@@ -1,0 +1,149 @@
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../data/notification_service.dart';
+import '../states/reminder_model.dart';
+
+class ReminderPresenter {
+  static const String _remindersKey = 'reminders_list';
+  final List<ReminderModel> _reminders = [];
+  final NotificationService _notificationService = NotificationService();
+
+  List<ReminderModel> get reminders => List.unmodifiable(_reminders);
+
+  Future<void> loadReminders() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? remindersJson = prefs.getString(_remindersKey);
+
+    if (remindersJson != null) {
+      final List<dynamic> decodedList = json.decode(remindersJson);
+      _reminders.clear();
+      _reminders.addAll(
+        decodedList.map((item) => ReminderModel.fromJson(item)).toList(),
+      );
+    }
+  }
+
+  Future<void> _saveReminders() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String encodedList = json.encode(
+      _reminders.map((reminder) => reminder.toJson()).toList(),
+    );
+    await prefs.setString(_remindersKey, encodedList);
+  }
+
+  List<String> generateScheduledTimes(String startTime, int intervalHours) {
+    List<String> times = [];
+
+    final parts = startTime.split(':');
+    if (parts.length != 2) return times;
+
+    int startHour = int.tryParse(parts[0]) ?? 0;
+    int startMinute = int.tryParse(parts[1]) ?? 0;
+
+    for (int i = 0; i < 24; i += intervalHours) {
+      int hour = (startHour + i) % 24;
+      String timeString = '${hour.toString().padLeft(2, '0')}:${startMinute.toString().padLeft(2, '0')}';
+      times.add(timeString);
+
+      if (i > 0 && hour < intervalHours) break;
+    }
+
+    return times;
+  }
+
+  Future<void> addReminder({
+    required String title,
+    required int intervalHours,
+    required String startTime,
+  }) async {
+    if (title.trim().isEmpty || intervalHours <= 0) return;
+
+    final scheduledTimes = generateScheduledTimes(startTime, intervalHours);
+
+    final reminder = ReminderModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      title: title.trim(),
+      intervalHours: intervalHours,
+      startTime: startTime,
+      scheduledTimes: scheduledTimes,
+    );
+
+    _reminders.add(reminder);
+    await _saveReminders();
+
+    // Schedula le notifiche
+    await _notificationService.scheduleMultipleDaily(
+      reminderId: reminder.id,
+      title: reminder.title,
+      times: reminder.scheduledTimes,
+    );
+  }
+
+  // Toggle attivazione con gestione notifiche
+  Future<void> toggleReminder(String id) async {
+    final index = _reminders.indexWhere((r) => r.id == id);
+    if (index != -1) {
+      final reminder = _reminders[index];
+      final newState = !reminder.isActive;
+
+      _reminders[index] = reminder.copyWith(isActive: newState);
+      await _saveReminders();
+
+      if (newState) {
+        // Riattiva notifiche
+        await _notificationService.scheduleMultipleDaily(
+          reminderId: reminder.id,
+          title: reminder.title,
+          times: reminder.scheduledTimes,
+        );
+      } else {
+        // Cancella notifiche
+        await _notificationService.cancelReminder(reminder.id);
+      }
+    }
+  }
+
+  Future<void> deleteReminder(String id) async {
+    await _notificationService.cancelReminder(id);
+    _reminders.removeWhere((r) => r.id == id);
+    await _saveReminders();
+  }
+
+  Future<void> updateReminder({
+    required String id,
+    required String title,
+    required int intervalHours,
+    required String startTime,
+  }) async {
+    final index = _reminders.indexWhere((r) => r.id == id);
+    if (index != -1) {
+      final scheduledTimes = generateScheduledTimes(startTime, intervalHours);
+      _reminders[index] = _reminders[index].copyWith(
+        title: title,
+        intervalHours: intervalHours,
+        startTime: startTime,
+        scheduledTimes: scheduledTimes,
+      );
+      await _saveReminders();
+    }
+  }
+
+  List<ReminderModel> getActiveRemindersForTime(String currentTime) {
+    return _reminders.where((reminder) {
+      return reminder.isActive &&
+          reminder.scheduledTimes.contains(currentTime);
+    }).toList();
+  }
+
+  Future<void> rescheduleAllNotifications() async {
+    for (final reminder in _reminders) {
+      if (reminder.isActive) {
+        await _notificationService.scheduleMultipleDaily(
+          reminderId: reminder.id,
+          title: reminder.title,
+          times: reminder.scheduledTimes,
+        );
+      }
+    }
+  }
+}
