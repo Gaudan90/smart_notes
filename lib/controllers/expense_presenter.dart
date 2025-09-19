@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../states/expense_model.dart';
 import '../states/expense_stats.dart';
@@ -48,7 +47,7 @@ class ExpensePresenter {
     required double amount,
     required DateTime date,
     required String category,
-}) async {
+  }) async {
     if (name.trim().isEmpty || amount <= 0) return;
 
     final expense = ExpenseModel(
@@ -59,7 +58,8 @@ class ExpensePresenter {
       category: category,
     );
 
-    expenses.add(expense);
+    // CORREZIONE: usa _expenses invece di expenses
+    _expenses.add(expense);
     _expenses.sort((a, b) => b.date.compareTo(a.date));
     await _saveExpenses();
   }
