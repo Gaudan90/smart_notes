@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:smart_notes/screens/home_view.dart';
 import 'package:smart_notes/theme/theme_config.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
-
 import 'data/notification_service.dart';
 
 void main() async {
@@ -15,10 +14,10 @@ class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppAppState extends State<MyApp> with TickerProviderStateMixin {
+class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
   final ThemeProvider _themeProvider = ThemeProvider();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
