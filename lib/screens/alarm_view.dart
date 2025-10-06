@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../data/alarm_manager.dart';
 import '../states/alarm_model.dart';
 import '../widget/alarm_overlay.dart';
+import '../data/alarm_background_service.dart';
 
 class AlarmView extends StatefulWidget {
   const AlarmView({super.key});
@@ -11,19 +13,45 @@ class AlarmView extends StatefulWidget {
   State<AlarmView> createState() => _AlarmViewState();
 }
 
-class _AlarmViewState extends State<AlarmView> {
+class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
   final AlarmManager _alarmManager = AlarmManager();
   final TextEditingController _titleController = TextEditingController();
   DateTime _selectedDateTime = DateTime.now();
-  Timer? _checkTimer;
   bool _isLoading = true;
   OverlayEntry? _alarmOverlay;
+
+  // Variabili per ripetizione
+  bool _isRepeating = false;
+  bool _repeatDaily = false;
+  List<int> _selectedDays = [];
+
+  final List<String> _weekDays = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadAlarms();
-    _startChecking();
+    _setupAlarmHandler();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadAlarms();
+    }
+  }
+
+  void _setupAlarmHandler() {
+    // Gestisce quando una sveglia viene triggerata dal background
+    AlarmTriggerManager.onAlarmTriggered = (String alarmId) async {
+      await _alarmManager.loadAlarms();
+      final alarm = _alarmManager.getAlarmById(alarmId);
+
+      if (alarm != null && _alarmOverlay == null) {
+        _triggerAlarm(alarm);
+      }
+    };
   }
 
   Future<void> _loadAlarms() async {
@@ -33,24 +61,32 @@ class _AlarmViewState extends State<AlarmView> {
     });
   }
 
-  void _startChecking() {
-    // Controlla ogni secondo se ci sono sveglie da far suonare
-    _checkTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _checkForAlarms();
-    });
-  }
+  Future<void> _requestPermissions() async {
+    if (await Permission.scheduleExactAlarm.isDenied) {
+      final status = await Permission.scheduleExactAlarm.request();
+      print('📱 Schedule exact alarm permission: $status');
 
-  void _checkForAlarms() {
-    final alarmsToTrigger = _alarmManager.getAlarmsToTrigger();
-
-    if (alarmsToTrigger.isNotEmpty && _alarmOverlay == null) {
-      // Suona la prima sveglia della lista
-      _triggerAlarm(alarmsToTrigger.first);
+      if (status.isPermanentlyDenied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text(
+                  'Permesso allarmi negato. Vai in Impostazioni → App → '
+                      'SmartNotes → Allarmi e promemoria'
+              ),
+              action: SnackBarAction(
+                label: 'Impostazioni',
+                onPressed: () => openAppSettings(),
+              ),
+            ),
+          );
+        }
+      }
     }
   }
 
   void _triggerAlarm(AlarmModel alarm) {
-    print('Triggering alarm: ${alarm.title}');
+    print('Triggering alarm overlay: ${alarm.title}');
 
     _alarmOverlay = OverlayEntry(
       builder: (context) => AlarmOverlay(
@@ -59,8 +95,14 @@ class _AlarmViewState extends State<AlarmView> {
           _alarmOverlay?.remove();
           _alarmOverlay = null;
 
-          // Disattiva la sveglia dopo che è suonata
-          await _alarmManager.toggleAlarm(alarm.id);
+          if (alarm.isRepeating) {
+            // Rischedula se è ripetuta
+            await _alarmManager.rescheduleRepeatingAlarm(alarm.id);
+          } else {
+            // Disattiva se è singola
+            await _alarmManager.toggleAlarm(alarm.id);
+          }
+
           setState(() {});
         },
       ),
@@ -100,13 +142,16 @@ class _AlarmViewState extends State<AlarmView> {
   void _showAddAlarmDialog() {
     _titleController.clear();
     _selectedDateTime = DateTime.now().add(const Duration(minutes: 1));
+    _isRepeating = false;
+    _repeatDaily = false;
+    _selectedDays = [];
 
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           final smartTime = _alarmManager.getSmartAlarmTime(_selectedDateTime);
-          final isNextDay = smartTime.day != _selectedDateTime.day;
+          final isNextDay = !_isRepeating && smartTime.day != _selectedDateTime.day;
 
           return AlertDialog(
             title: const Text('Nuova Sveglia'),
@@ -125,10 +170,9 @@ class _AlarmViewState extends State<AlarmView> {
                   const SizedBox(height: 16),
 
                   ListTile(
-                    title: const Text('Data e Ora'),
+                    title: const Text('Ora'),
                     subtitle: Text(
-                      '${_selectedDateTime.day}/${_selectedDateTime.month}/${_selectedDateTime.year} '
-                          '${_selectedDateTime.hour.toString().padLeft(2, '0')}:'
+                      '${_selectedDateTime.hour.toString().padLeft(2, '0')}:'
                           '${_selectedDateTime.minute.toString().padLeft(2, '0')}',
                     ),
                     trailing: const Icon(Icons.access_time),
@@ -138,11 +182,75 @@ class _AlarmViewState extends State<AlarmView> {
                     },
                   ),
 
-                  if (isNextDay)
+                  const SizedBox(height: 16),
+
+                  SwitchListTile(
+                    title: const Text('Sveglia ripetuta'),
+                    value: _isRepeating,
+                    onChanged: (value) {
+                      setDialogState(() {
+                        _isRepeating = value;
+                        if (!value) {
+                          _repeatDaily = false;
+                          _selectedDays = [];
+                        }
+                      });
+                    },
+                  ),
+
+                  if (_isRepeating) ...[
+                    RadioListTile<bool>(
+                      title: const Text('Tutti i giorni'),
+                      value: true,
+                      groupValue: _repeatDaily,
+                      onChanged: (value) {
+                        setDialogState(() {
+                          _repeatDaily = value!;
+                          if (value) {
+                            _selectedDays = [];
+                          }
+                        });
+                      },
+                    ),
+                    RadioListTile<bool>(
+                      title: const Text('Giorni specifici'),
+                      value: false,
+                      groupValue: _repeatDaily,
+                      onChanged: (value) {
+                        setDialogState(() {
+                          _repeatDaily = value!;
+                        });
+                      },
+                    ),
+
+                    if (!_repeatDaily)
+                      Wrap(
+                        spacing: 8,
+                        children: List.generate(7, (index) {
+                          final dayNumber = index + 1;
+                          return FilterChip(
+                            label: Text(_weekDays[index]),
+                            selected: _selectedDays.contains(dayNumber),
+                            onSelected: (selected) {
+                              setDialogState(() {
+                                if (selected) {
+                                  _selectedDays.add(dayNumber);
+                                } else {
+                                  _selectedDays.remove(dayNumber);
+                                }
+                              });
+                            },
+                          );
+                        }),
+                      ),
+                  ],
+
+                  if (!_isRepeating && isNextDay)
                     Container(
                       padding: const EdgeInsets.all(12),
+                      margin: const EdgeInsets.only(top: 16),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withValues(alpha: 0.1),
+                        color: Colors.blue.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -151,8 +259,8 @@ class _AlarmViewState extends State<AlarmView> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'L\'orario è già passato oggi.\nLa sveglia suonerà domani '
-                                  '${smartTime.day}/${smartTime.month} alle '
+                              'L\'orario è già passato oggi.\n'
+                                  'La sveglia suonerà domani alle '
                                   '${smartTime.hour.toString().padLeft(2, '0')}:'
                                   '${smartTime.minute.toString().padLeft(2, '0')}',
                               style: const TextStyle(fontSize: 13),
@@ -172,12 +280,25 @@ class _AlarmViewState extends State<AlarmView> {
               ElevatedButton(
                 onPressed: () async {
                   if (_titleController.text.isNotEmpty) {
+                    if (_isRepeating && !_repeatDaily && _selectedDays.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Seleziona almeno un giorno'),
+                          backgroundColor: Colors.orange,
+                        ),
+                      );
+                      return;
+                    }
+
                     await _alarmManager.addAlarm(
                       title: _titleController.text,
                       dateTime: _selectedDateTime,
+                      isRepeating: _isRepeating,
+                      repeatDays: _selectedDays,
+                      repeatDaily: _repeatDaily,
                     );
                     setState(() {});
-                    if (context.mounted) Navigator.pop(context);
+                    Navigator.pop(context);
                   }
                 },
                 child: const Text('Imposta'),
@@ -190,6 +311,20 @@ class _AlarmViewState extends State<AlarmView> {
   }
 
   String _formatAlarmTime(AlarmModel alarm) {
+    if (alarm.isRepeating) {
+      String time = '${alarm.dateTime.hour.toString().padLeft(2, '0')}:'
+          '${alarm.dateTime.minute.toString().padLeft(2, '0')}';
+
+      if (alarm.repeatDaily) {
+        return '$time (Tutti i giorni)';
+      } else if (alarm.repeatDays.isNotEmpty) {
+        final days = alarm.repeatDays
+            .map((d) => _weekDays[d - 1])
+            .join(', ');
+        return '$time ($days)';
+      }
+    }
+
     final now = DateTime.now();
     final isToday = alarm.dateTime.day == now.day &&
         alarm.dateTime.month == now.month &&
@@ -218,7 +353,6 @@ class _AlarmViewState extends State<AlarmView> {
       appBar: AppBar(
         title: const Text('Sveglia Intelligente'),
         actions: [
-          // Pulsante test veloce
           IconButton(
             icon: const Icon(Icons.bug_report),
             onPressed: () async {
@@ -228,13 +362,11 @@ class _AlarmViewState extends State<AlarmView> {
                 dateTime: now.add(const Duration(seconds: 10)),
               );
               setState(() {});
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Sveglia test impostata per tra 10 secondi'),
                 ),
               );
-              }
             },
             tooltip: 'Test veloce (10 sec)',
           ),
@@ -252,7 +384,7 @@ class _AlarmViewState extends State<AlarmView> {
                 gradient: LinearGradient(
                   colors: [
                     Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
+                    Theme.of(context).colorScheme.primary.withOpacity(0.7),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(12),
@@ -298,7 +430,6 @@ class _AlarmViewState extends State<AlarmView> {
               ),
             ),
 
-          // Lista sveglie
           Expanded(
             child: _alarmManager.alarms.isEmpty
                 ? Center(
@@ -327,7 +458,7 @@ class _AlarmViewState extends State<AlarmView> {
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
                     leading: Icon(
-                      Icons.alarm,
+                      alarm.isRepeating ? Icons.repeat : Icons.alarm,
                       color: alarm.isActive
                           ? Theme.of(context).colorScheme.primary
                           : Colors.grey,
@@ -379,7 +510,7 @@ class _AlarmViewState extends State<AlarmView> {
 
   @override
   void dispose() {
-    _checkTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _alarmOverlay?.remove();
     _titleController.dispose();
     super.dispose();

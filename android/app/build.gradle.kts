@@ -1,7 +1,7 @@
 plugins {
-    id "dev.flutter.flutterGradlePlugin" version "1.0.0" apply false
-    id "com.android.application" version "8.5.2" apply false
-    id "org.jetbrains.kotlin.android" version "2.0.0" apply false
+    id("com.android.application")
+    id("kotlin-android")
+    id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
@@ -34,6 +34,7 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true
         }
     }
 }
@@ -43,6 +44,6 @@ flutter {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.2.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:smart_notes/screens/home_view.dart';
 import 'package:smart_notes/theme/theme_config.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
+import 'data/alarm_background_service.dart';
 import 'data/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().initialize();
+  await AlarmBackgroundService.initialize();
+  print('✅ AlarmBackgroundService initialized');
   runApp(const MyApp());
 }
 

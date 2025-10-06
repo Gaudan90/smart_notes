@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'dart:async';
+import '../data/alarm_manager.dart';
 import '../states/alarm_model.dart';
 
 class AlarmOverlay extends StatefulWidget {
@@ -55,6 +56,7 @@ class _AlarmOverlayState extends State<AlarmOverlay>
     _updateTime();
     _timeTimer = Timer.periodic(const Duration(seconds: 1), (_) => _updateTime());
 
+    // AVVIA L'AUDIO IMMEDIATAMENTE
     _startAlarmSound();
   }
 
@@ -86,15 +88,21 @@ class _AlarmOverlayState extends State<AlarmOverlay>
 
   Future<void> _snoozeAlarm() async {
     await _audioPlayer.stop();
-    // TODO: Implementa logica snooze
+
+    // Aggiungi snooze di 5 minuti tramite AlarmManager
+    final AlarmManager alarmManager = AlarmManager();
+    await alarmManager.snoozeAlarm(widget.alarm.id, 5);
+
     widget.onDismiss();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sveglia posticipata di 5 minuti'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Sveglia posticipata di 5 minuti'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   @override
