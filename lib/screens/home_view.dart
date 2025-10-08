@@ -10,6 +10,7 @@ import 'expense_view.dart';
 import 'fizzbuzz_view.dart';
 import 'missing_numbers_view.dart';
 import 'number_stats_view.dart';
+import 'event_calendar_view.dart';
 
 class HomeView extends StatefulWidget {
   final ThemeProvider themeProvider;
@@ -32,7 +33,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _animations = List.generate(8, (index) {
+    _animations = List.generate(9, (index) {
       final double start = index * 0.08;
       final double end = (0.4 + index * 0.08).clamp(0.0, 1.0);
 
@@ -119,11 +120,22 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
+        title: 'Calendario Eventi',
+        subtitle: 'Genera date eventi ricorrenti',
+        icon: Icons.event_repeat,
+        color: Colors.deepPurple,
+        animation: _animations[5],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const EventCalendarView()),
+        ),
+      ),
+      FeatureCard(
         title: 'Statistiche Numeriche',
         subtitle: 'Trova il numero più frequente',
         icon: Icons.analytics_outlined,
         color: Colors.blue,
-        animation: _animations[5],
+        animation: _animations[6],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const NumberStatsView()),
@@ -134,7 +146,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Inverti le parole della frase',
         icon: Icons.text_rotation_none,
         color: Colors.green,
-        animation: _animations[6],
+        animation: _animations[7],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const SentenceReverserView()),
@@ -145,7 +157,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Trova i numeri saltati',
         icon: Icons.search,
         color: Colors.purple,
-        animation: _animations[7],
+        animation: _animations[8],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MissingNumbersView()),
