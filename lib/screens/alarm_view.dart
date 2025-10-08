@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../data/alarm_manager.dart';
 import '../states/alarm_model.dart';
 import '../widget/alarm_overlay.dart';
@@ -20,7 +19,6 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
   bool _isLoading = true;
   OverlayEntry? _alarmOverlay;
 
-  // Variabili per ripetizione
   bool _isRepeating = false;
   bool _repeatDaily = false;
   List<int> _selectedDays = [];
@@ -43,7 +41,6 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
   }
 
   void _setupAlarmHandler() {
-    // Gestisce quando una sveglia viene triggerata dal background
     AlarmTriggerManager.onAlarmTriggered = (String alarmId) async {
       await _alarmManager.loadAlarms();
       final alarm = _alarmManager.getAlarmById(alarmId);
@@ -61,29 +58,6 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
     });
   }
 
-  Future<void> _requestPermissions() async {
-    if (await Permission.scheduleExactAlarm.isDenied) {
-      final status = await Permission.scheduleExactAlarm.request();
-      print('📱 Schedule exact alarm permission: $status');
-
-      if (status.isPermanentlyDenied) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text(
-                  'Permesso allarmi negato. Vai in Impostazioni → App → '
-                      'SmartNotes → Allarmi e promemoria'
-              ),
-              action: SnackBarAction(
-                label: 'Impostazioni',
-                onPressed: () => openAppSettings(),
-              ),
-            ),
-          );
-        }
-      }
-    }
-  }
 
   void _triggerAlarm(AlarmModel alarm) {
     print('Triggering alarm overlay: ${alarm.title}');
@@ -96,10 +70,8 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
           _alarmOverlay = null;
 
           if (alarm.isRepeating) {
-            // Rischedula se è ripetuta
             await _alarmManager.rescheduleRepeatingAlarm(alarm.id);
           } else {
-            // Disattiva se è singola
             await _alarmManager.toggleAlarm(alarm.id);
           }
 
@@ -250,7 +222,7 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                       padding: const EdgeInsets.all(12),
                       margin: const EdgeInsets.only(top: 16),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -362,11 +334,13 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                 dateTime: now.add(const Duration(seconds: 10)),
               );
               setState(() {});
-              ScaffoldMessenger.of(context).showSnackBar(
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Sveglia test impostata per tra 10 secondi'),
                 ),
               );
+              }
             },
             tooltip: 'Test veloce (10 sec)',
           ),
@@ -384,7 +358,7 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                 gradient: LinearGradient(
                   colors: [
                     Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                    Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(12),

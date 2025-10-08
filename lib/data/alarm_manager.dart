@@ -35,11 +35,9 @@ class AlarmManager {
     _alarms.sort((a, b) => a.dateTime.compareTo(b.dateTime));
   }
 
-  // Funzione smart per gestire date passate
   DateTime getSmartAlarmTime(DateTime selectedDateTime) {
     final now = DateTime.now();
 
-    // Se l'orario è già passato oggi, proponi domani
     if (selectedDateTime.isBefore(now)) {
       return DateTime(
         now.year,
@@ -77,7 +75,6 @@ class AlarmManager {
     _sortAlarms();
     await saveAlarms();
 
-    // Schedula con AlarmManager
     await AlarmBackgroundService.scheduleAlarm(alarm);
   }
 
@@ -89,10 +86,8 @@ class AlarmManager {
       await saveAlarms();
 
       if (_alarms[index].isActive) {
-        // Riattiva
         await AlarmBackgroundService.scheduleAlarm(_alarms[index]);
       } else {
-        // Disattiva
         await AlarmBackgroundService.cancelAlarm(id);
       }
     }
@@ -104,11 +99,9 @@ class AlarmManager {
     await saveAlarms();
   }
 
-  // Snooze di una sveglia
   Future<void> snoozeAlarm(String id, int minutes) async {
     final alarm = _alarms.firstWhere((a) => a.id == id);
 
-    // Crea una sveglia temporanea per lo snooze
     final snoozeAlarm = AlarmModel(
       id: 'snooze_${DateTime.now().millisecondsSinceEpoch}',
       title: '${alarm.title} (Posticipata)',
@@ -122,7 +115,6 @@ class AlarmManager {
     await AlarmBackgroundService.scheduleAlarm(snoozeAlarm);
   }
 
-  // Trova la prossima sveglia attiva
   AlarmModel? getNextActiveAlarm() {
     final now = DateTime.now();
     AlarmModel? nextAlarm;
@@ -146,7 +138,6 @@ class AlarmManager {
     return nextAlarm;
   }
 
-  // Trova un allarme per ID
   AlarmModel? getAlarmById(String id) {
     try {
       return _alarms.firstWhere((a) => a.id == id);
@@ -155,7 +146,6 @@ class AlarmManager {
     }
   }
 
-  // Dopo che una sveglia ripetuta è suonata, rischedulala
   Future<void> rescheduleRepeatingAlarm(String id) async {
     final alarm = getAlarmById(id);
     if (alarm != null && alarm.isRepeating) {

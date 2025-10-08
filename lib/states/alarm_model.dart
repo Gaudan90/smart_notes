@@ -4,8 +4,8 @@ class AlarmModel {
   final DateTime dateTime;
   final bool isActive;
   final bool isRepeating;
-  final List<int> repeatDays; // 1=Lun, 2=Mar, ... 7=Dom
-  final bool repeatDaily; // true = tutti i giorni
+  final List<int> repeatDays;
+  final bool repeatDaily;
 
   AlarmModel({
     required this.id,
@@ -61,17 +61,14 @@ class AlarmModel {
     );
   }
 
-  // Calcola la prossima occorrenza per sveglie ripetute
   DateTime? getNextOccurrence() {
     final now = DateTime.now();
 
     if (!isRepeating) {
-      // Sveglia singola
       return dateTime.isAfter(now) ? dateTime : null;
     }
 
     if (repeatDaily) {
-      // Tutti i giorni alla stessa ora
       DateTime next = DateTime(
         now.year,
         now.month,
@@ -87,7 +84,6 @@ class AlarmModel {
       return next;
     }
 
-    // Giorni specifici della settimana
     if (repeatDays.isNotEmpty) {
       for (int i = 0; i < 7; i++) {
         final checkDate = now.add(Duration(days: i));

@@ -11,7 +11,6 @@ class AlarmBackgroundService {
   static Future<void> initialize() async {
     print('Initializing AlarmBackgroundService...');
 
-    // Inizializza timezone
     tz.initializeTimeZones();
     final String timeZoneName = await FlutterTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(timeZoneName));
@@ -38,7 +37,6 @@ class AlarmBackgroundService {
       },
     );
 
-    // Crea canale Android - SINTASSI CORRETTA
     const androidChannel = AndroidNotificationChannel(
       'alarm_channel',
       'Allarmi',

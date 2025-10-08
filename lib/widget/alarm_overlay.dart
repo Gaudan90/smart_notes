@@ -56,7 +56,6 @@ class _AlarmOverlayState extends State<AlarmOverlay>
     _updateTime();
     _timeTimer = Timer.periodic(const Duration(seconds: 1), (_) => _updateTime());
 
-    // AVVIA L'AUDIO IMMEDIATAMENTE
     _startAlarmSound();
   }
 
@@ -89,7 +88,6 @@ class _AlarmOverlayState extends State<AlarmOverlay>
   Future<void> _snoozeAlarm() async {
     await _audioPlayer.stop();
 
-    // Aggiungi snooze di 5 minuti tramite AlarmManager
     final AlarmManager alarmManager = AlarmManager();
     await alarmManager.snoozeAlarm(widget.alarm.id, 5);
 
