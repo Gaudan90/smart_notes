@@ -39,7 +39,8 @@ class ShoppingItemCard extends StatelessWidget {
                   Text(
                     item.name,
                     style: TextStyle(
-                      decoration: item.isPurchased ? TextDecoration.lineThrough : null,
+                      decoration: item.isPurchased
+                          ? TextDecoration.lineThrough : null,
                       color: item.isPurchased ? Colors.grey : null,
                       fontWeight: FontWeight.w500,
                     ),
@@ -52,16 +53,19 @@ class ShoppingItemCard extends StatelessWidget {
                       Flexible(
                         child: Text(
                           item.category,
-                          style: const TextStyle(fontSize: 12, color: Colors.grey),
+                          style: const TextStyle(fontSize: 12,
+                              color: Colors.grey),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (item.price != null) ...[
-                        const Text(' • ', style: TextStyle(fontSize: 12, color: Colors.grey)),
+                        const Text(' • ', style: TextStyle(fontSize: 12,
+                            color: Colors.grey)),
                         Flexible(
                           child: Text(
                             '€${item.totalCost.toStringAsFixed(2)}',
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            style: const TextStyle(fontSize: 12,
+                                color: Colors.grey),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -80,14 +84,19 @@ class ShoppingItemCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.remove_circle_outline, size: 20),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32),
                   onPressed: onDecrement,
                 ),
                 Container(
                   constraints: const BoxConstraints(minWidth: 28),
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 4),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                    color: Theme.of(context).colorScheme
+                        .primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Center(
@@ -104,13 +113,17 @@ class ShoppingItemCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline, size: 20),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32),
                   onPressed: onIncrement,
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red, size: 20),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                  constraints: const BoxConstraints(
+                      minWidth: 32,
+                      minHeight: 32),
                   onPressed: onDelete,
                 ),
               ],
