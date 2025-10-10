@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_notes/screens/reminder_view.dart';
 import 'package:smart_notes/screens/sentence_reverse_view.dart';
+import 'package:smart_notes/screens/shopping_list_view.dart';
 import 'package:smart_notes/screens/theme_settings_view.dart';
 import 'package:smart_notes/screens/todo_list_view.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
@@ -34,9 +35,9 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _animations = List.generate(10, (index) {
-      final double start = index * 0.08;
-      final double end = (0.4 + index * 0.08).clamp(0.0, 1.0);
+    _animations = List.generate(11, (index) {
+      final double start = index * 0.04;
+      final double end = (0.2 + index * 0.04).clamp(0.0, 1.0);
 
       return Tween<double>(
         begin: 0.0,
@@ -88,14 +89,14 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Promemoria',
-        subtitle: 'Attività ricorrenti giornaliere',
-        icon: Icons.notifications_active,
-        color: Colors.amber,
+        title: 'Lista Spesa',
+        subtitle: 'Spesa ottimizzata senza duplicati',
+        icon: Icons.shopping_cart,
+        color: Colors.lightGreen,
         animation: _animations[2],
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const ReminderView()),
+          MaterialPageRoute(builder: (_) => const ShoppingListView()),
         ),
       ),
       FeatureCard(
@@ -131,12 +132,24 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
           MaterialPageRoute(builder: (_) => const EventCalendarView()),
         ),
       ),
+
+      FeatureCard(
+        title: 'Promemoria',
+        subtitle: 'Attività ricorrenti giornaliere',
+        icon: Icons.notifications_active,
+        color: Colors.amber,
+        animation: _animations[6],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ReminderView()),
+        ),
+      ),
       FeatureCard(
         title: 'Routine Planner',
         subtitle: 'Pianifica routine ricorrenti',
         icon: Icons.event_repeat,
         color: Colors.red,
-        animation: _animations[6],
+        animation: _animations[7],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const FizzBuzzView()),
@@ -147,7 +160,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Trova il numero più frequente',
         icon: Icons.analytics_outlined,
         color: Colors.blue,
-        animation: _animations[7],
+        animation: _animations[8],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const NumberStatsView()),
@@ -158,7 +171,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Inverti le parole della frase',
         icon: Icons.text_rotation_none,
         color: Colors.green,
-        animation: _animations[8],
+        animation: _animations[9],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const SentenceReverserView()),
@@ -169,7 +182,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Trova i numeri saltati',
         icon: Icons.search,
         color: Colors.purple,
-        animation: _animations[9],
+        animation: _animations[10],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MissingNumbersView()),
