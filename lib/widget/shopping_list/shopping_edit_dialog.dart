@@ -1,29 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../controllers/shopping_list_presenter.dart';
+import '../../states/shopping_item_model.dart';
 
-class ShoppingAddDialog extends StatefulWidget {
+class ShoppingEditDialog extends StatefulWidget {
   final ShoppingListPresenter presenter;
-  final VoidCallback onItemAdded;
+  final ShoppingItemModel item;
+  final VoidCallback onItemUpdated;
 
-  const ShoppingAddDialog({
+  const ShoppingEditDialog({
     super.key,
     required this.presenter,
-    required this.onItemAdded,
+    required this.item,
+    required this.onItemUpdated,
   });
 
   @override
-  State<ShoppingAddDialog> createState() => _ShoppingAddDialogState();
+  State<ShoppingEditDialog> createState() => _ShoppingEditDialogState();
 }
 
-class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
-  final _nameController = TextEditingController();
-  final _quantityController = TextEditingController(text: '1');
-  final _priceController = TextEditingController();
-  final _weightController = TextEditingController();
-  final _pricePerKgController = TextEditingController();
-  String _selectedCategory = ShoppingListPresenter.categories.first;
-  bool _isSoldByWeight = false;
+class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
+  late TextEditingController _nameController;
+  late TextEditingController _quantityController;
+  late TextEditingController _priceController;
+  late TextEditingController _weightController;
+  late TextEditingController _pricePerKgController;
+  late String _selectedCategory;
+  late bool _isSoldByWeight;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.item.name);
+    _quantityController = TextEditingController(text: '${widget.item.quantity}');
+    _priceController = TextEditingController(
+      text: widget.item.price != null
+          ? widget.item.price!.toStringAsFixed(2) : '',
+    );
+    _weightController = TextEditingController(
+      text: widget.item.weightKg != null
+          ? widget.item.weightKg!.toStringAsFixed(3) : '',
+    );
+    _pricePerKgController = TextEditingController(
+      text: widget.item.pricePerKg != null
+          ? widget.item.pricePerKg!.toStringAsFixed(2) : '',
+    );
+    _selectedCategory = widget.item.category;
+    _isSoldByWeight = widget.item.isSoldByWeight;
+  }
 
   @override
   void dispose() {
@@ -38,7 +62,7 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Aggiungi Prodotto'),
+      title: const Text('Modifica Prodotto'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -47,42 +71,11 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
               controller: _nameController,
               decoration: const InputDecoration(
                 labelText: 'Nome prodotto',
-                hintText: 'Es: Latte',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.shopping_basket),
               ),
               textCapitalization: TextCapitalization.words,
-              onChanged: (value) {
-                setState(() {});
-              },
             ),
-
-            if (_nameController.text.isNotEmpty &&
-                widget.presenter.itemExists(_nameController.text))
-              Container(
-                margin: const EdgeInsets.only(top: 8),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.info, color: Colors.orange, size: 20),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Già in lista (${widget.presenter
-                            .getItemQuantity(_nameController.text)}x)\n'
-                            'La quantità verrà aggiornata',
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
             const SizedBox(height: 16),
 
             SwitchListTile(
@@ -147,7 +140,6 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
                 ],
               ),
             ] else ...[
-              // Campi per prodotti al peso
               Row(
                 children: [
                   Expanded(
@@ -222,11 +214,20 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
           onPressed: () async {
             if (_nameController.text.isNotEmpty) {
               final quantity = int.tryParse(_quantityController.text) ?? 1;
-              final price = double.tryParse(_priceController.text);
-              final weightKg = double.tryParse(_weightController.text);
-              final pricePerKg = double.tryParse(_pricePerKgController.text);
+              final priceText = _priceController.text.trim();
+              final price = priceText.isNotEmpty ? double
+                  .tryParse(priceText) : null;
 
-              final message = await widget.presenter.addItem(
+              final weightText = _weightController.text.trim();
+              final weightKg = weightText.isNotEmpty ? double
+                  .tryParse(weightText) : null;
+
+              final pricePerKgText = _pricePerKgController.text.trim();
+              final pricePerKg = pricePerKgText.isNotEmpty ? double
+                  .tryParse(pricePerKgText) : null;
+
+              await widget.presenter.updateItem(
+                id: widget.item.id,
                 name: _nameController.text,
                 category: _selectedCategory,
                 quantity: quantity,
@@ -235,12 +236,12 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
                 pricePerKg: pricePerKg,
               );
 
-              widget.onItemAdded();
+              widget.onItemUpdated();
               if (context.mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(message),
+                  const SnackBar(
+                    content: Text('✓ Prodotto aggiornato'),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -248,7 +249,7 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
               }
             }
           },
-          child: const Text('Aggiungi'),
+          child: const Text('Salva'),
         ),
       ],
     );

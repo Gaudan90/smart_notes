@@ -7,6 +7,9 @@ class ShoppingItemModel {
   bool isPurchased;
   final DateTime addedAt;
 
+  double? weightKg;
+  double? pricePerKg;
+
   ShoppingItemModel({
     required this.id,
     required this.name,
@@ -15,11 +18,20 @@ class ShoppingItemModel {
     this.price,
     this.isPurchased = false,
     required this.addedAt,
+    this.weightKg,
+    this.pricePerKg,
   });
 
   double get totalCost {
+    if (weightKg != null && pricePerKg != null && weightKg! > 0 && pricePerKg! > 0) {
+      return weightKg! * pricePerKg!;
+    }
     if (price == null) return 0.0;
     return price! * quantity;
+  }
+
+  bool get isSoldByWeight {
+    return weightKg != null && pricePerKg != null;
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +43,8 @@ class ShoppingItemModel {
       'price': price,
       'isPurchased': isPurchased,
       'addedAt': addedAt.toIso8601String(),
+      'weightKg': weightKg,
+      'pricePerKg': pricePerKg,
     };
   }
 
@@ -43,6 +57,8 @@ class ShoppingItemModel {
       price: json['price']?.toDouble(),
       isPurchased: json['isPurchased'] ?? false,
       addedAt: DateTime.parse(json['addedAt']),
+      weightKg: json['weightKg']?.toDouble(),
+      pricePerKg: json['pricePerKg']?.toDouble(),
     );
   }
 
@@ -52,6 +68,8 @@ class ShoppingItemModel {
     String? category,
     double? price,
     bool? isPurchased,
+    double? weightKg,
+    double? pricePerKg,
   }) {
     return ShoppingItemModel(
       id: id,
@@ -61,6 +79,8 @@ class ShoppingItemModel {
       price: price ?? this.price,
       isPurchased: isPurchased ?? this.isPurchased,
       addedAt: addedAt,
+      weightKg: weightKg ?? this.weightKg,
+      pricePerKg: pricePerKg ?? this.pricePerKg,
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../controllers/shopping_list_presenter.dart';
+import '../states/shopping_item_model.dart';
 import '../widget/shopping_list/shopping_add_dialog.dart';
+import '../widget/shopping_list/shopping_edit_dialog.dart';
 import '../widget/shopping_list/shopping_item_card.dart';
 import '../widget/shopping_list/shopping_quick_add_sheet.dart';
 import '../widget/shopping_list/shopping_stats_tab.dart';
@@ -50,6 +52,17 @@ class _ShoppingListViewState extends State<ShoppingListView>
       builder: (context) => ShoppingQuickAddSheet(
         presenter: _presenter,
         onItemAdded: () => setState(() {}),
+      ),
+    );
+  }
+
+  void _showEditItemDialog(ShoppingItemModel item) {
+    showDialog(
+      context: context,
+      builder: (context) => ShoppingEditDialog(
+        presenter: _presenter,
+        item: item,
+        onItemUpdated: () => setState(() {}),
       ),
     );
   }
@@ -194,6 +207,7 @@ class _ShoppingListViewState extends State<ShoppingListView>
             await _presenter.removeItem(item.id);
             setState(() {});
           },
+          onEdit: () => _showEditItemDialog(item),
         );
       },
     );
@@ -240,6 +254,7 @@ class _ShoppingListViewState extends State<ShoppingListView>
                 await _presenter.removeItem(item.id);
                 setState(() {});
               },
+              onEdit: () => _showEditItemDialog(item),
             )),
             const SizedBox(height: 16),
           ],
