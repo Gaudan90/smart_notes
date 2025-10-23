@@ -13,7 +13,12 @@ class ShoppingStatsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 16,
+        bottom: 100, // Spazio per il FAB
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
