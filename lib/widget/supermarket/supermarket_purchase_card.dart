@@ -133,7 +133,7 @@ class SupermarketPurchaseCard extends StatelessWidget {
 
               const SizedBox(width: 8),
 
-              // Bottone elimina (ben visibile e centrato)
+              // Bottone elimina
               Container(
                 decoration: BoxDecoration(
                   color: Colors.red.withValues(alpha: 0.1),

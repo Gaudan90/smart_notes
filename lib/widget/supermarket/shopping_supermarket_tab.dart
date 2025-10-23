@@ -174,6 +174,43 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
     }
   }
 
+  Future<void> _deletePurchase(SupermarketPurchaseModel purchase) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Conferma eliminazione'),
+        content: Text('Eliminare "${purchase.productName}" da ${purchase.supermarket}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annulla'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await widget.presenter.deletePurchase(purchase.id);
+      widget.onUpdate();
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✓ Acquisto eliminato'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final filteredPurchases = _searchQuery.isEmpty
@@ -259,7 +296,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
                 ],
               ),
 
-              // Info card
               if (widget.presenter.purchases.isNotEmpty && _searchQuery.isEmpty) ...[
                 const SizedBox(height: 12),
                 Container(
@@ -303,10 +339,7 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
               final purchase = filteredPurchases[index];
               return SupermarketPurchaseCard(
                 purchase: purchase,
-                onDelete: () async {
-                  await widget.presenter.deletePurchase(purchase.id);
-                  widget.onUpdate();
-                },
+                onDelete: () => _deletePurchase(purchase),
                 onEdit: () => _showEditPurchase(purchase),
               );
             },
