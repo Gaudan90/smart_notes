@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../controllers/shopping_list_presenter.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 import '../../states/supermarket_purchase_model.dart';
 import 'supermarket_add_dialog.dart';
 import 'supermarket_edit_dialog.dart';
 import 'supermarket_purchase_card.dart';
+import 'import_from_list_dialog.dart';
 
 class ShoppingSupermarketTab extends StatefulWidget {
   final SupermarketTrackerPresenter presenter;
+  final ShoppingListPresenter shoppingPresenter;
   final List<String> availableProducts;
   final VoidCallback onUpdate;
 
   const ShoppingSupermarketTab({
     super.key,
     required this.presenter,
+    required this.shoppingPresenter,
     required this.availableProducts,
     required this.onUpdate,
   });
@@ -39,6 +43,17 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
         presenter: widget.presenter,
         onPurchaseAdded: widget.onUpdate,
         availableProducts: widget.availableProducts,
+      ),
+    );
+  }
+
+  void _showImportFromList() {
+    showDialog(
+      context: context,
+      builder: (context) => ImportFromListDialog(
+        shoppingPresenter: widget.shoppingPresenter,
+        supermarketPresenter: widget.presenter,
+        onImportCompleted: widget.onUpdate,
       ),
     );
   }
@@ -223,19 +238,35 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _showAddPurchase,
-                  icon: const Icon(Icons.add_shopping_cart),
-                  label: const Text('Registra Acquisto'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _showImportFromList,
+                      icon: const Icon(Icons.file_download, size: 18),
+                      label: const Text('Importa'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  // Bottone aggiungi (esistente, ora più stretto)
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton.icon(
+                      onPressed: _showAddPurchase,
+                      icon: const Icon(Icons.add_shopping_cart),
+                      label: const Text('Registra Acquisto'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 12),

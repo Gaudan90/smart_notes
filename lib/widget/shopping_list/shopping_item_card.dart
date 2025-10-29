@@ -69,8 +69,10 @@ class ShoppingItemCard extends StatelessWidget {
                             Flexible(
                               child: Text(
                                 item.isSoldByWeight
-                                    ? '${item.weightKg!.toStringAsFixed(2)} kg × €${item.pricePerKg!.toStringAsFixed(2)}/kg = €${item.totalCost.toStringAsFixed(2)}'
-                                    : '€${item.totalCost.toStringAsFixed(2)}',
+                                    ? '€${item.pricePerKg!.toStringAsFixed(2)}/kg × ${item.weightKg!.toStringAsFixed(2)} kg = €${item.totalCost.toStringAsFixed(2)}'
+                                    : (item.price != null && item.quantity > 1
+                                    ? '€${item.price!.toStringAsFixed(2)} × ${item.quantity} = €${item.totalCost.toStringAsFixed(2)}'
+                                    : '€${item.totalCost.toStringAsFixed(2)}'),
                                 style: const TextStyle(fontSize: 12,
                                     color: Colors.grey),
                                 overflow: TextOverflow.ellipsis,

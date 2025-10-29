@@ -70,6 +70,7 @@ class _ShoppingListViewState extends State<ShoppingListView>
           ),
           ShoppingSupermarketTab(
             presenter: _supermarketPresenter,
+            shoppingPresenter: _presenter,
             availableProducts: _presenter.items
                 .map((item) => item.name).toSet().toList(),
             onUpdate: () => setState(() {}),
