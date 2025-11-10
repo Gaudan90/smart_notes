@@ -178,7 +178,7 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
 
   Widget _buildFlatList() {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
       itemCount: widget.presenter.items.length,
       itemBuilder: (context, index) {
         final item = widget.presenter.items[index];
@@ -210,7 +210,7 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
     final grouped = widget.presenter.getItemsByCategory();
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
       itemCount: grouped.length,
       itemBuilder: (context, index) {
         final category = grouped.keys.elementAt(index);
