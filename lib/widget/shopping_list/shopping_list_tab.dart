@@ -54,139 +54,131 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _showQuickAdd,
-                  icon: const Icon(Icons.flash_on, size: 18),
-                  label: const Text('Rapido'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _showAddItemDialog,
-                  icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Aggiungi'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Toggle vista
-              IconButton(
-                icon: Icon(_showGrouped ? Icons.list : Icons.grid_view),
-                onPressed: () {
-                  setState(() {
-                    _showGrouped = !_showGrouped;
-                  });
-                },
-                tooltip: _showGrouped ? 'Vista Lista' : 'Raggruppa',
-              ),
-              if (widget.presenter.purchasedItems.isNotEmpty)
-                PopupMenuButton(
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      child: const Row(
-                        children: [
-                          Icon(Icons.cleaning_services, size: 20),
-                          SizedBox(width: 8),
-                          Text('Rimuovi comprati'),
-                        ],
-                      ),
-                      onTap: () async {
-                        await Future.delayed(Duration.zero);
-                        final confirm = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Svuota comprati'),
-                            content: const Text('Rimuovere tutti i prodotti già comprati?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: const Text('Annulla'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => Navigator.pop(context, true),
-                                child: const Text('Rimuovi'),
-                              ),
-                            ],
-                          ),
-                        );
-
-                        if (confirm == true) {
-                          await widget.presenter.clearPurchased();
-                          widget.onUpdate();
-                        }
-                      },
-                    ),
-                  ],
-                ),
-            ],
-          ),
-        ),
-
-        // Lista prodotti
-        Expanded(
-          child: widget.presenter.items.isEmpty
-              ? _buildEmptyState()
-              : _showGrouped
-              ? _buildGroupedList()
-              : _buildFlatList(),
-        ),
-      ],
-    );
+  void _toggleSortOrder() {
+    setState(() {
+      widget.presenter.toggleSortType();
+    });
+    widget.onUpdate();
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.shopping_basket,
-            size: 64,
-            color: Theme.of(context).disabledColor,
+  @override
+  Widget build(BuildContext context) {
+    final isAlphabetical = widget.presenter.currentSortType == SortType.alphabetical;
+
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          isAlphabetical ? 'Ordinamento: A-Z' : 'Ordinamento: Categoria',
+          style: const TextStyle(fontSize: 16),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              isAlphabetical ? Icons.sort_by_alpha : Icons.category,
+              color: isAlphabetical ? Colors.green : null,
+            ),
+            onPressed: _toggleSortOrder,
+            tooltip: isAlphabetical
+                ? 'Ordina per categoria'
+                : 'Ordina alfabeticamente',
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'Lista vuota',
-            style: TextStyle(fontSize: 16),
+          IconButton(
+            icon: Icon(_showGrouped ? Icons.list : Icons.grid_view),
+            onPressed: () {
+              setState(() {
+                _showGrouped = !_showGrouped;
+              });
+            },
+            tooltip: _showGrouped ? 'Vista Lista' : 'Raggruppa',
+          ),
+          if (widget.presenter.purchasedItems.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.cleaning_services),
+              onPressed: () async {
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Svuota comprati'),
+                    content: const Text('Rimuovere tutti i prodotti già comprati?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Annulla'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Rimuovi'),
+                      ),
+                    ],
+                  ),
+                );
+
+                if (confirm == true) {
+                  await widget.presenter.clearPurchased();
+                  widget.onUpdate();
+                }
+              },
+              tooltip: 'Rimuovi comprati',
+            ),
+        ],
+      ),
+      body: _buildBody(),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton.small(
+            heroTag: 'quick',
+            onPressed: _showQuickAdd,
+            child: const Icon(Icons.flash_on),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Aggiungi i tuoi prodotti',
-            style: TextStyle(fontSize: 14, color: Colors.grey),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
+          FloatingActionButton(
+            heroTag: 'add',
             onPressed: _showAddItemDialog,
-            icon: const Icon(Icons.add),
-            label: const Text('Aggiungi primo prodotto'),
+            child: const Icon(Icons.add),
           ),
         ],
       ),
     );
   }
 
+  Widget _buildBody() {
+    if (widget.presenter.items.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.shopping_basket,
+              size: 64,
+              color: Theme.of(context).disabledColor,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Lista vuota',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Aggiungi i tuoi prodotti',
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_showGrouped) {
+      return _buildGroupedList();
+    }
+
+    return _buildFlatList();
+  }
+
   Widget _buildFlatList() {
     return ListView.builder(
-      padding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: 16,
-      ),
+      padding: const EdgeInsets.all(16),
       itemCount: widget.presenter.items.length,
       itemBuilder: (context, index) {
         final item = widget.presenter.items[index];
@@ -218,11 +210,7 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
     final grouped = widget.presenter.getItemsByCategory();
 
     return ListView.builder(
-      padding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: 16,
-      ),
+      padding: const EdgeInsets.all(16),
       itemCount: grouped.length,
       itemBuilder: (context, index) {
         final category = grouped.keys.elementAt(index);

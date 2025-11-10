@@ -3,19 +3,26 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../states/shopping_item_model.dart';
 import '../states/shopping_list_stats_model.dart';
 
+enum SortType {
+  byCategory,
+  alphabetical,
+}
+
 class ShoppingListPresenter {
   static const String _itemsKey = 'shopping_list_items';
   static const String _historyKey = 'shopping_history';
   final List<ShoppingItemModel> _items = [];
   Map<String, int> _purchaseHistory = {};
+  SortType _currentSortType = SortType.byCategory;
 
   List<ShoppingItemModel> get items => List.unmodifiable(_items);
+  SortType get currentSortType => _currentSortType;
 
   static const List<String> categories = [
     'Frutta e Verdura',
     'Latticini',
-    'Carne e Pesce',
-    'Pane e Cereali',
+    'Carne, Pesce e Affettati',
+    'Pane, Cereali, Pasta e Riso',
     'Bevande',
     'Dolci',
     'Surgelati',
@@ -59,12 +66,46 @@ class ShoppingListPresenter {
   }
 
   void _sortItems() {
+    switch (_currentSortType) {
+      case SortType.byCategory:
+        _sortByCategory();
+        break;
+      case SortType.alphabetical:
+        _sortAlphabetically();
+        break;
+    }
+  }
+
+  void _sortByCategory() {
     _items.sort((a, b) {
       if (a.isPurchased != b.isPurchased) {
         return a.isPurchased ? 1 : -1;
       }
       return a.category.compareTo(b.category);
     });
+  }
+
+  void _sortAlphabetically() {
+    _items.sort((a, b) {
+      if (a.isPurchased != b.isPurchased) {
+        return a.isPurchased ? 1 : -1;
+      }
+      return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+    });
+  }
+
+  /// Cambia il tipo di ordinamento e riordina la lista
+  void setSortType(SortType sortType) {
+    _currentSortType = sortType;
+    _sortItems();
+  }
+
+  /// Toggle tra ordinamento per categoria e alfabetico
+  void toggleSortType() {
+    _currentSortType = _currentSortType == SortType.byCategory
+        ? SortType.alphabetical
+        : SortType.byCategory;
+    _sortItems();
   }
 
   Future<String> addItem({
@@ -80,10 +121,10 @@ class ShoppingListPresenter {
     }
 
     final trimmedName = name.trim();
-
     final existingItem = _findDuplicateItem(trimmedName);
 
     if (existingItem != null) {
+      // Aggiorna prodotto esistente
       if (weightKg != null && weightKg > 0) {
         existingItem.weightKg = (existingItem.weightKg ?? 0) + weightKg;
         if (pricePerKg != null && pricePerKg > 0) {
@@ -102,6 +143,7 @@ class ShoppingListPresenter {
           '(${_formatItemQuantity(existingItem)})';
     }
 
+    // Nuovo prodotto
     final newItem = ShoppingItemModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: trimmedName,
@@ -128,13 +170,11 @@ class ShoppingListPresenter {
 
   ShoppingItemModel? _findDuplicateItem(String name) {
     final lowerName = name.toLowerCase();
-
     for (int i = 0; i < _items.length; i++) {
       if (_items[i].name.toLowerCase() == lowerName) {
         return _items[i];
       }
     }
-
     return null;
   }
 
@@ -215,7 +255,7 @@ class ShoppingListPresenter {
   void _addToHistory(String productName) {
     final normalizedName = productName.trim().toLowerCase();
     _purchaseHistory[normalizedName] = (_purchaseHistory[normalizedName] ?? 0) + 1;
-    _saveHistory(); // Salva lo storico in background
+    _saveHistory();
   }
 
   Future<void> removeItem(String id) async {
@@ -301,6 +341,7 @@ class ShoppingListPresenter {
     return item?.quantity ?? 0;
   }
 
+  /// Prodotti frequenti basati sullo storico reale degli acquisti
   List<String> getFrequentProducts() {
     if (_purchaseHistory.isEmpty) {
       return [

@@ -44,16 +44,32 @@ class _ShoppingListViewState extends State<ShoppingListView>
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Lista della Spesa'),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Lista', icon: Icon(Icons.shopping_cart)),
-            Tab(text: 'Statistiche', icon: Icon(Icons.analytics)),
-            Tab(text: 'Supermercati', icon: Icon(Icons.store)),
-          ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(isLandscape ? 40 : 48),
+          child: TabBar(
+            controller: _tabController,
+            labelPadding: EdgeInsets.symmetric(
+              horizontal: isLandscape ? 8 : 12,
+              vertical: isLandscape ? 4 : 8,
+            ),
+            indicatorSize: TabBarIndicatorSize.label,
+            tabs: isLandscape
+                ? const [
+              Tab(text: 'Lista'),
+              Tab(text: 'Statistiche'),
+              Tab(text: 'Supermercati'),
+            ]
+                : const [
+              Tab(text: 'Lista', icon: Icon(Icons.shopping_cart, size: 20)),
+              Tab(text: 'Statistiche', icon: Icon(Icons.analytics, size: 20)),
+              Tab(text: 'Supermercati', icon: Icon(Icons.store, size: 20)),
+            ],
+          ),
         ),
       ),
       body: _isLoading

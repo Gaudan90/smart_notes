@@ -48,102 +48,64 @@ class SupermarketPurchaseCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Nome prodotto
                     Text(
                       purchase.productName,
                       style: const TextStyle(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         fontSize: 15,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
 
-                    // Supermercato
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getSupermarketColor(purchase.supermarket)
-                            .withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        purchase.supermarket,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: _getSupermarketColor(purchase.supermarket),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    // Data e quantità
+                    // ✅ RIGA UNIFICATA: Data + Prezzo + Quantità
                     Row(
                       children: [
-                        Icon(Icons.calendar_today,
-                          size: 12,
-                          color: Colors.grey[600],
-                        ),
+                        // Data
+                        Icon(Icons.calendar_today, size: 12, color: Colors.grey[600]),
                         const SizedBox(width: 4),
                         Text(
                           _formatDate(purchase.purchaseDate),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                          ),
+                          style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                         ),
+
+                        // Prezzo (sulla stessa riga!)
+                        if (purchase.price != null) ...[
+                          const SizedBox(width: 12),
+                          Icon(Icons.euro, size: 12, color: Colors.green[700]),
+                          const SizedBox(width: 2),
+                          Text(
+                            '${purchase.price!.toStringAsFixed(2)}',
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green[700]),
+                          ),
+                        ],
+
+                        // Quantità
                         if (purchase.quantity > 1) ...[
                           const SizedBox(width: 12),
-                          Icon(Icons.shopping_cart,
-                            size: 12,
-                            color: Colors.grey[600],
-                          ),
+                          Icon(Icons.shopping_cart, size: 12, color: Colors.grey[600]),
                           const SizedBox(width: 4),
                           Text(
                             'x${purchase.quantity}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
+                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                           ),
                         ],
                       ],
                     ),
-
-                    if (purchase.price != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        '€${(purchase.price! * purchase.quantity).toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[700],
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
 
               const SizedBox(width: 8),
 
-              // Bottone elimina
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.red.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red, size: 22),
-                  onPressed: onDelete,
-                  tooltip: 'Elimina',
-                ),
+              // Pulsante cancella
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                onPressed: onDelete,
               ),
             ],
           ),
