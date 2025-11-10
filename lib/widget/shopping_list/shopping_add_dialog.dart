@@ -76,7 +76,8 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
                         'Già in lista (${widget.presenter
                             .getItemQuantity(_nameController.text)}x)\n'
                             'La quantità verrà aggiornata',
-                        style: const TextStyle(fontSize: 12),
+                        style: const TextStyle(fontSize: 12,
+                        color: Colors.black),
                       ),
                     ),
                   ],

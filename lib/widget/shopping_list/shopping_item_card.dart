@@ -128,7 +128,29 @@ class ShoppingItemCard extends StatelessWidget {
                       icon: const Icon(Icons.delete, color: Colors.red, size: 20),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                      onPressed: onDelete,
+                      onPressed: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Elimina prodotto'),
+                            content: Text('Rimuovere "${item.name}" dalla lista?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Annulla'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('Elimina'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (confirm == true) {
+                          onDelete();
+                        }
+                      },
                     ),
                   ],
                 ),
