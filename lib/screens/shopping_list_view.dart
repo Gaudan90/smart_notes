@@ -48,14 +48,14 @@ class _ShoppingListViewState extends State<ShoppingListView>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista della Spesa'),
+        title: const Text('Lista Spesa'),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(isLandscape ? 40 : 48),
+          preferredSize: Size.fromHeight(isLandscape ? 60 : 76),
           child: TabBar(
             controller: _tabController,
             labelPadding: EdgeInsets.symmetric(
-              horizontal: isLandscape ? 8 : 12,
-              vertical: isLandscape ? 4 : 8,
+              horizontal: isLandscape ? 10 : 18,
+              vertical: isLandscape ? 6 : 12,
             ),
             indicatorSize: TabBarIndicatorSize.label,
             tabs: isLandscape
