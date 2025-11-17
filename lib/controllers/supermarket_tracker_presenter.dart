@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/import_result.dart';
 import '../states/supermarket_purchase_model.dart';
@@ -6,8 +7,16 @@ import '../states/supermarket_purchase_model.dart';
 class SupermarketTrackerPresenter {
   static const String _purchasesKey = 'supermarket_purchases';
   final List<SupermarketPurchaseModel> _purchases = [];
+  final Random _random = Random();
 
   List<SupermarketPurchaseModel> get purchases => List.unmodifiable(_purchases);
+
+  // Genera un ID veramente univoco combinando timestamp e numero casuale
+  String _generateUniqueId() {
+    final timestamp = DateTime.now().microsecondsSinceEpoch;
+    final randomSuffix = _random.nextInt(999999);
+    return '${timestamp}_$randomSuffix';
+  }
 
   static const List<String> supermarkets = [
     'U2',
@@ -31,7 +40,48 @@ class SupermarketTrackerPresenter {
       _purchases.addAll(
         decodedList.map((item) => SupermarketPurchaseModel.fromJson(item)).toList(),
       );
+
+      // Rigenera ID duplicati (fix retroattivo)
+      await _migrateAndFixDuplicateIds();
+
       _sortPurchases();
+    }
+  }
+
+  // Migrazione automatica per fix ID duplicati
+  Future<void> _migrateAndFixDuplicateIds() async {
+    // Trova ID duplicati
+    final Set<String> seenIds = {};
+    final List<int> duplicateIndexes = [];
+
+    for (int i = 0; i < _purchases.length; i++) {
+      final id = _purchases[i].id;
+      if (seenIds.contains(id)) {
+        duplicateIndexes.add(i);
+      } else {
+        seenIds.add(id);
+      }
+    }
+
+    // Se ci sono duplicati, rigenera gli ID
+    if (duplicateIndexes.isNotEmpty) {
+      print('Migrazione: Trovati ${duplicateIndexes.length} ID duplicati. Rigenerazione in corso...');
+
+      for (final index in duplicateIndexes) {
+        final oldPurchase = _purchases[index];
+        _purchases[index] = SupermarketPurchaseModel(
+          id: _generateUniqueId(),  // Nuovo ID univoco
+          productName: oldPurchase.productName,
+          supermarket: oldPurchase.supermarket,
+          purchaseDate: oldPurchase.purchaseDate,
+          price: oldPurchase.price,
+          quantity: oldPurchase.quantity,
+        );
+      }
+
+      // Salva i dati migrati
+      await _savePurchases();
+      print('Migrazione completata: ${duplicateIndexes.length} ID rigenerati');
     }
   }
 
@@ -44,7 +94,17 @@ class SupermarketTrackerPresenter {
   }
 
   void _sortPurchases() {
-    _purchases.sort((a, b) => b.purchaseDate.compareTo(a.purchaseDate));
+    _purchases.sort((a, b) {
+      // Prima per data (più recente prima)
+      final dateComparison = b.purchaseDate.compareTo(a.purchaseDate);
+
+      // Se le date sono uguali, ordina alfabeticamente per nome prodotto
+      if (dateComparison == 0) {
+        return a.productName.toLowerCase().compareTo(b.productName.toLowerCase());
+      }
+
+      return dateComparison;
+    });
   }
 
   Future<void> addPurchase({
@@ -57,7 +117,7 @@ class SupermarketTrackerPresenter {
     if (productName.trim().isEmpty) return;
 
     final purchase = SupermarketPurchaseModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: _generateUniqueId(),  // ID univoco con timestamp + random
       productName: productName.trim(),
       supermarket: supermarket,
       purchaseDate: purchaseDate,

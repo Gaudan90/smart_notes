@@ -34,6 +34,10 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
   String _searchQuery = '';
   bool _isAlphabeticalSort = false;
 
+  // Selezione multipla
+  bool _isSelectionMode = false;
+  final Set<String> _selectedIds = {};
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -84,6 +88,76 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
     });
   }
 
+  // Metodi per la selezione multipla
+  void _enterSelectionMode(String purchaseId) {
+    setState(() {
+      _isSelectionMode = true;
+      _selectedIds.add(purchaseId);
+    });
+  }
+
+  void _exitSelectionMode() {
+    setState(() {
+      _isSelectionMode = false;
+      _selectedIds.clear();
+    });
+  }
+
+  void _toggleSelection(String purchaseId) {
+    setState(() {
+      if (_selectedIds.contains(purchaseId)) {
+        _selectedIds.remove(purchaseId);
+        // Se non ci sono più elementi selezionati, esci dalla modalità selezione
+        if (_selectedIds.isEmpty) {
+          _isSelectionMode = false;
+        }
+      } else {
+        _selectedIds.add(purchaseId);
+      }
+    });
+  }
+
+  Future<void> _deleteSelectedPurchases() async {
+    if (_selectedIds.isEmpty) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Conferma eliminazione'),
+        content: Text('Eliminare ${_selectedIds.length} acquisti selezionati?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annulla'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      // Elimina tutti gli acquisti selezionati
+      for (final id in _selectedIds) {
+        await widget.presenter.deletePurchase(id);
+      }
+
+      widget.onUpdate();
+
+      if (mounted) {
+        _showSnackBar('✓ ${_selectedIds.length} acquisti eliminati', null);
+      }
+
+      // Esci dalla modalità selezione
+      _exitSelectionMode();
+    }
+  }
+
   List<SupermarketPurchaseModel> _getSortedPurchases(
       List<SupermarketPurchaseModel> purchases) {
     final sorted = List<SupermarketPurchaseModel>.from(purchases);
@@ -111,7 +185,7 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
         );
 
         if (result.status == ShareResultStatus.success) {
-          _showSnackBar('✓ Dati condivisi con successo', Colors.green);
+          _showSnackBar('âœ“ Dati condivisi con successo', Colors.green);
         }
       }
     } catch (e) {
@@ -142,7 +216,7 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
                 maxLines: 10,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'U2|Latte|01/01/2024|2|€3.50',
+                  hintText: 'U2|Latte|01/01/2024|2|â‚¬3.50',
                 ),
               ),
             ],
@@ -229,7 +303,7 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
       widget.onUpdate();
 
       if (mounted) {
-        _showSnackBar('✓ Acquisto eliminato', null);
+        _showSnackBar('âœ“ Acquisto eliminato', null);
       }
     }
   }
@@ -256,6 +330,27 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
       // AppBar solo in portrait
       appBar: _isLandscape
           ? null
+          : _isSelectionMode
+          ? AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        title: Text(
+          '${_selectedIds.length} selezionati',
+          style: const TextStyle(fontSize: 16),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: _exitSelectionMode,
+          tooltip: 'Esci dalla selezione',
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: _selectedIds.isNotEmpty ? _deleteSelectedPurchases : null,
+            tooltip: 'Elimina selezionati',
+          ),
+        ],
+      )
           : AppBar(
         automaticallyImplyLeading: false,
         title: Text(
@@ -375,16 +470,35 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
               itemCount: sortedPurchases.length,
               itemBuilder: (context, index) {
                 final purchase = sortedPurchases[index];
+                final isSelected = _selectedIds.contains(purchase.id);
+
                 return SupermarketPurchaseCard(
                   purchase: purchase,
                   onDelete: () => _deletePurchase(purchase),
                   onEdit: () => _showEditPurchase(purchase),
+                  isSelectionMode: _isSelectionMode,
+                  isSelected: isSelected,
+                  onLongPress: _isSelectionMode
+                      ? null
+                      : () => _enterSelectionMode(purchase.id),
+                  onTap: _isSelectionMode
+                      ? () => _toggleSelection(purchase.id)
+                      : null,
                 );
               },
             ),
           ),
         ],
       ),
+      // FAB per eliminare elementi selezionati (utile in landscape)
+      floatingActionButton: _isSelectionMode && _selectedIds.isNotEmpty
+          ? FloatingActionButton.extended(
+        onPressed: _deleteSelectedPurchases,
+        backgroundColor: Colors.red,
+        icon: const Icon(Icons.delete),
+        label: Text('Elimina (${_selectedIds.length})'),
+      )
+          : null,
     );
   }
 }

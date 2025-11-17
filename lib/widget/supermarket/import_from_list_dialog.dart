@@ -24,9 +24,14 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
   bool _selectAll = false;
 
   List<ShoppingItemModel> get _availableItems {
-    return widget.shoppingPresenter.items
+    final items = widget.shoppingPresenter.items
         .where((item) => !item.isPurchased)
         .toList();
+
+    // Ordinamento alfabetico
+    items.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+    return items;
   }
 
   void _toggleSelectAll() {
@@ -183,8 +188,8 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
                             const SizedBox(height: 2),
                             Text(
                               item.isSoldByWeight
-                                  ? '${item.weightKg!.toStringAsFixed(2)} kg × €${item.pricePerKg!.toStringAsFixed(2)}/kg'
-                                  : '${item.quantity}x • €${item.totalCost.toStringAsFixed(2)}',
+                                  ? '${item.weightKg!.toStringAsFixed(2)} kg x ${item.pricePerKg!.toStringAsFixed(2)}/kg'
+                                  : '${item.quantity}x ${item.totalCost.toStringAsFixed(2)}',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -317,22 +322,16 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
       final supermarket = _supermarketChoices[item.id]!;
 
 
-      // Aggiungi al tracciamento supermercati
-      // IMPORTANTE: Salva il prezzo BASE, non il prezzo totale
-      // - Se venduto a peso: pricePerKg (€/kg)
-      // - Se venduto a unità: price (€ unitario)
-      // - Quantità: SEMPRE 1 (tracciamo prezzi unitari, non quantità acquistate)
-      //   Esempio: Latte x7 a 1€ → salviamo 1x a 1€ (non 7x a 1€)
       final double? basePrice = item.isSoldByWeight
-          ? item.pricePerKg  // Prezzo al kg (NON moltiplicato)
-          : item.price;       // Prezzo unitario (NON moltiplicato per quantità)
+          ? item.pricePerKg
+          : item.price;
 
       await widget.supermarketPresenter.addPurchase(
         productName: item.name,
         supermarket: supermarket,
         purchaseDate: _selectedDate,
         price: basePrice,
-        quantity: 1,  // ✅ SEMPRE 1 - tracciamo prezzi unitari!
+        quantity: 1,
       );
 
       // Marca come comprato nella lista
@@ -346,7 +345,7 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('✓ $imported prodotti importati con successo'),
+          content: Text('$imported prodotti importati con successo'),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),
