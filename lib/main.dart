@@ -4,13 +4,20 @@ import 'package:smart_notes/theme/theme_config.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
 import 'data/alarm_background_service.dart';
 import 'data/notification_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   await NotificationService().initialize();
   await AlarmBackgroundService.initialize();
   print('✅ AlarmBackgroundService initialized');
-  runApp(const MyApp());
+  runApp(EasyLocalization(
+    supportedLocales: const [Locale('it', 'IT'), Locale('en', 'US')],
+    path: 'assets/translations',
+    fallbackLocale: const Locale('it', 'IT'),
+    child: const MyApp(),
+  ),);
 }
 
 class MyApp extends StatefulWidget {
@@ -66,6 +73,9 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
             themeMode: _themeProvider.themeMode,
             home: HomeView(themeProvider: _themeProvider),
             debugShowCheckedModeBanner: false,
+            localizationsDelegates: context.localizationDelegates,
+            supportedLocales: context.supportedLocales,
+            locale: context.locale,
           ),
         );
       },

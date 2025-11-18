@@ -1,0 +1,18 @@
+{
+  "app_title": "SmartNotes",
+  "countdowns": "Countdown",
+  "events": "Eventi",
+  "notes": "Note",
+  "settings": "Impostazioni",
+  "new_countdown": "Nuovo Countdown",
+  "edit_countdown": "Modifica Countdown",
+  "title": "Titolo",
+  "description": "Descrizione",
+  "date": "Data",
+  "time": "Ora",
+  "save": "Salva",
+  "cancel": "Annulla",
+  "create": "Crea",
+  "delete": "Elimina",
+  "change": "Cambia"
+}

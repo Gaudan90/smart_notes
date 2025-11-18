@@ -7,6 +7,7 @@ import 'package:smart_notes/screens/todo_list_view.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
 import '../widget/feature_card.dart';
 import 'alarm_view.dart';
+import 'countdown_view.dart';
 import 'expense_view.dart';
 import 'fizzbuzz_view.dart';
 import 'missing_numbers_view.dart';
@@ -35,7 +36,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _animations = List.generate(11, (index) {
+    _animations = List.generate(12, (index) {
       final double start = index * 0.04;
       final double end = (0.2 + index * 0.04).clamp(0.0, 1.0);
 
@@ -111,11 +112,22 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
+        title: 'Countdown Obiettivi',
+        subtitle: 'Timer per eventi futuri',
+        icon: Icons.timer,
+        color: Colors.pink,
+        animation: _animations[4],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CountdownView()),
+        ),
+      ),
+      FeatureCard(
         title: 'Sveglia Smart',
         subtitle: 'Sveglie intelligenti con ripetizione',
         icon: Icons.alarm,
         color: Colors.cyan,
-        animation: _animations[4],
+        animation: _animations[5],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const AlarmView()),
@@ -126,7 +138,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Genera date eventi ricorrenti',
         icon: Icons.event_repeat,
         color: Colors.deepPurple,
-        animation: _animations[5],
+        animation: _animations[6],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const EventCalendarView()),
@@ -138,7 +150,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Attività ricorrenti giornaliere',
         icon: Icons.notifications_active,
         color: Colors.amber,
-        animation: _animations[6],
+        animation: _animations[7],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ReminderView()),
@@ -149,7 +161,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Pianifica routine ricorrenti',
         icon: Icons.event_repeat,
         color: Colors.red,
-        animation: _animations[7],
+        animation: _animations[8],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const FizzBuzzView()),
@@ -160,7 +172,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Trova il numero più frequente',
         icon: Icons.analytics_outlined,
         color: Colors.blue,
-        animation: _animations[8],
+        animation: _animations[9],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const NumberStatsView()),
@@ -171,7 +183,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Inverti le parole della frase',
         icon: Icons.text_rotation_none,
         color: Colors.green,
-        animation: _animations[9],
+        animation: _animations[10],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const SentenceReverserView()),
@@ -182,7 +194,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Trova i numeri saltati',
         icon: Icons.search,
         color: Colors.purple,
-        animation: _animations[10],
+        animation: _animations[11],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MissingNumbersView()),
