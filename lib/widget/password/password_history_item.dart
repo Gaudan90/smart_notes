@@ -5,12 +5,16 @@ class PasswordHistoryItem extends StatelessWidget {
   final PasswordModel password;
   final VoidCallback onCopy;
   final VoidCallback onDelete;
+  final bool isLocked;
+  final VoidCallback? onUnlock;
 
   const PasswordHistoryItem({
     super.key,
     required this.password,
     required this.onCopy,
     required this.onDelete,
+    this.isLocked = false,
+    this.onUnlock,
   });
 
   Color _getStrengthColor(int strength) {
@@ -33,10 +37,15 @@ class PasswordHistoryItem extends StatelessWidget {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }
 
+  String _getObscuredPassword() {
+    return '•' * password.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     final strengthColor = _getStrengthColor(password.strength);
     final hasName = password.name != null && password.name!.isNotEmpty;
+    final displayPassword = isLocked ? _getObscuredPassword() : password.password;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
@@ -44,7 +53,7 @@ class PasswordHistoryItem extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: strengthColor.withValues(alpha: 0.2),
           child: Icon(
-            hasName ? Icons.label : Icons.lock,
+            isLocked ? Icons.lock : (hasName ? Icons.label : Icons.lock_open),
             color: strengthColor,
           ),
         ),
@@ -64,11 +73,12 @@ class PasswordHistoryItem extends StatelessWidget {
               const SizedBox(height: 2),
             ],
             Text(
-              password.password,
+              displayPassword,
               style: TextStyle(
                 fontFamily: 'monospace',
                 fontSize: hasName ? 13 : 14,
                 color: hasName ? Colors.grey[600] : null,
+                letterSpacing: isLocked ? 4 : 1,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -92,11 +102,20 @@ class PasswordHistoryItem extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              icon: const Icon(Icons.copy, size: 20),
-              onPressed: onCopy,
-              tooltip: 'Copia',
-            ),
+            if (isLocked && onUnlock != null) ...[
+              IconButton(
+                icon: const Icon(Icons.visibility, size: 20),
+                onPressed: onUnlock,
+                tooltip: 'Visualizza',
+                color: Colors.blue,
+              ),
+            ] else ...[
+              IconButton(
+                icon: const Icon(Icons.copy, size: 20),
+                onPressed: onCopy,
+                tooltip: 'Copia',
+              ),
+            ],
             IconButton(
               icon: const Icon(Icons.delete, size: 20),
               color: Colors.red,

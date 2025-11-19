@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smart_notes/screens/home_view.dart';
+import 'package:smart_notes/screens/password_generator_view.dart';
+import 'package:smart_notes/screens/pin_setup_view.dart';
+import 'package:smart_notes/screens/pin_unlock_view.dart';
 import 'package:smart_notes/theme/theme_config.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
 import 'data/alarm_background_service.dart';
@@ -76,6 +79,11 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
+            routes: {
+              '/pin_setup': (context) => const PinSetupView(),
+              '/pin_unlock': (context) => const PinUnlockView(),
+              '/password_generator': (context) => const PasswordGeneratorView(),
+            },
           ),
         );
       },

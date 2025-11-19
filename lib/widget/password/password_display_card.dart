@@ -4,11 +4,13 @@ import '../../states/password_model.dart';
 class PasswordDisplayCard extends StatelessWidget {
   final PasswordModel password;
   final VoidCallback onCopy;
+  final bool isLocked;
 
   const PasswordDisplayCard({
     super.key,
     required this.password,
     required this.onCopy,
+    this.isLocked = false,
   });
 
   Color _getStrengthColor(int strength) {
@@ -27,10 +29,15 @@ class PasswordDisplayCard extends StatelessWidget {
     );
   }
 
+  String _getObscuredPassword() {
+    return '•' * password.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     final strengthColor = _getStrengthColor(password.strength);
     final hasName = password.name != null && password.name!.isNotEmpty;
+    final displayPassword = isLocked ? _getObscuredPassword() : password.password;
 
     return Card(
       elevation: 4,
@@ -42,7 +49,7 @@ class PasswordDisplayCard extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  hasName ? Icons.label : Icons.lock,
+                  isLocked ? Icons.lock : (hasName ? Icons.label : Icons.lock_open),
                   color: strengthColor,
                   size: 28,
                 ),
@@ -91,22 +98,23 @@ class PasswordDisplayCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: SelectableText(
-                      password.password,
-                      style: const TextStyle(
+                      displayPassword,
+                      style: TextStyle(
                         color: Colors.black54,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'monospace',
-                        letterSpacing: 1,
+                        letterSpacing: isLocked ? 4 : 1,
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.copy),
-                    onPressed: onCopy,
-                    color: Colors.black54,
-                    tooltip: 'Copia',
-                  ),
+                  if (!isLocked)
+                    IconButton(
+                      icon: const Icon(Icons.copy),
+                      onPressed: onCopy,
+                      color: Colors.black54,
+                      tooltip: 'Copia',
+                    ),
                 ],
               ),
             ),

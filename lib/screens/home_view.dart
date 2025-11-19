@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_notes/screens/password_generator_view.dart';
 import 'package:smart_notes/screens/reminder_view.dart';
 import 'package:smart_notes/screens/sentence_reverse_view.dart';
 import 'package:smart_notes/screens/shopping_list_view.dart';
@@ -7,6 +6,7 @@ import 'package:smart_notes/screens/theme_settings_view.dart';
 import 'package:smart_notes/screens/todo_list_view.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
 import '../widget/feature_card.dart';
+import '../widget/password/password_security_gate.dart';
 import 'alarm_view.dart';
 import 'countdown_view.dart';
 import 'expense_view.dart';
@@ -170,13 +170,13 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       ),
       FeatureCard(
         title: 'Password Sicure',
-        subtitle: 'Genera password complesse',
+        subtitle: 'Genera password sicure con PIN',
         icon: Icons.security,
         color: Colors.deepPurple,
         animation: _animations[9],
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const PasswordGeneratorView()),
+          MaterialPageRoute(builder: (_) => const PasswordSecurityGate()),
         ),
       ),
       FeatureCard(
