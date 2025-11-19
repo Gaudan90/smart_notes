@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_notes/screens/password_generator_view.dart';
 import 'package:smart_notes/screens/reminder_view.dart';
 import 'package:smart_notes/screens/sentence_reverse_view.dart';
 import 'package:smart_notes/screens/shopping_list_view.dart';
@@ -36,7 +37,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _animations = List.generate(12, (index) {
+    _animations = List.generate(13, (index) {
       final double start = index * 0.04;
       final double end = (0.2 + index * 0.04).clamp(0.0, 1.0);
 
@@ -168,11 +169,22 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
+        title: 'Password Sicure',
+        subtitle: 'Genera password complesse',
+        icon: Icons.security,
+        color: Colors.deepPurple,
+        animation: _animations[9],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const PasswordGeneratorView()),
+        ),
+      ),
+      FeatureCard(
         title: 'Statistiche Numeriche',
         subtitle: 'Trova il numero più frequente',
         icon: Icons.analytics_outlined,
         color: Colors.blue,
-        animation: _animations[9],
+        animation: _animations[10],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const NumberStatsView()),
@@ -183,7 +195,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Inverti le parole della frase',
         icon: Icons.text_rotation_none,
         color: Colors.green,
-        animation: _animations[10],
+        animation: _animations[11],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const SentenceReverserView()),
@@ -194,7 +206,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Trova i numeri saltati',
         icon: Icons.search,
         color: Colors.purple,
-        animation: _animations[11],
+        animation: _animations[12],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MissingNumbersView()),

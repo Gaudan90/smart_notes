@@ -268,7 +268,7 @@ class _CountdownCardState extends State<CountdownCard> {
     final days = widget.countdown.daysRemaining;
 
     if (days == 0) {
-      return 'Oggi è il giorno atteso!';
+      return 'Manca pochissimo!';
     } else if (days == 1) {
       return 'Manca solo 1 giorno! Sii pronto!';
     } else if (days <= 7) {
