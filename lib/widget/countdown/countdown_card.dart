@@ -83,9 +83,15 @@ class _CountdownCardState extends State<CountdownCard> {
               Row(
                 children: [
                   if (countdown.emoji != null) ...[
-                    Text(
-                      countdown.emoji!,
-                      style: const TextStyle(fontSize: 28),
+                    Icon(
+                      IconData(
+                        int.parse(countdown.emoji!),
+                        fontFamily: 'MaterialIcons',
+                      ),
+                      size: 32,
+                      color: countdown.isExpired
+                          ? Colors.white60
+                          : Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(width: 12),
                   ],
@@ -142,7 +148,7 @@ class _CountdownCardState extends State<CountdownCard> {
                     _formatDate(countdown.targetDate),
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -245,7 +251,7 @@ class _CountdownCardState extends State<CountdownCard> {
           label,
           style: TextStyle(
             fontSize: 11,
-            color: Colors.grey[600],
+            color: Colors.white,
             fontWeight: FontWeight.w500,
           ),
         ),
