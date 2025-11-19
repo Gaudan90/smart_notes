@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../../states/countdown_model.dart';
+import 'emoji_icons.dart';
 
 class CountdownCard extends StatefulWidget {
   final CountdownModel countdown;
@@ -83,15 +84,19 @@ class _CountdownCardState extends State<CountdownCard> {
               Row(
                 children: [
                   if (countdown.emoji != null) ...[
-                    Icon(
-                      IconData(
-                        int.parse(countdown.emoji!),
-                        fontFamily: 'MaterialIcons',
-                      ),
-                      size: 32,
-                      color: countdown.isExpired
-                          ? Colors.white60
-                          : Theme.of(context).colorScheme.primary,
+                    Builder(
+                      builder: (context) {
+                        final icon = EmojiIcons.getIconFromCodePoint(countdown.emoji);
+                        if (icon == null) return const SizedBox.shrink();
+
+                        return Icon(
+                          icon,
+                          size: 32,
+                          color: countdown.isExpired
+                              ? Colors.grey
+                              : Theme.of(context).colorScheme.primary,
+                        );
+                      },
                     ),
                     const SizedBox(width: 12),
                   ],

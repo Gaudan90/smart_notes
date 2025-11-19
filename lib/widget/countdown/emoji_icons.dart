@@ -42,4 +42,19 @@ class EmojiIcons {
     'Lavoro',
     'Medicina',
   ];
+
+  static IconData? getIconFromCodePoint(String? codePointString) {
+    if (codePointString == null) return null;
+
+    final codePoint = int.tryParse(codePointString);
+    if (codePoint == null) return null;
+
+    for (var icon in commonIcons) {
+      if (icon.codePoint == codePoint) {
+        return icon;
+      }
+    }
+
+    return null;
+  }
 }
