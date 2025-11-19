@@ -30,6 +30,7 @@ class PasswordDisplayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strengthColor = _getStrengthColor(password.strength);
+    final hasName = password.name != null && password.name!.isNotEmpty;
 
     return Card(
       elevation: 4,
@@ -40,12 +41,38 @@ class PasswordDisplayCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.lock, color: strengthColor, size: 28),
+                Icon(
+                  hasName ? Icons.label : Icons.lock,
+                  color: strengthColor,
+                  size: 28,
+                ),
                 const SizedBox(width: 12),
-                Text(
-                  'Password Generata',
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (hasName) ...[
+                        Text(
+                          password.name!,
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Password Generata',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ] else
+                        Text(
+                          'Password Generata',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ],

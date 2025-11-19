@@ -36,22 +36,44 @@ class PasswordHistoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final strengthColor = _getStrengthColor(password.strength);
+    final hasName = password.name != null && password.name!.isNotEmpty;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: strengthColor.withValues(alpha: 0.2),
-          child: Icon(Icons.lock, color: strengthColor),
-        ),
-        title: Text(
-          password.password,
-          style: const TextStyle(
-            fontFamily: 'monospace',
-            fontSize: 14,
+          child: Icon(
+            hasName ? Icons.label : Icons.lock,
+            color: strengthColor,
           ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (hasName) ...[
+              Text(
+                password.name!,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+            ],
+            Text(
+              password.password,
+              style: TextStyle(
+                fontFamily: 'monospace',
+                fontSize: hasName ? 13 : 14,
+                color: hasName ? Colors.grey[600] : null,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../states/password_model.dart';
 
@@ -7,6 +8,13 @@ class PasswordGeneratorPresenter {
   static const String _historyKey = 'password_history';
   final List<PasswordModel> _history = [];
   final Random _random = Random.secure();
+
+  // FlutterSecureStorage con opzioni di configurazione
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+  );
 
   List<PasswordModel> get history => List.unmodifiable(_history);
 
@@ -16,25 +24,58 @@ class PasswordGeneratorPresenter {
   static const String _symbols = '!@#\$%^&*()_+-=[]{}|;:,.<>?';
 
   Future<void> loadHistory() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? historyJson = prefs.getString(_historyKey);
+    // Prima tenta di migrare i dati da SharedPreferences se esistono
+    await _migrateFromSharedPreferences();
+
+    // Poi carica dal secure storage
+    final String? historyJson = await _secureStorage.read(key: _historyKey);
 
     if (historyJson != null) {
-      final List<dynamic> decodedList = json.decode(historyJson);
-      _history.clear();
-      _history.addAll(
-        decodedList.map((item) => PasswordModel.fromJson(item)).toList(),
-      );
-      _history.sort((a, b) => b.generatedAt.compareTo(a.generatedAt));
+      try {
+        final List<dynamic> decodedList = json.decode(historyJson);
+        _history.clear();
+        _history.addAll(
+          decodedList.map((item) => PasswordModel.fromJson(item)).toList(),
+        );
+        _history.sort((a, b) => b.generatedAt.compareTo(a.generatedAt));
+      } catch (e) {
+        // In caso di errore di parsing, resetta la cronologia
+        _history.clear();
+        await _secureStorage.delete(key: _historyKey);
+      }
+    }
+  }
+
+  /// Migra i dati da SharedPreferences a FlutterSecureStorage
+  /// Viene eseguita solo una volta
+  Future<void> _migrateFromSharedPreferences() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? oldData = prefs.getString(_historyKey);
+
+      if (oldData != null) {
+        // Controlla se il secure storage è vuoto
+        final String? existingData = await _secureStorage.read(key: _historyKey);
+
+        if (existingData == null) {
+          // Migra i dati
+          await _secureStorage.write(key: _historyKey, value: oldData);
+        }
+
+        // Rimuovi i dati vecchi da SharedPreferences
+        await prefs.remove(_historyKey);
+      }
+    } catch (e) {
+      // Se la migrazione fallisce, continua comunque
+      // I dati nel secure storage (se esistono) sono prioritari
     }
   }
 
   Future<void> _saveHistory() async {
-    final prefs = await SharedPreferences.getInstance();
     final String encodedList = json.encode(
       _history.map((password) => password.toJson()).toList(),
     );
-    await prefs.setString(_historyKey, encodedList);
+    await _secureStorage.write(key: _historyKey, value: encodedList);
   }
 
   PasswordModel generatePassword({
@@ -43,7 +84,8 @@ class PasswordGeneratorPresenter {
     required bool includeLowercase,
     required bool includeNumbers,
     required bool includeSymbols,
-}) {
+    String? name,
+  }) {
     String characterPool = '';
     if (includeUppercase) characterPool += _uppercase;
     if (includeLowercase) characterPool += _lowercase;
@@ -75,6 +117,7 @@ class PasswordGeneratorPresenter {
       hasNumbers: includeNumbers,
       hasSymbols: includeSymbols,
       generatedAt: DateTime.now(),
+      name: name,
     );
   }
 
@@ -141,7 +184,7 @@ class PasswordGeneratorPresenter {
   Future<void> addToHistory(PasswordModel password) async {
     _history.insert(0, password);
 
-    // Mantiene solo le ultime 50 password
+    // Mantiene le ultime 50 password
     if (_history.length > 50) {
       _history.removeRange(50, _history.length);
     }
@@ -151,8 +194,7 @@ class PasswordGeneratorPresenter {
 
   Future<void> clearHistory() async {
     _history.clear();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_historyKey);
+    await _secureStorage.delete(key: _historyKey);
   }
 
   Future<void> deleteFromHistory(String password) async {

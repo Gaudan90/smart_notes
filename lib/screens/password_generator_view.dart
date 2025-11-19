@@ -16,6 +16,7 @@ class PasswordGeneratorView extends StatefulWidget {
 class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
     with SingleTickerProviderStateMixin {
   final _presenter = PasswordGeneratorPresenter();
+  final _nameController = TextEditingController();
 
   PasswordModel? _currentPassword;
   bool _isLoading = true;
@@ -49,6 +50,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
       includeLowercase: _includeLowercase,
       includeNumbers: _includeNumbers,
       includeSymbols: _includeSymbols,
+      name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
     );
 
     setState(() {
@@ -56,6 +58,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
     });
 
     _presenter.addToHistory(password);
+    _nameController.clear();
   }
 
   Future<void> _copyToClipboard(String password) async {
@@ -126,6 +129,24 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
           ),
 
           const SizedBox(height: 24),
+
+          // Campo nomenclatura opzionale
+          TextField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              labelText: 'Nome password (opzionale)',
+              hintText: 'es. Gmail, Netflix, Banca...',
+              prefixIcon: const Icon(Icons.label_outline),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              filled: true,
+            ),
+            maxLength: 30,
+            textCapitalization: TextCapitalization.sentences,
+          ),
+
+          const SizedBox(height: 16),
 
           ElevatedButton.icon(
             onPressed: _generatePassword,
@@ -273,6 +294,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
   @override
   void dispose() {
     _tabController.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 }

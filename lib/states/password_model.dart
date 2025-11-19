@@ -6,6 +6,7 @@ class PasswordModel {
   final bool hasNumbers;
   final bool hasSymbols;
   final DateTime generatedAt;
+  final String? name;
 
   PasswordModel({
     required this.password,
@@ -15,7 +16,8 @@ class PasswordModel {
     required this.hasNumbers,
     required this.hasSymbols,
     required this.generatedAt,
-});
+    this.name,
+  });
 
   int get strength {
     int score = 0;
@@ -85,6 +87,7 @@ class PasswordModel {
       'hasNumbers': hasNumbers,
       'hasSymbols': hasSymbols,
       'generatedAt': generatedAt.toIso8601String(),
+      'name': name,
     };
   }
 
@@ -97,6 +100,7 @@ class PasswordModel {
       hasNumbers: json['hasNumbers'],
       hasSymbols: json['hasSymbols'],
       generatedAt: DateTime.parse(json['generatedAt']),
+      name: json['name'],
     );
   }
 }
