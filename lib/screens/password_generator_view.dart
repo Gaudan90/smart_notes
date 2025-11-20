@@ -79,12 +79,12 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
     }
   }
 
-  // Mostra dialog per inserire PIN e vedere la password
+  /// Mostra dialog per inserire PIN e vedere la password
   Future<void> _showPasswordUnlock(String password) async {
     final pinController = TextEditingController();
     bool isPinVisible = false;
 
-    final result = await showDialog<bool>(
+    final result = await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) => StatefulBuilder(
@@ -131,7 +131,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
+              onPressed: () => Navigator.pop(dialogContext, 'cancel'),
               child: const Text('Annulla'),
             ),
             ElevatedButton(
@@ -149,23 +149,14 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
                 final isValid = await _securityManager.verifyPin(pinController.text);
                 if (isValid) {
                   if (dialogContext.mounted) {
-                    Navigator.pop(dialogContext, true);
+                    Navigator.pop(dialogContext, 'success');
                   }
                 } else {
                   final attempts = await _securityManager.getFailedAttempts();
                   if (attempts >= 3) {
-                    // PRIMA chiudi il dialog
+                    // PRIMA chiudi il dialog con un codice speciale
                     if (dialogContext.mounted) {
-                      Navigator.pop(dialogContext, false);
-                    }
-
-                    // Aspetta che il dialog sia completamente chiuso
-                    await Future.delayed(const Duration(milliseconds: 300));
-
-                    // POI naviga SOLO se ancora mounted
-                    if (mounted) {
-                      _securityManager.lock();
-                      Navigator.of(context).pushReplacementNamed('/pin_unlock');
+                      Navigator.pop(dialogContext, 'too_many_attempts');
                     }
                   } else {
                     if (mounted) {
@@ -187,9 +178,22 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
       ),
     );
 
-    // Se il PIN era corretto, mostra il secondo dialog
-    if (result == true && mounted) {
-      // delay per assicurarsi che il primo dialog sia completamente chiuso
+    // NON facciamo dispose del controller locale per evitare race conditions
+    // Flutter's garbage collector lo gestirà automaticamente quando non è più referenziato
+    // Questo è sicuro per controller creati localmente dentro un metodo
+
+    // Gestisci il risultato DOPO che il dialog è completamente chiuso
+    if (result == 'too_many_attempts') {
+      // Aspetta che il dialog sia completamente chiuso
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      if (mounted) {
+        _securityManager.lock();
+        // Naviga alla schermata di recovery
+        Navigator.of(context).pushReplacementNamed('/pin_unlock');
+      }
+    } else if (result == 'success' && mounted) {
+      // PIN corretto, mostra il secondo dialog
       await Future.delayed(const Duration(milliseconds: 300));
       if (mounted) {
         _showPasswordDialog(password);
@@ -259,7 +263,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
             icon: const Icon(Icons.lock),
             onPressed: () async {
               _securityManager.lock();
-              // Delay per permettere al widget di fare dispose
+              // Delay minimo per permettere al widget di fare dispose correttamente
               await Future.delayed(const Duration(milliseconds: 100));
               if (mounted) {
                 Navigator.of(context).pushReplacementNamed('/pin_unlock');
@@ -298,7 +302,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
             PasswordDisplayCard(
               password: _currentPassword!,
               onCopy: () => _copyToClipboard(_currentPassword!.password),
-              isLocked: false,
+              isLocked: false, // Appena generata è visibile
             ),
             const SizedBox(height: 24),
           ],
@@ -414,7 +418,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
 
                 return PasswordHistoryItem(
                   password: password,
-                  isLocked: true,
+                  isLocked: true, // Password nella cronologia sono oscurate
                   onCopy: () => _copyToClipboard(password.password),
                   onDelete: () => _deleteSinglePassword(password.password),
                   onUnlock: () => _showPasswordUnlock(password.password),
