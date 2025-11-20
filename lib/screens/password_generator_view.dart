@@ -6,6 +6,8 @@ import '../states/password_model.dart';
 import '../widget/password/password_display_card.dart';
 import '../widget/password/password_config_section.dart';
 import '../widget/password/password_history_item.dart';
+import '../widget/password/pin_unlock_dialog.dart';
+import '../widget/password/password_reveal_dialog.dart';
 
 class PasswordGeneratorView extends StatefulWidget {
   const PasswordGeneratorView({super.key});
@@ -81,106 +83,14 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
 
   /// Mostra dialog per inserire PIN e vedere la password
   Future<void> _showPasswordUnlock(String password) async {
-    final pinController = TextEditingController();
-    bool isPinVisible = false;
-
     final result = await showDialog<String>(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: const Row(
-            children: [
-              Icon(Icons.lock_open, color: Colors.blue),
-              SizedBox(width: 8),
-              Text('Sblocca Password'),
-            ],
-          ),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Inserisci il tuo PIN per visualizzare la password'),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: pinController,
-                  decoration: InputDecoration(
-                    labelText: 'PIN',
-                    hintText: '••••••••',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        isPinVisible ? Icons.visibility_off : Icons.visibility,
-                      ),
-                      onPressed: () {
-                        setDialogState(() {
-                          isPinVisible = !isPinVisible;
-                        });
-                      },
-                    ),
-                    border: const OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.number,
-                  maxLength: 8,
-                  obscureText: !isPinVisible,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, 'cancel'),
-              child: const Text('Annulla'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (pinController.text.length != 8) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Il PIN deve essere di 8 cifre'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                  return;
-                }
-
-                final isValid = await _securityManager.verifyPin(pinController.text);
-                if (isValid) {
-                  if (dialogContext.mounted) {
-                    Navigator.pop(dialogContext, 'success');
-                  }
-                } else {
-                  final attempts = await _securityManager.getFailedAttempts();
-                  if (attempts >= 3) {
-                    // PRIMA chiudi il dialog con un codice speciale
-                    if (dialogContext.mounted) {
-                      Navigator.pop(dialogContext, 'too_many_attempts');
-                    }
-                  } else {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('PIN errato. Tentativi rimasti: ${3 - attempts}'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                    pinController.clear();
-                  }
-                }
-              },
-              child: const Text('Sblocca'),
-            ),
-          ],
-        ),
+      builder: (context) => PinUnlockDialog(
+        onVerifyPin: (pin) => _securityManager.verifyPin(pin),
+        onGetFailedAttempts: () => _securityManager.getFailedAttempts(),
       ),
     );
-
-    // NON facciamo dispose del controller locale per evitare race conditions
-    // Flutter's garbage collector lo gestirà automaticamente quando non è più referenziato
-    // Questo è sicuro per controller creati localmente dentro un metodo
 
     // Gestisci il risultato DOPO che il dialog è completamente chiuso
     if (result == 'too_many_attempts') {
@@ -204,51 +114,9 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
   void _showPasswordDialog(String password) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.visibility, color: Colors.green),
-            SizedBox(width: 8),
-            Text('Password Sbloccata'),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green),
-              ),
-              child: SelectableText(
-                password,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'monospace',
-                  letterSpacing: 2,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () {
-                _copyToClipboard(password);
-                Navigator.pop(context);
-              },
-              icon: const Icon(Icons.copy),
-              label: const Text('Copia'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Chiudi'),
-          ),
-        ],
+      builder: (context) => PasswordRevealDialog(
+        password: password,
+        onCopy: () => _copyToClipboard(password),
       ),
     );
   }
