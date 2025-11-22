@@ -159,6 +159,8 @@ class SupermarketPurchaseCard extends StatelessWidget {
         return Colors.amber;
       case 'Action':
         return Colors.pink;
+      case 'Esselunga':
+        return Colors.cyan;
       default:
         return Colors.grey;
     }

@@ -28,6 +28,7 @@ class SupermarketTrackerPresenter {
     'Coop',
     'Lidl',
     'Action',
+    'Esselunga'
   ];
 
   Future<void> loadPurchases() async {
