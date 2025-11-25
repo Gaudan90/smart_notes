@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_notes/screens/reminder_view.dart';
 import 'package:smart_notes/screens/sentence_reverse_view.dart';
 import 'package:smart_notes/screens/shopping_list_view.dart';
+import 'package:smart_notes/screens/text_analyzer_view.dart';
 import 'package:smart_notes/screens/theme_settings_view.dart';
 import 'package:smart_notes/screens/todo_list_view.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
@@ -37,7 +38,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _animations = List.generate(13, (index) {
+    _animations = List.generate(14, (index) {
       final double start = index * 0.04;
       final double end = (0.2 + index * 0.04).clamp(0.0, 1.0);
 
@@ -210,6 +211,17 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MissingNumbersView()),
+        ),
+      ),
+      FeatureCard(
+        title: 'Analizzatore Testi',
+        subtitle: 'Conta parole e caratteri',
+        icon: Icons.text_snippet,
+        color: Colors.deepOrange,
+        animation: _animations[13],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const TextAnalyzerView()),
         ),
       ),
     ];
