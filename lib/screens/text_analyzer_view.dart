@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../controllers/text_analyzer_presenter.dart';
 import '../states/text_analyzer_model.dart';
+import '../widget/text_analyzer/analysis_result_card.dart';
+import '../widget/text_analyzer/history_stats_header.dart';
+import '../widget/text_analyzer/text_analysis_history_item.dart';
 
 class TextAnalyzerView extends StatefulWidget {
   const TextAnalyzerView({super.key});
@@ -54,7 +57,6 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
 
     _presenter.addToHistory(analysis);
 
-    // Scroll in alto per vedere i risultati
     FocusScope.of(context).unfocus();
   }
 
@@ -73,7 +75,7 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✓ Testo incollato'),
+            content: Text('Testo incollato'),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 1),
           ),
@@ -87,7 +89,7 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
     setState(() {
       _currentAnalysis = analysis;
     });
-    _tabController.animateTo(0); // Torna al tab analisi
+    _tabController.animateTo(0);
   }
 
   @override
@@ -128,9 +130,8 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Risultati analisi (se disponibili)
           if (_currentAnalysis != null) ...[
-            _buildAnalysisCard(_currentAnalysis!),
+            AnalysisResultCard(analysis: _currentAnalysis!),
             const SizedBox(height: 24),
           ],
 
@@ -187,7 +188,6 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
 
           const SizedBox(height: 16),
 
-          // Bottone analizza
           ElevatedButton.icon(
             onPressed: _analyzeText,
             icon: const Icon(Icons.analytics, size: 28),
@@ -234,146 +234,6 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
     );
   }
 
-  Widget _buildAnalysisCard(TextAnalysisModel analysis) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Risultati Analisi',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 24),
-
-            // Statistiche principali
-            _buildStatRow(
-              Icons.format_quote,
-              'Parole',
-              analysis.wordCount.toString(),
-              Colors.blue,
-            ),
-            const SizedBox(height: 12),
-            _buildStatRow(
-              Icons.text_fields,
-              'Caratteri (senza spazi)',
-              analysis.characterCount.toString(),
-              Colors.orange,
-            ),
-            const SizedBox(height: 12),
-            _buildStatRow(
-              Icons.space_bar,
-              'Caratteri (con spazi)',
-              analysis.characterCountWithSpaces.toString(),
-              Colors.purple,
-            ),
-            const SizedBox(height: 12),
-            _buildStatRow(
-              Icons.trending_up,
-              'Parola più lunga',
-              analysis.longestWord,
-              Colors.green,
-            ),
-
-            const Divider(height: 24),
-
-            // Statistiche aggiuntive
-            Text(
-              'Statistiche Avanzate',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade700,
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                _buildStatChip(
-                  'Frasi',
-                  analysis.sentenceCount.toString(),
-                  Colors.teal,
-                ),
-                _buildStatChip(
-                  'Paragrafi',
-                  analysis.paragraphCount.toString(),
-                  Colors.indigo,
-                ),
-                _buildStatChip(
-                  'Media lunghezza parole',
-                  analysis.averageWordLength.toStringAsFixed(1),
-                  Colors.deepOrange,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatRow(IconData icon, String label, String value, Color color) {
-    return Row(
-      children: [
-        Icon(icon, color: color, size: 22),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatChip(String label, String value, Color color) {
-    return Chip(
-      avatar: CircleAvatar(
-        backgroundColor: color.withValues(alpha: 0.2),
-        child: Text(
-          value,
-          style: TextStyle(
-            color: color,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      label: Text(label),
-      backgroundColor: color.withValues(alpha: 0.1),
-    );
-  }
-
   Widget _buildHistoryTab() {
     if (_presenter.history.isEmpty) {
       return Center(
@@ -403,10 +263,12 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
     return Column(
       children: [
         // Header con statistiche
-        Container(
-          padding: const EdgeInsets.all(16),
-          color: Theme.of(context).colorScheme.primaryContainer,
-          child: _buildHistoryStats(),
+        HistoryStatsHeader(
+          stats: _presenter.getHistoryStats(),
+          onClearAll: () async {
+            await _presenter.clearHistory();
+            setState(() {});
+          },
         ),
 
         // Lista analisi
@@ -416,7 +278,14 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
             itemCount: _presenter.history.length,
             itemBuilder: (context, index) {
               final analysis = _presenter.history[index];
-              return _buildHistoryItem(analysis, index);
+              return TextAnalysisHistoryItem(
+                analysis: analysis,
+                onTap: () => _loadFromHistory(analysis),
+                onDelete: () async {
+                  await _presenter.deleteFromHistory(index);
+                  setState(() {});
+                },
+              );
             },
           ),
         ),
@@ -424,180 +293,4 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
     );
   }
 
-  Widget _buildHistoryStats() {
-    final stats = _presenter.getHistoryStats();
-
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Statistiche Cronologia',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: () async {
-                final confirm = await showDialog<bool>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Conferma'),
-                    content: const Text('Cancellare tutta la cronologia?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Annulla'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () => Navigator.pop(context, true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                        ),
-                        child: const Text('Elimina'),
-                      ),
-                    ],
-                  ),
-                );
-
-                if (confirm == true) {
-                  await _presenter.clearHistory();
-                  setState(() {});
-                }
-              },
-              icon: const Icon(Icons.delete_sweep),
-              label: const Text('Cancella tutto'),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _buildStatChip(
-              'Analisi',
-              stats['totalAnalyses'].toString(),
-              Colors.blue,
-            ),
-            _buildStatChip(
-              'Parole totali',
-              stats['totalWords'].toString(),
-              Colors.orange,
-            ),
-            _buildStatChip(
-              'Media parole',
-              stats['averageWords'].toStringAsFixed(0),
-              Colors.green,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildHistoryItem(TextAnalysisModel analysis, int index) {
-    final preview = analysis.text.length > 100
-        ? '${analysis.text.substring(0, 100)}...'
-        : analysis.text;
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => _loadFromHistory(analysis),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      preview,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, size: 20),
-                    color: Colors.red,
-                    onPressed: () async {
-                      await _presenter.deleteFromHistory(index);
-                      setState(() {});
-                    },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildInfoChip(
-                    '${analysis.wordCount} parole',
-                    Icons.format_quote,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildInfoChip(
-                    '${analysis.characterCount} caratteri',
-                    Icons.text_fields,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Text(
-                _formatDateTime(analysis.analyzedAt),
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey.shade600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoChip(String label, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: Colors.grey.shade700),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              color: Colors.grey.shade700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inMinutes < 1) return 'Adesso';
-    if (difference.inHours < 1) return '${difference.inMinutes}m fa';
-    if (difference.inDays < 1) return '${difference.inHours}h fa';
-    if (difference.inDays < 7) return '${difference.inDays}g fa';
-
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-  }
 }
