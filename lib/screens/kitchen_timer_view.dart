@@ -5,6 +5,7 @@ import '../states/kitchen_timer_model.dart';
 import '../states/kitchen_timer_preset_model.dart';
 import '../widget/kitchen_timer/timer_card.dart';
 import '../widget/kitchen_timer/timer_presets_grid.dart';
+import '../widget/kitchen_timer/timer_history_tab.dart';
 
 class KitchenTimerView extends StatefulWidget {
   const KitchenTimerView({super.key});
@@ -119,7 +120,7 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('✓ Timer "$name" creato'),
+                    content: Text('Timer "$name" creato'),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -151,7 +152,13 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
         controller: _tabController,
         children: [
           _buildTimersTab(),
-          _buildHistoryTab(),
+          TimerHistoryTab(
+            history: _presenter.history,
+            onClearHistory: () async {
+              await _presenter.clearHistory();
+              setState(() {});
+            },
+          ),
         ],
       ),
       floatingActionButton: _tabController.index == 0
@@ -248,8 +255,33 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
                       setState(() {});
                     },
                     onDelete: () async {
-                      await _presenter.deleteTimer(currentTimer.id);
-                      setState(() {});
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Elimina Timer'),
+                          content: Text(
+                            'Vuoi eliminare il timer "${currentTimer.name}"?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Annulla'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              child: const Text('Elimina'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true && mounted) {
+                        await _presenter.deleteTimer(currentTimer.id);
+                        setState(() {});
+                      }
                     },
                   );
                 },
@@ -259,128 +291,5 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
         ],
       ),
     );
-  }
-
-  Widget _buildHistoryTab() {
-    if (_presenter.history.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.history,
-              size: 64,
-              color: Theme.of(context).disabledColor,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Nessun timer completato',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Completa un timer per vederlo qui',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Column(
-      children: [
-        // Header con bottone cancella
-        Container(
-          padding: const EdgeInsets.all(16),
-          color: Theme.of(context).colorScheme.primaryContainer,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Timer Completati (${_presenter.history.length})',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              TextButton.icon(
-                onPressed: () async {
-                  final confirm = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Conferma'),
-                      content: const Text('Cancellare tutta la cronologia?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Annulla'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                          ),
-                          child: const Text('Elimina'),
-                        ),
-                      ],
-                    ),
-                  );
-
-                  if (confirm == true) {
-                    await _presenter.clearHistory();
-                    setState(() {});
-                  }
-                },
-                icon: const Icon(Icons.delete_sweep),
-                label: const Text('Cancella tutto'),
-              ),
-            ],
-          ),
-        ),
-
-        // Lista cronologia
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: _presenter.history.length,
-            itemBuilder: (context, index) {
-              final timer = _presenter.history[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.green.withValues(alpha: 0.2),
-                    child: const Icon(Icons.check, color: Colors.green),
-                  ),
-                  title: Text(
-                    timer.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  subtitle: Text(
-                    '${timer.formattedDuration} • ${_formatDateTime(timer.completedAt!)}',
-                  ),
-                  trailing: Icon(
-                    Icons.timer,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inMinutes < 1) return 'Adesso';
-    if (difference.inHours < 1) return '${difference.inMinutes}m fa';
-    if (difference.inDays < 1) return '${difference.inHours}h fa';
-    if (difference.inDays < 7) return '${difference.inDays}g fa';
-
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }
 }
