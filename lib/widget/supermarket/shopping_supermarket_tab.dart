@@ -216,7 +216,7 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab> {
                 maxLines: 10,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  hintText: 'U2|Latte|01/01/2024|2|â‚¬3.50',
+                  hintText: 'U2|Latte|01/01/2024|2|€3.50',
                 ),
               ),
             ],
