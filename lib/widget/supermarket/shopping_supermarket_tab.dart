@@ -278,7 +278,7 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
           : ListView.builder(
         padding: EdgeInsets.fromLTRB(
           _isLandscape ? 6 : 16,
-          0,
+          _isSelectionMode ? 16 : 0,
           _isLandscape ? 6 : 16,
           100,
         ),
