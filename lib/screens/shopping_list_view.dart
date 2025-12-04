@@ -37,6 +37,7 @@ class _ShoppingListViewState extends State<ShoppingListView>
   Future<void> _loadData() async {
     await _presenter.loadItems();
     await _supermarketPresenter.loadPurchases();
+    await _supermarketPresenter.loadCustomSupermarkets();
     setState(() {
       _isLoading = false;
     });
@@ -44,7 +45,8 @@ class _ShoppingListViewState extends State<ShoppingListView>
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape = MediaQuery.of(context)
+        .orientation == Orientation.landscape;
 
     return Scaffold(
       appBar: AppBar(
@@ -89,7 +91,10 @@ class _ShoppingListViewState extends State<ShoppingListView>
             shoppingPresenter: _presenter,
             availableProducts: _presenter.items
                 .map((item) => item.name).toSet().toList(),
-            onUpdate: () => setState(() {}),
+            onUpdate: () async {
+              await _supermarketPresenter.loadCustomSupermarkets();
+              setState(() {});
+            },
           ),
         ],
       ),

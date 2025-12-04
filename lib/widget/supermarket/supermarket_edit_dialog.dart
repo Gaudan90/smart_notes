@@ -32,8 +32,10 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
   @override
   void initState() {
     super.initState();
-    _productController = TextEditingController(text: widget.purchase.productName);
-    _quantityController = TextEditingController(text: '${widget.purchase.quantity}');
+    _productController = TextEditingController
+      (text: widget.purchase.productName);
+    _quantityController = TextEditingController
+      (text: '${widget.purchase.quantity}');
     _priceController = TextEditingController(
       text: widget.purchase.price != null
           ? widget.purchase.price!.toStringAsFixed(2)
@@ -66,8 +68,14 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
     }
   }
 
+  Widget _buildSupermarketDropdownItem(String market) {
+    return Text(market);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final allSupermarkets = widget.presenter.allSupermarkets;
+
     return AlertDialog(
       title: const Text('Modifica Acquisto'),
       content: SingleChildScrollView(
@@ -81,10 +89,10 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.store),
               ),
-              items: SupermarketTrackerPresenter.supermarkets.map((market) {
+              items: allSupermarkets.map((market) {
                 return DropdownMenuItem(
                   value: market,
-                  child: Text(market),
+                  child: _buildSupermarketDropdownItem(market),
                 );
               }).toList(),
               onChanged: (value) {
@@ -111,10 +119,18 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
               onSelected: (String selection) {
                 _productController.text = selection;
               },
-              fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-                if (controller.text != _productController.text) {
-                  controller.text = _productController.text;
-                }
+              fieldViewBuilder:
+                  (context, controller, focusNode, onFieldSubmitted) {
+                // Sincronizza il controller interno
+                controller.text = _productController.text;
+                controller.selection = TextSelection.fromPosition(
+                  TextPosition(offset: controller.text.length),
+                );
+
+                // Listener per aggiornare quando l'utente digita
+                controller.addListener(() {
+                  _productController.text = controller.text;
+                });
 
                 return TextField(
                   controller: controller,
@@ -125,20 +141,17 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
                     prefixIcon: Icon(Icons.shopping_basket),
                   ),
                   textCapitalization: TextCapitalization.words,
-                  onChanged: (value) {
-                    _productController.text = value;
-                  },
                 );
               },
             ),
 
             const SizedBox(height: 16),
 
-            // Data
             ListTile(
               title: const Text('Data acquisto'),
               subtitle: Text(
-                '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                '${_selectedDate.day}'
+                    '/${_selectedDate.month}/${_selectedDate.year}',
               ),
               trailing: const Icon(Icons.calendar_today),
               onTap: _selectDate,
@@ -150,7 +163,6 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
 
             const SizedBox(height: 16),
 
-            // Quantità e Prezzo
             Row(
               children: [
                 Expanded(
@@ -173,13 +185,14 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
                     controller: _priceController,
                     decoration: const InputDecoration(
                       labelText: 'Prezzo €',
-                      hintText: 'Opzionale',
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.euro),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType
+                        .numberWithOptions(decimal: true),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                      FilteringTextInputFormatter
+                          .allow(RegExp(r'^\d+\.?\d{0,2}')),
                     ],
                   ),
                 ),
@@ -197,8 +210,9 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
           onPressed: () async {
             if (_productController.text.isNotEmpty) {
               final quantity = int.tryParse(_quantityController.text) ?? 1;
-              final priceText = _priceController.text.trim();
-              final price = priceText.isNotEmpty ? double.tryParse(priceText) : null;
+              final price = _priceController.text.isNotEmpty
+                  ? double.tryParse(_priceController.text)
+                  : null;
 
               await widget.presenter.updatePurchase(
                 id: widget.purchase.id,

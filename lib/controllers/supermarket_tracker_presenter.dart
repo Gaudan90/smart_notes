@@ -1,24 +1,21 @@
 import 'dart:convert';
-import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../data/import_result.dart';
 import '../states/supermarket_purchase_model.dart';
+import '../states/custom_supermarket_model.dart';
 
 class SupermarketTrackerPresenter {
   static const String _purchasesKey = 'supermarket_purchases';
+  static const String _customSupermarketsKey = 'custom_supermarkets';
   final List<SupermarketPurchaseModel> _purchases = [];
-  final Random _random = Random();
+  final List<CustomSupermarketModel> _customSupermarkets = [];
 
   List<SupermarketPurchaseModel> get purchases => List.unmodifiable(_purchases);
+  List<CustomSupermarketModel> get customSupermarkets => List.unmodifiable(_customSupermarkets);
 
-  // Genera un ID veramente univoco combinando timestamp e numero casuale
-  String _generateUniqueId() {
-    final timestamp = DateTime.now().microsecondsSinceEpoch;
-    final randomSuffix = _random.nextInt(999999);
-    return '${timestamp}_$randomSuffix';
-  }
-
-  static const List<String> supermarkets = [
+  // Supermercati di default
+  static const List<String> defaultSupermarkets = [
     'U2',
     'Gigante',
     'Bennet',
@@ -28,8 +25,18 @@ class SupermarketTrackerPresenter {
     'Coop',
     'Lidl',
     'Action',
-    'Esselunga'
   ];
+
+  // Lista unificata: default + custom (senza duplicati)
+  List<String> get allSupermarkets {
+    return [
+      ...defaultSupermarkets,
+      ..._customSupermarkets.map((s) => s.name),
+    ].toSet().toList();
+  }
+
+  // Backward compatibility
+  static List<String> get supermarkets => defaultSupermarkets;
 
   Future<void> loadPurchases() async {
     final prefs = await SharedPreferences.getInstance();
@@ -41,48 +48,93 @@ class SupermarketTrackerPresenter {
       _purchases.addAll(
         decodedList.map((item) => SupermarketPurchaseModel.fromJson(item)).toList(),
       );
-
-      // Rigenera ID duplicati (fix retroattivo)
-      await _migrateAndFixDuplicateIds();
-
       _sortPurchases();
     }
   }
 
-  // Migrazione automatica per fix ID duplicati
-  Future<void> _migrateAndFixDuplicateIds() async {
-    // Trova ID duplicati
-    final Set<String> seenIds = {};
-    final List<int> duplicateIndexes = [];
+  Future<void> loadCustomSupermarkets() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? customJson = prefs.getString(_customSupermarketsKey);
 
-    for (int i = 0; i < _purchases.length; i++) {
-      final id = _purchases[i].id;
-      if (seenIds.contains(id)) {
-        duplicateIndexes.add(i);
-      } else {
-        seenIds.add(id);
-      }
-    }
-
-    // Se ci sono duplicati, rigenera gli ID
-    if (duplicateIndexes.isNotEmpty) {
-      print('Migrazione: Trovati ${duplicateIndexes.length} ID duplicati. Rigenerazione in corso...');
-
-      for (final index in duplicateIndexes) {
-        final oldPurchase = _purchases[index];
-        _purchases[index] = SupermarketPurchaseModel(
-          id: _generateUniqueId(),  // Nuovo ID univoco
-          productName: oldPurchase.productName,
-          supermarket: oldPurchase.supermarket,
-          purchaseDate: oldPurchase.purchaseDate,
-          price: oldPurchase.price,
-          quantity: oldPurchase.quantity,
+      if (customJson != null) {
+        final List<dynamic> decodedList = json.decode(customJson);
+        _customSupermarkets.clear();
+        _customSupermarkets.addAll(
+          decodedList.map((item) => CustomSupermarketModel.fromJson(item)).toList(),
         );
       }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Errore caricamento supermercati custom: $e');
+      }
+      _customSupermarkets.clear();
+    }
+  }
 
-      // Salva i dati migrati
-      await _savePurchases();
-      print('Migrazione completata: ${duplicateIndexes.length} ID rigenerati');
+  Future<void> _saveCustomSupermarkets() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String encodedList = json.encode(
+        _customSupermarkets.map((s) => s.toJson()).toList(),
+      );
+      await prefs.setString(_customSupermarketsKey, encodedList);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Errore salvataggio supermercati custom: $e');
+      }
+    }
+  }
+
+  Future<void> addCustomSupermarket(String name, int colorValue) async {
+    if (name.trim().isEmpty) return;
+
+    // Check duplicati
+    if (defaultSupermarkets.contains(name.trim()) ||
+        _customSupermarkets.any((s) => s.name == name.trim())) {
+      throw Exception('Supermercato già esistente');
+    }
+
+    final customSupermarket = CustomSupermarketModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name.trim(),
+      colorValue: colorValue,
+    );
+
+    _customSupermarkets.add(customSupermarket);
+    await _saveCustomSupermarkets();
+  }
+
+  Future<void> deleteCustomSupermarket(String id) async {
+    _customSupermarkets.removeWhere((s) => s.id == id);
+    await _saveCustomSupermarkets();
+  }
+
+  Future<void> updateCustomSupermarket
+      (String id, String newName, int newColorValue) async {
+    final index = _customSupermarkets.indexWhere((s) => s.id == id);
+    if (index == -1) return;
+
+    // Check duplicati (escluso l'elemento corrente)
+    if (defaultSupermarkets.contains(newName.trim()) ||
+        _customSupermarkets.any((s) => s.id != id && s.name == newName.trim())) {
+      throw Exception('Nome supermercato già esistente');
+    }
+
+    _customSupermarkets[index] = CustomSupermarketModel(
+      id: id,
+      name: newName.trim(),
+      colorValue: newColorValue,
+    );
+
+    await _saveCustomSupermarkets();
+  }
+
+  CustomSupermarketModel? getCustomSupermarket(String name) {
+    try {
+      return _customSupermarkets.firstWhere((s) => s.name == name);
+    } catch (e) {
+      return null;
     }
   }
 
@@ -95,17 +147,7 @@ class SupermarketTrackerPresenter {
   }
 
   void _sortPurchases() {
-    _purchases.sort((a, b) {
-      // Prima per data (più recente prima)
-      final dateComparison = b.purchaseDate.compareTo(a.purchaseDate);
-
-      // Se le date sono uguali, ordina alfabeticamente per nome prodotto
-      if (dateComparison == 0) {
-        return a.productName.toLowerCase().compareTo(b.productName.toLowerCase());
-      }
-
-      return dateComparison;
-    });
+    _purchases.sort((a, b) => b.purchaseDate.compareTo(a.purchaseDate));
   }
 
   Future<void> addPurchase({
@@ -118,7 +160,7 @@ class SupermarketTrackerPresenter {
     if (productName.trim().isEmpty) return;
 
     final purchase = SupermarketPurchaseModel(
-      id: _generateUniqueId(),  // ID univoco con timestamp + random
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       productName: productName.trim(),
       supermarket: supermarket,
       purchaseDate: purchaseDate,
@@ -195,8 +237,9 @@ class SupermarketTrackerPresenter {
   // STATISTICHE
   Map<String, int> getProductCountBySupermarket() {
     final Map<String, int> counts = {};
-    for (var supermarket in supermarkets) {
-      counts[supermarket] = _purchases.where((p) => p.supermarket == supermarket).length;
+    for (var supermarket in allSupermarkets) {
+      counts[supermarket] = _purchases.where((p) =>
+      p.supermarket == supermarket).length;
     }
     return counts;
   }
@@ -214,7 +257,8 @@ class SupermarketTrackerPresenter {
     }
 
     final buffer = StringBuffer();
-    buffer.writeln('# Export Supermercati - ${DateTime.now().toString().split('.')[0]}');
+    buffer.writeln('# Export Supermercati - '
+        '${DateTime.now().toString().split('.')[0]}');
     buffer.writeln('# Formato: Supermercato|Prodotto|Data|Quantità|Prezzo');
     buffer.writeln('# ========================================\n');
 

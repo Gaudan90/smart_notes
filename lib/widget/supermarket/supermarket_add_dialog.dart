@@ -23,8 +23,17 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
   final _quantityController = TextEditingController(text: '1');
   final _priceController = TextEditingController();
 
-  String _selectedSupermarket = SupermarketTrackerPresenter.supermarkets.first;
+  late String _selectedSupermarket;
   DateTime _selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    final allSupermarkets = widget.presenter.allSupermarkets;
+    _selectedSupermarket = allSupermarkets.isNotEmpty
+        ? allSupermarkets.first
+        : SupermarketTrackerPresenter.defaultSupermarkets.first;
+  }
 
   @override
   void dispose() {
@@ -49,8 +58,14 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
     }
   }
 
+  Widget _buildSupermarketDropdownItem(String market) {
+    return Text(market);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final allSupermarkets = widget.presenter.allSupermarkets;
+
     return AlertDialog(
       title: const Text('Aggiungi Acquisto'),
       content: SingleChildScrollView(
@@ -65,10 +80,10 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.store),
               ),
-              items: SupermarketTrackerPresenter.supermarkets.map((market) {
+              items: allSupermarkets.map((market) {
                 return DropdownMenuItem(
                   value: market,
-                  child: Text(market),
+                  child: _buildSupermarketDropdownItem(market),
                 );
               }).toList(),
               onChanged: (value) {
@@ -95,7 +110,8 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
               onSelected: (String selection) {
                 _productController.text = selection;
               },
-              fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+              fieldViewBuilder:
+                  (context, controller, focusNode, onFieldSubmitted) {
                 _productController.text = controller.text;
                 return TextField(
                   controller: controller,
@@ -117,7 +133,8 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
             ListTile(
               title: const Text('Data acquisto'),
               subtitle: Text(
-                '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                '${_selectedDate.day}'
+                    '/${_selectedDate.month}/${_selectedDate.year}',
               ),
               trailing: const Icon(Icons.calendar_today),
               onTap: _selectDate,
@@ -156,9 +173,11 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.euro),
                     ),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType
+                        .numberWithOptions(decimal: true),
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                      FilteringTextInputFormatter
+                          .allow(RegExp(r'^\d+\.?\d{0,2}')),
                     ],
                   ),
                 ),
