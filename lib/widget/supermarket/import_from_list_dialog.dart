@@ -73,8 +73,6 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
     final selectedItems = _availableItems
         .where((item) => _selectedIds.contains(item.id))
         .toList();
-
-    // Chiudi il dialog corrente
     Navigator.pop(context);
 
     // Apri il dialog di configurazione
@@ -116,7 +114,7 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
               ),
               SizedBox(height: 8),
               Text(
-                'Tutti i prodotti sono già stati comprati',
+                'Tutti i prodotti sono giÃ  stati comprati',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ],
@@ -135,7 +133,8 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${_selectedIds.length}/${availableItems.length} selezionati',
+                      '${_selectedIds.length}'
+                          '/${availableItems.length} selezionati',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -150,7 +149,8 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
                     ),
                     label: Text(_selectAll ? 'Deseleziona' : 'Seleziona tutti'),
                     style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                      foregroundColor: Theme.of(context)
+                          .colorScheme.onPrimaryContainer,
                     ),
                   ),
                 ],
@@ -184,12 +184,16 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
                             item.category,
                             style: const TextStyle(fontSize: 12),
                           ),
-                          if (item.price != null || item.pricePerKg != null) ...[
+                          if
+                          (item.price != null || item.pricePerKg != null) ...[
                             const SizedBox(height: 2),
                             Text(
                               item.isSoldByWeight
-                                  ? '${item.weightKg!.toStringAsFixed(2)} kg x ${item.pricePerKg!.toStringAsFixed(2)}/kg'
-                                  : '${item.quantity}x ${item.totalCost.toStringAsFixed(2)}',
+                                  ? '${item.weightKg!.toStringAsFixed(2)} '
+                                  'kg x ${item.pricePerKg!
+                                  .toStringAsFixed(2)}/kg'
+                                  : '${item.quantity}x ${item.totalCost
+                                  .toStringAsFixed(2)}',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -264,7 +268,8 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
     // Inizializza tutti con il primo supermercato
     for (var item in widget.items) {
       _supermarketChoices[item.id] =
-          SupermarketTrackerPresenter.supermarkets.first;
+          widget.supermarketPresenter.allSupermarkets.firstOrNull
+              ?? SupermarketTrackerPresenter.nonAssegnato;
     }
   }
 
@@ -445,7 +450,7 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
                               ),
                               isDense: true,
                             ),
-                            items: SupermarketTrackerPresenter.supermarkets
+                            items: widget.supermarketPresenter.allSupermarkets
                                 .map((market) {
                               return DropdownMenuItem(
                                 value: market,

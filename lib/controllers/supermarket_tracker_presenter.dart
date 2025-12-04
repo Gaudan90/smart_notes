@@ -11,11 +11,16 @@ class SupermarketTrackerPresenter {
   final List<SupermarketPurchaseModel> _purchases = [];
   final List<CustomSupermarketModel> _customSupermarkets = [];
 
-  List<SupermarketPurchaseModel> get purchases => List.unmodifiable(_purchases);
-  List<CustomSupermarketModel> get customSupermarkets => List.unmodifiable(_customSupermarkets);
+  List<SupermarketPurchaseModel> get purchases =>
+      List.unmodifiable(_purchases);
+  List<CustomSupermarketModel> get customSupermarkets =>
+      List.unmodifiable(_customSupermarkets);
 
-  // Supermercati di default
-  static const List<String> defaultSupermarkets = [
+  // Costante per supermercato non assegnato
+  static const String nonAssegnato = 'Non Assegnato';
+
+  // Supermercati di default VECCHI (solo per backward compatibility)
+  static const List<String> _oldDefaultSupermarkets = [
     'U2',
     'Gigante',
     'Bennet',
@@ -27,16 +32,14 @@ class SupermarketTrackerPresenter {
     'Action',
   ];
 
-  // Lista unificata: default + custom (senza duplicati)
+  // Lista unificata: Non Assegnato + custom
   List<String> get allSupermarkets {
-    return [
-      ...defaultSupermarkets,
-      ..._customSupermarkets.map((s) => s.name),
-    ].toSet().toList();
+    final result = {nonAssegnato, ..._customSupermarkets.map((s) => s.name)};
+    return result.toList();
   }
 
-  // Backward compatibility
-  static List<String> get supermarkets => defaultSupermarkets;
+  // Backward compatibility per vecchio codice
+  static List<String> get supermarkets => _oldDefaultSupermarkets;
 
   Future<void> loadPurchases() async {
     final prefs = await SharedPreferences.getInstance();
@@ -46,9 +49,45 @@ class SupermarketTrackerPresenter {
       final List<dynamic> decodedList = json.decode(purchasesJson);
       _purchases.clear();
       _purchases.addAll(
-        decodedList.map((item) => SupermarketPurchaseModel.fromJson(item)).toList(),
+        decodedList.map((item) => SupermarketPurchaseModel
+            .fromJson(item)).toList(),
       );
+
+      // Sposta acquisti con vecchi supermercati a "Non Assegnato"
+      await _migrateOldPurchases();
+
       _sortPurchases();
+    }
+  }
+
+  Future<void> _migrateOldPurchases() async {
+    bool needsSave = false;
+    final customNames = _customSupermarkets.map((s) => s.name).toSet();
+
+    for (int i = 0; i < _purchases.length; i++) {
+      final purchase = _purchases[i];
+
+      // Se il supermercato non è custom e non è "Non Assegnato"
+      if (!customNames.contains(purchase.supermarket) &&
+          purchase.supermarket != nonAssegnato) {
+        // Migra a "Non Assegnato"
+        _purchases[i] = SupermarketPurchaseModel(
+          id: purchase.id,
+          productName: purchase.productName,
+          supermarket: nonAssegnato,
+          purchaseDate: purchase.purchaseDate,
+          price: purchase.price,
+          quantity: purchase.quantity,
+        );
+        needsSave = true;
+      }
+    }
+
+    if (needsSave) {
+      await _savePurchases();
+      if (kDebugMode) {
+        print('Migrazione completata: acquisti spostati a "Non Assegnato"');
+      }
     }
   }
 
@@ -61,7 +100,8 @@ class SupermarketTrackerPresenter {
         final List<dynamic> decodedList = json.decode(customJson);
         _customSupermarkets.clear();
         _customSupermarkets.addAll(
-          decodedList.map((item) => CustomSupermarketModel.fromJson(item)).toList(),
+          decodedList.map((item) => CustomSupermarketModel
+              .fromJson(item)).toList(),
         );
       }
     } catch (e) {
@@ -89,8 +129,8 @@ class SupermarketTrackerPresenter {
   Future<void> addCustomSupermarket(String name, int colorValue) async {
     if (name.trim().isEmpty) return;
 
-    // Check duplicati
-    if (defaultSupermarkets.contains(name.trim()) ||
+    // Check duplicati: non può essere "Non Assegnato" o già esistente
+    if (name.trim() == nonAssegnato ||
         _customSupermarkets.any((s) => s.name == name.trim())) {
       throw Exception('Supermercato già esistente');
     }
@@ -106,6 +146,33 @@ class SupermarketTrackerPresenter {
   }
 
   Future<void> deleteCustomSupermarket(String id) async {
+    final supermarketToDelete = _customSupermarkets.firstWhere(
+          (s) => s.id == id,
+      orElse: () => CustomSupermarketModel(id: '', name: '', colorValue: 0),
+    );
+
+    if (supermarketToDelete.id.isEmpty) return;
+
+    // Sposta tutti gli acquisti associati a "Non Assegnato"
+    bool needsPurchasesSave = false;
+    for (int i = 0; i < _purchases.length; i++) {
+      if (_purchases[i].supermarket == supermarketToDelete.name) {
+        _purchases[i] = SupermarketPurchaseModel(
+          id: _purchases[i].id,
+          productName: _purchases[i].productName,
+          supermarket: nonAssegnato,
+          purchaseDate: _purchases[i].purchaseDate,
+          price: _purchases[i].price,
+          quantity: _purchases[i].quantity,
+        );
+        needsPurchasesSave = true;
+      }
+    }
+
+    if (needsPurchasesSave) {
+      await _savePurchases();
+    }
+
     _customSupermarkets.removeWhere((s) => s.id == id);
     await _saveCustomSupermarkets();
   }
@@ -115,9 +182,9 @@ class SupermarketTrackerPresenter {
     final index = _customSupermarkets.indexWhere((s) => s.id == id);
     if (index == -1) return;
 
-    // Check duplicati (escluso l'elemento corrente)
-    if (defaultSupermarkets.contains(newName.trim()) ||
-        _customSupermarkets.any((s) => s.id != id && s.name == newName.trim())) {
+    if (newName.trim() == nonAssegnato ||
+        _customSupermarkets.any((s) =>
+        s.id != id && s.name == newName.trim())) {
       throw Exception('Nome supermercato già esistente');
     }
 
@@ -230,7 +297,8 @@ class SupermarketTrackerPresenter {
     return grouped;
   }
 
-  List<SupermarketPurchaseModel> getPurchasesForSupermarket(String supermarket) {
+  List<SupermarketPurchaseModel>
+  getPurchasesForSupermarket(String supermarket) {
     return _purchases.where((p) => p.supermarket == supermarket).toList();
   }
 
@@ -304,4 +372,3 @@ class SupermarketTrackerPresenter {
     );
   }
 }
-

@@ -9,6 +9,7 @@ import 'supermarket_empty_state.dart';
 import 'supermarket_tab_selection_mixin.dart';
 import 'supermarket_tab_actions_mixin.dart';
 import 'supermarket_tab_dialogs_mixin.dart';
+import 'delete_custom_supermarkets_dialog.dart';
 
 class ShoppingSupermarketTab extends StatefulWidget {
   final SupermarketTrackerPresenter presenter;
@@ -33,7 +34,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
         SupermarketTabSelectionMixin,
         SupermarketTabActionsMixin,
         SupermarketTabDialogsMixin {
-  // State base
   final _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isAlphabeticalSort = false;
@@ -97,6 +97,19 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
     });
   }
 
+  void _showDeleteCustomSupermarkets() {
+    showDialog(
+      context: context,
+      builder: (context) => DeleteCustomSupermarketsDialog(
+        presenter: widget.presenter,
+        onDeleted: () async {
+          await widget.onUpdate();
+          setState(() {});
+        },
+      ),
+    );
+  }
+
   List<SupermarketPurchaseModel> _getSortedPurchases(
       List<SupermarketPurchaseModel> purchases) {
     final sorted = List<SupermarketPurchaseModel>.from(purchases);
@@ -131,7 +144,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
     );
   }
 
-  // Costruisce l'AppBar dinamica
   PreferredSizeWidget? _buildAppBar() {
     // AppBar nascosta in landscape normale
     if (_isLandscape && !_isSelectionMode) return null;
@@ -253,7 +265,8 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Totale: ${widget.presenter.purchases.length} acquisti registrati',
+                'Totale: ${widget.presenter
+                    .purchases.length} acquisti registrati',
                 style: TextStyle(
                   fontSize: 13,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -280,7 +293,7 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
           _isLandscape ? 6 : 16,
           _isSelectionMode ? 16 : 0,
           _isLandscape ? 6 : 16,
-          100,
+          150,
         ),
         itemCount: sortedPurchases.length,
         itemBuilder: (context, index) {
@@ -308,13 +321,35 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
   // Costruisce il FAB per aggiungere supermercato custom
   Widget? _buildFAB() {
     if (_isSelectionMode) return null;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16, right: 8),
-      child: FloatingActionButton.extended(
-        onPressed: showAddCustomSupermarket,
-        icon: const Icon(Icons.add_business),
-        label: const Text('Supermercato'),
-        tooltip: 'Aggiungi supermercato personalizzato',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          // Mini FAB per eliminare supermercati
+          if (widget.presenter.customSupermarkets.isNotEmpty)
+            FloatingActionButton.small(
+              onPressed: _showDeleteCustomSupermarkets,
+              heroTag: 'delete_supermarkets',
+              backgroundColor: Colors.red.shade400,
+              tooltip: 'Elimina supermercati',
+              child: const Icon(Icons.delete_outline, size: 20),
+            ),
+
+          if (widget.presenter.customSupermarkets.isNotEmpty)
+            const SizedBox(height: 12),
+
+          // FAB principale per aggiungere
+          FloatingActionButton.extended(
+            onPressed: showAddCustomSupermarket,
+            heroTag: 'add_supermarket',
+            icon: const Icon(Icons.add_business),
+            label: const Text('Supermercato'),
+            tooltip: 'Aggiungi supermercato personalizzato',
+          ),
+        ],
       ),
     );
   }

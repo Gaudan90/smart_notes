@@ -32,7 +32,7 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
     final allSupermarkets = widget.presenter.allSupermarkets;
     _selectedSupermarket = allSupermarkets.isNotEmpty
         ? allSupermarkets.first
-        : SupermarketTrackerPresenter.defaultSupermarkets.first;
+        : SupermarketTrackerPresenter.nonAssegnato;
   }
 
   @override
