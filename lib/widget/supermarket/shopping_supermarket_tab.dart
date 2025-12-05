@@ -38,7 +38,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
   String _searchQuery = '';
   bool _isAlphabeticalSort = false;
 
-  // Selezione multipla (implementazione per mixin)
   bool _isSelectionMode = false;
   final Set<String> _selectedIds = {};
 
@@ -63,6 +62,13 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
   List<String> get availableProducts => widget.availableProducts;
   @override
   Future<void> Function() get onUpdate => widget.onUpdate;
+
+  List<SupermarketPurchaseModel> get _filteredAndSortedPurchases {
+    final filteredPurchases = _searchQuery.isEmpty
+        ? widget.presenter.purchases
+        : widget.presenter.searchPurchases(_searchQuery);
+    return _getSortedPurchases(filteredPurchases);
+  }
 
   @override
   void setSelectionState(bool selectionMode) {
@@ -97,6 +103,18 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
     });
   }
 
+  void _toggleSelectAll() {
+    final allPurchases = _filteredAndSortedPurchases;
+
+    if (_selectedIds.length == allPurchases.length) {
+      updateSelectedIds(<String>{});
+      setSelectionState(false);
+    } else {
+      final allIds = allPurchases.map((p) => p.id).toSet();
+      updateSelectedIds(allIds);
+    }
+  }
+
   void _showDeleteCustomSupermarkets() {
     showDialog(
       context: context,
@@ -126,11 +144,7 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
 
   @override
   Widget build(BuildContext context) {
-    final filteredPurchases = _searchQuery.isEmpty
-        ? widget.presenter.purchases
-        : widget.presenter.searchPurchases(_searchQuery);
-
-    final sortedPurchases = _getSortedPurchases(filteredPurchases);
+    final sortedPurchases = _filteredAndSortedPurchases;
 
     return Scaffold(
       appBar: _buildAppBar(),
@@ -145,7 +159,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
   }
 
   PreferredSizeWidget? _buildAppBar() {
-    // AppBar nascosta in landscape normale
     if (_isLandscape && !_isSelectionMode) return null;
 
     return AppBar(
@@ -163,15 +176,26 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
       )
           : null,
       actions: [
-        if (_isSelectionMode)
+        if (_isSelectionMode) ...[
+          IconButton(
+            icon: Icon(
+              _selectedIds.length == _filteredAndSortedPurchases.length
+                  ? Icons.deselect
+                  : Icons.select_all,
+            ),
+            onPressed: _toggleSelectAll,
+            tooltip: _selectedIds.length == _filteredAndSortedPurchases.length
+                ? 'Deseleziona tutti'
+                : 'Seleziona tutti',
+          ),
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: _selectedIds.isNotEmpty
                 ? () => deleteSelected(context)
                 : null,
             tooltip: 'Elimina selezionati',
-          )
-        else
+          ),
+        ] else
           IconButton(
             icon: Icon(
               _isAlphabeticalSort ? Icons.sort_by_alpha : Icons.access_time,
@@ -192,7 +216,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
       padding: EdgeInsets.all(_isLandscape ? 6 : 16),
       child: Column(
         children: [
-          // Header controls
           SupermarketHeaderControls(
             isLandscape: _isLandscape,
             isAlphabeticalSort: _isAlphabeticalSort,
@@ -245,7 +268,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
     );
   }
 
-  // Costruisce la card informativa con totale acquisti
   Widget _buildInfoCard() {
     return Padding(
       padding: const EdgeInsets.only(top: 12),
@@ -265,8 +287,8 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Totale: ${widget.presenter
-                    .purchases.length} acquisti registrati',
+                'Totale: ${widget.presenter.purchases.length} '
+                    'acquisti registrati',
                 style: TextStyle(
                   fontSize: 13,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -305,7 +327,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
             onDelete: () => deletePurchase(purchase),
             onEdit: () => showEditPurchase(purchase),
             presenter: widget.presenter,
-            // Selezione multipla
             isSelectionMode: _isSelectionMode,
             isSelected: isSelected,
             onLongPress: () => toggleSelectionMode(purchase.id),

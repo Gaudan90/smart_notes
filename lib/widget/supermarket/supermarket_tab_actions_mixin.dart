@@ -1,31 +1,62 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 import '../../states/supermarket_purchase_model.dart';
 
 mixin SupermarketTabActionsMixin<T extends StatefulWidget> on State<T> {
-  // Callback per UI updates
   void showSnackBarMessage(String message, Color? backgroundColor);
 
-  // Getter per accesso al presenter
   SupermarketTrackerPresenter get presenter;
   Future<void> Function() get onUpdate;
 
-  // Esporta tutti gli acquisti come file di testo condivisibile
   Future<void> exportData() async {
     try {
       final textContent = presenter.exportToText();
 
-      if (mounted) {
-        final result = await SharePlus.instance.share(
-          ShareParams(
-            text: textContent,
-            subject: 'Export Supermercati - SmartNotes',
-          ),
-        );
+      // Limite: 5000 caratteri (~70-80 righe) per condivisione diretta
+      const textSizeLimit = 5000;
 
-        if (result.status == ShareResultStatus.success) {
-          showSnackBarMessage('✓ Dati condivisi con successo', Colors.green);
+      if (mounted) {
+        if (textContent.length < textSizeLimit) {
+          // TESTO BREVE: Condividi direttamente come testo
+          final result = await SharePlus.instance.share(
+            ShareParams(
+              text: textContent,
+              subject: 'Export Supermercati - SmartNotes',
+            ),
+          );
+
+          if (mounted && result.status == ShareResultStatus.success) {
+            showSnackBarMessage('✓ Dati condivisi con successo', Colors.green);
+          }
+        } else {
+          // TESTO LUNGO: Crea file temporaneo e condividi file
+          final directory = await getTemporaryDirectory();
+          final timestamp = DateTime.now().millisecondsSinceEpoch;
+          final fileName = 'supermercati_export_$timestamp.txt';
+          final file = File('${directory.path}/$fileName');
+
+          await file.writeAsString(textContent);
+
+          final result = await SharePlus.instance.share(
+            ShareParams(
+              files: [XFile(file.path)],
+              subject: 'Export Supermercati - SmartNotes',
+            ),
+          );
+
+          if (mounted && result.status == ShareResultStatus.success) {
+            showSnackBarMessage(
+                '✓ File condiviso (${presenter.purchases.length} acquisti)',
+                Colors.green
+            );
+          }
+
+          try {
+            await file.delete();
+          } catch (_) {}
         }
       }
     } catch (e) {
@@ -35,7 +66,6 @@ mixin SupermarketTabActionsMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  // Importa acquisti da testo in formato TXT
   Future<void> importData() async {
     final textController = TextEditingController();
 
@@ -89,7 +119,6 @@ mixin SupermarketTabActionsMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  // Elimina tutti gli acquisti registrati
   Future<void> clearAll() async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -118,7 +147,6 @@ mixin SupermarketTabActionsMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  // Elimina un singolo acquisto
   Future<void> deletePurchase(SupermarketPurchaseModel purchase) async {
     final confirm = await showDialog<bool>(
       context: context,
