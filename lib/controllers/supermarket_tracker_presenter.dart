@@ -16,7 +16,6 @@ class SupermarketTrackerPresenter {
   List<CustomSupermarketModel> get customSupermarkets =>
       List.unmodifiable(_customSupermarkets);
 
-  // Costante per supermercato non assegnato
   static const String nonAssegnato = 'Non Assegnato';
 
   // Supermercati di default VECCHI (solo per backward compatibility)
@@ -53,7 +52,6 @@ class SupermarketTrackerPresenter {
             .fromJson(item)).toList(),
       );
 
-      // Sposta acquisti con vecchi supermercati a "Non Assegnato"
       await _migrateOldPurchases();
 
       _sortPurchases();
@@ -169,10 +167,12 @@ class SupermarketTrackerPresenter {
       }
     }
 
+    // Salva acquisti se modificati
     if (needsPurchasesSave) {
       await _savePurchases();
     }
 
+    // Elimina il supermercato
     _customSupermarkets.removeWhere((s) => s.id == id);
     await _saveCustomSupermarkets();
   }
@@ -182,6 +182,7 @@ class SupermarketTrackerPresenter {
     final index = _customSupermarkets.indexWhere((s) => s.id == id);
     if (index == -1) return;
 
+    // Check duplicati (escluso l'elemento corrente) e non può essere "Non Assegnato"
     if (newName.trim() == nonAssegnato ||
         _customSupermarkets.any((s) =>
         s.id != id && s.name == newName.trim())) {
@@ -345,15 +346,26 @@ class SupermarketTrackerPresenter {
     int imported = 0;
     int skipped = 0;
 
-    for (var line in lines) {
-      final trimmed = line.trim();
+    // Timestamp base per generare ID unici
+    final baseTimestamp = DateTime.now().millisecondsSinceEpoch;
+
+    for (var i = 0; i < lines.length; i++) {
+      final trimmed = lines[i].trim();
 
       // Salta righe vuote e commenti
       if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
 
       final purchase = SupermarketPurchaseModel.fromTextLine(trimmed);
       if (purchase != null) {
-        _purchases.add(purchase);
+        final uniquePurchase = SupermarketPurchaseModel(
+          id: '${baseTimestamp + i}',
+          productName: purchase.productName,
+          supermarket: purchase.supermarket,
+          purchaseDate: purchase.purchaseDate,
+          price: purchase.price,
+          quantity: purchase.quantity,
+        );
+        _purchases.add(uniquePurchase);
         imported++;
       } else {
         skipped++;
