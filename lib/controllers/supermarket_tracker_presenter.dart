@@ -18,18 +18,6 @@ class SupermarketTrackerPresenter {
 
   static const String nonAssegnato = 'Non Assegnato';
 
-  // Supermercati di default VECCHI (solo per backward compatibility)
-  static const List<String> _oldDefaultSupermarkets = [
-    'U2',
-    'Gigante',
-    'Bennet',
-    'Carrefour',
-    'Mercato',
-    'Ipercoop',
-    'Coop',
-    'Lidl',
-    'Action',
-  ];
 
   // Lista unificata: Non Assegnato + custom
   List<String> get allSupermarkets {
@@ -37,8 +25,6 @@ class SupermarketTrackerPresenter {
     return result.toList();
   }
 
-  // Backward compatibility per vecchio codice
-  static List<String> get supermarkets => _oldDefaultSupermarkets;
 
   Future<void> loadPurchases() async {
     final prefs = await SharedPreferences.getInstance();
@@ -52,42 +38,11 @@ class SupermarketTrackerPresenter {
             .fromJson(item)).toList(),
       );
 
-      await _migrateOldPurchases();
 
       _sortPurchases();
     }
   }
 
-  Future<void> _migrateOldPurchases() async {
-    bool needsSave = false;
-    final customNames = _customSupermarkets.map((s) => s.name).toSet();
-
-    for (int i = 0; i < _purchases.length; i++) {
-      final purchase = _purchases[i];
-
-      // Se il supermercato non è custom e non è "Non Assegnato"
-      if (!customNames.contains(purchase.supermarket) &&
-          purchase.supermarket != nonAssegnato) {
-        // Migra a "Non Assegnato"
-        _purchases[i] = SupermarketPurchaseModel(
-          id: purchase.id,
-          productName: purchase.productName,
-          supermarket: nonAssegnato,
-          purchaseDate: purchase.purchaseDate,
-          price: purchase.price,
-          quantity: purchase.quantity,
-        );
-        needsSave = true;
-      }
-    }
-
-    if (needsSave) {
-      await _savePurchases();
-      if (kDebugMode) {
-        print('Migrazione completata: acquisti spostati a "Non Assegnato"');
-      }
-    }
-  }
 
   Future<void> loadCustomSupermarkets() async {
     try {

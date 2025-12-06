@@ -19,9 +19,12 @@ class SupermarketAddDialog extends StatefulWidget {
 }
 
 class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
+  final _formKey = GlobalKey<FormState>();
   final _productController = TextEditingController();
   final _quantityController = TextEditingController(text: '1');
   final _priceController = TextEditingController();
+
+  TextEditingController? _autocompleteController;
 
   late String _selectedSupermarket;
   DateTime _selectedDate = DateTime.now();
@@ -29,6 +32,8 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
   @override
   void initState() {
     super.initState();
+    _selectedDate = DateTime.now();
+
     final allSupermarkets = widget.presenter.allSupermarkets;
     _selectedSupermarket = allSupermarkets.isNotEmpty
         ? allSupermarkets.first
@@ -69,121 +74,138 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
     return AlertDialog(
       title: const Text('Aggiungi Acquisto'),
       content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Supermercato
-            DropdownButtonFormField<String>(
-              value: _selectedSupermarket,
-              decoration: const InputDecoration(
-                labelText: 'Supermercato',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.store),
-              ),
-              items: allSupermarkets.map((market) {
-                return DropdownMenuItem(
-                  value: market,
-                  child: _buildSupermarketDropdownItem(market),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedSupermarket = value!;
-                });
-              },
-            ),
-
-            const SizedBox(height: 16),
-
-            // Prodotto (con autocomplete)
-            Autocomplete<String>(
-              optionsBuilder: (TextEditingValue textEditingValue) {
-                if (textEditingValue.text.isEmpty) {
-                  return const Iterable<String>.empty();
-                }
-                return widget.availableProducts.where((product) {
-                  return product.toLowerCase().contains(
-                    textEditingValue.text.toLowerCase(),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<String>(
+                value: _selectedSupermarket,
+                decoration: const InputDecoration(
+                  labelText: 'Supermercato',
+                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.store),
+                ),
+                items: allSupermarkets.map((market) {
+                  return DropdownMenuItem(
+                    value: market,
+                    child: _buildSupermarketDropdownItem(market),
                   );
-                });
-              },
-              onSelected: (String selection) {
-                _productController.text = selection;
-              },
-              fieldViewBuilder:
-                  (context, controller, focusNode, onFieldSubmitted) {
-                _productController.text = controller.text;
-                return TextField(
-                  controller: controller,
-                  focusNode: focusNode,
-                  decoration: const InputDecoration(
-                    labelText: 'Prodotto',
-                    hintText: 'Es: Latte',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.shopping_basket),
-                  ),
-                  textCapitalization: TextCapitalization.words,
-                );
-              },
-            ),
-
-            const SizedBox(height: 16),
-
-            // Data
-            ListTile(
-              title: const Text('Data acquisto'),
-              subtitle: Text(
-                '${_selectedDate.day}'
-                    '/${_selectedDate.month}/${_selectedDate.year}',
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedSupermarket = value!;
+                  });
+                },
               ),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: _selectDate,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-                side: BorderSide(color: Colors.grey.shade300),
+
+              const SizedBox(height: 16),
+
+              Autocomplete<String>(
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text.isEmpty) {
+                    return const Iterable<String>.empty();
+                  }
+                  return widget.availableProducts.where((product) {
+                    return product.toLowerCase().contains(
+                      textEditingValue.text.toLowerCase(),
+                    );
+                  });
+                },
+                onSelected: (String selection) {
+                  _productController.text = selection;
+                },
+                fieldViewBuilder:
+                    (context, controller, focusNode, onFieldSubmitted) {
+                  _autocompleteController = controller;
+
+                  return TextFormField(
+                    controller: controller,
+                    focusNode: focusNode,
+                    decoration: const InputDecoration(
+                      labelText: 'Prodotto',
+                      hintText: 'Es: Latte',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.shopping_basket),
+                    ),
+                    textCapitalization: TextCapitalization.words,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Inserisci il nome del prodotto';
+                      }
+                      return null;
+                    },
+                  );
+                },
               ),
-            ),
 
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
 
-            // Quantità e Prezzo
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _quantityController,
-                    decoration: const InputDecoration(
-                      labelText: 'Quantità',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.add_circle_outline),
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                  ),
+              ListTile(
+                title: const Text('Data acquisto'),
+                subtitle: Text(
+                  '${_selectedDate.day}'
+                      '/${_selectedDate.month}/${_selectedDate.year}',
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: _priceController,
-                    decoration: const InputDecoration(
-                      labelText: 'Prezzo €',
-                      hintText: 'Opzionale',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.euro),
-                    ),
-                    keyboardType: const TextInputType
-                        .numberWithOptions(decimal: true),
-                    inputFormatters: [
-                      FilteringTextInputFormatter
-                          .allow(RegExp(r'^\d+\.?\d{0,2}')),
-                    ],
-                  ),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: _selectDate,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  side: BorderSide(color: Colors.grey.shade300),
                 ),
-              ],
-            ),
-          ],
+              ),
+
+              const SizedBox(height: 16),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _quantityController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Quantità',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.add_circle_outline),
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Richiesto';
+                        }
+                        final qty = int.tryParse(value);
+                        if (qty == null || qty < 1) {
+                          return 'Min 1';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _priceController,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: const InputDecoration(
+                        labelText: 'Prezzo €',
+                        hintText: 'Opzionale',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.euro),
+                      ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter
+                            .allow(RegExp(r'^\d+\.?\d{0,2}')),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -193,12 +215,14 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            if (_productController.text.isNotEmpty) {
+            if (_formKey.currentState!.validate()) {
               final quantity = int.tryParse(_quantityController.text) ?? 1;
               final price = double.tryParse(_priceController.text);
 
+              final productName = _autocompleteController?.text ?? '';
+
               await widget.presenter.addPurchase(
-                productName: _productController.text,
+                productName: productName,
                 supermarket: _selectedSupermarket,
                 purchaseDate: _selectedDate,
                 price: price,
@@ -211,9 +235,20 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('✓ Acquisto registrato'),
+                    content: Text('Acquisto registrato'),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            } else {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Compila tutti i campi obbligatori'),
+                    backgroundColor: Colors.orange,
+                    behavior: SnackBarBehavior.floating,
+                    duration: Duration(seconds: 2),
                   ),
                 );
               }

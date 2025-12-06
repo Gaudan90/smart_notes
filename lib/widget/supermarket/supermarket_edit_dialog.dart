@@ -121,13 +121,11 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
               },
               fieldViewBuilder:
                   (context, controller, focusNode, onFieldSubmitted) {
-                // Sincronizza il controller interno
                 controller.text = _productController.text;
                 controller.selection = TextSelection.fromPosition(
                   TextPosition(offset: controller.text.length),
                 );
 
-                // Listener per aggiornare quando l'utente digita
                 controller.addListener(() {
                   _productController.text = controller.text;
                 });
@@ -229,7 +227,7 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('✓ Acquisto aggiornato'),
+                    content: Text('Acquisto aggiornato'),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
                   ),

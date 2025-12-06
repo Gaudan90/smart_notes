@@ -29,7 +29,7 @@ mixin SupermarketTabActionsMixin<T extends StatefulWidget> on State<T> {
           );
 
           if (mounted && result.status == ShareResultStatus.success) {
-            showSnackBarMessage('✓ Dati condivisi con successo', Colors.green);
+            showSnackBarMessage('Dati condivisi con successo', Colors.green);
           }
         } else {
           // TESTO LUNGO: Crea file temporaneo e condividi file
@@ -49,7 +49,7 @@ mixin SupermarketTabActionsMixin<T extends StatefulWidget> on State<T> {
 
           if (mounted && result.status == ShareResultStatus.success) {
             showSnackBarMessage(
-                '✓ File condiviso (${presenter.purchases.length} acquisti)',
+                'File condiviso (${presenter.purchases.length} acquisti)',
                 Colors.green
             );
           }
@@ -176,7 +176,7 @@ mixin SupermarketTabActionsMixin<T extends StatefulWidget> on State<T> {
       await onUpdate();
 
       if (mounted) {
-        showSnackBarMessage('✓ Acquisto eliminato', null);
+        showSnackBarMessage('Acquisto eliminato', null);
       }
     }
   }
