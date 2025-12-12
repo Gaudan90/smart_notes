@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_notes/screens/home_view.dart';
 import 'package:smart_notes/screens/password_generator_view.dart';
@@ -5,6 +6,7 @@ import 'package:smart_notes/screens/pin_setup_view.dart';
 import 'package:smart_notes/screens/pin_unlock_view.dart';
 import 'package:smart_notes/theme/theme_config.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
+import 'package:timezone/data/latest.dart' as tz;
 import 'data/alarm_background_service.dart';
 import 'data/notification_service.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -14,7 +16,10 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   await NotificationService().initialize();
   await AlarmBackgroundService.initialize();
-  print('✅ AlarmBackgroundService initialized');
+  if (kDebugMode) {
+    print('✅ AlarmBackgroundService initialized');
+  }
+  tz.initializeTimeZones();
   runApp(EasyLocalization(
     supportedLocales: const [Locale('it', 'IT'), Locale('en', 'US')],
     path: 'assets/translations',

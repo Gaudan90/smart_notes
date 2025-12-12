@@ -12,6 +12,7 @@ import 'alarm_view.dart';
 import 'countdown_view.dart';
 import 'expense_view.dart';
 import 'fizzbuzz_view.dart';
+import 'gantt_planner_view.dart';
 import 'kitchen_timer_view.dart';
 import 'meal_plan_view.dart';
 import 'missing_numbers_view.dart';
@@ -40,7 +41,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _animations = List.generate(16, (index) {
+    _animations = List.generate(17, (index) {
       final double start = index * 0.04;
       final double end = (0.2 + index * 0.04).clamp(0.0, 1.0);
 
@@ -216,11 +217,22 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
+        title: 'Mini Planner',
+        subtitle: 'Timeline task con scadenze e progresso',
+        icon: Icons.timeline,
+        color: Colors.amberAccent,
+        animation: _animations[13],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const GanttPlannerView()),
+        ),
+      ),
+      FeatureCard(
         title: 'Statistiche Numeriche',
         subtitle: 'Trova il numero più frequente',
         icon: Icons.analytics_outlined,
         color: Colors.blue,
-        animation: _animations[13],
+        animation: _animations[14],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const NumberStatsView()),
@@ -231,7 +243,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Inverti le parole della frase',
         icon: Icons.text_rotation_none,
         color: Colors.green,
-        animation: _animations[14],
+        animation: _animations[15],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const SentenceReverserView()),
@@ -242,7 +254,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'Trova i numeri saltati',
         icon: Icons.search,
         color: Colors.purple,
-        animation: _animations[15],
+        animation: _animations[16],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MissingNumbersView()),
