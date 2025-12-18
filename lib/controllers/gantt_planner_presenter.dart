@@ -13,6 +13,7 @@ class GanttPlannerPresenter {
   List<GanttTaskModel> _tasks = [];
   TaskFilter _currentFilter = TaskFilter.all;
 
+  // ← NUOVO: Notification service
   GanttNotificationService? _notificationService;
 
   List<GanttTaskModel> get tasks {
@@ -23,9 +24,10 @@ class GanttPlannerPresenter {
 
   int get totalTasks => _tasks.length;
   int get completedTasks => _tasks.where((t) => t.completed).length;
-  int get activeTasks => _tasks.where((t) => !t.completed).length;
-  int get overdueTasks => _tasks.where((t) => !t.completed
-      && t.daysRemaining < 0).length;
+  int get activeTasks => _tasks.where((t) =>
+  !t.completed && t.daysRemaining >= 0).length;
+  int get overdueTasks => _tasks.where((t) =>
+  !t.completed && t.daysRemaining < 0).length;
 
   TaskFilter get currentFilter => _currentFilter;
 
@@ -47,8 +49,8 @@ class GanttPlannerPresenter {
       if (data != null) {
         final List<dynamic> jsonList = jsonDecode(data);
         _tasks = jsonList
-            .map((json) => GanttTaskModel.fromJson
-          (json as Map<String, dynamic>))
+            .map((json) =>
+            GanttTaskModel.fromJson(json as Map<String, dynamic>))
             .toList();
       }
     } catch (e) {
@@ -178,7 +180,8 @@ class GanttPlannerPresenter {
       case TaskFilter.all:
         return tasks;
       case TaskFilter.active:
-        return tasks.where((t) => !t.completed).toList();
+        return tasks.where((t) =>
+        !t.completed && t.daysRemaining >= 0).toList();
       case TaskFilter.overdue:
         return tasks.where((t) => !t.completed && t.daysRemaining < 0).toList();
       case TaskFilter.completed:

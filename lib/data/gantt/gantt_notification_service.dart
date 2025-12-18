@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/timezone.dart' as tz;
 import '../../states/gantt_task_model.dart';
 
@@ -14,7 +15,6 @@ class GanttNotificationService {
   GanttNotificationService(this._notifications);
 
   Future<void> initialize() async {
-    // NotificationService esistente gestisce già l'inizializzazione
   }
 
   Future<void> scheduleDailyNotification(List<GanttTaskModel> allTasks) async {
@@ -35,7 +35,7 @@ class GanttNotificationService {
         .where((t) => t.daysRemaining < 0)
         .length;
 
-    final String title = '📊 Mini Planner';
+    final String title = 'Mini Planner';
     final String body = _buildNotificationBody(
       activeTasks,
       urgentTasks,
@@ -62,10 +62,12 @@ class GanttNotificationService {
   }
 
   Future<void> _scheduleDailyAt18(String title, String body) async {
-    final now = tz.TZDateTime.now(tz.local);
+    final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+    final location = tz.getLocation(timeZoneName);
+    final now = tz.TZDateTime.now(location);
 
     var scheduledDate = tz.TZDateTime(
-      tz.local,
+      location, // ← Usa timezone locale invece di tz.local
       now.year,
       now.month,
       now.day,
