@@ -184,7 +184,7 @@ class _HabitDetailViewState extends State<HabitDetailView> {
   }
 
   Widget _buildCalendar(HabitStats stats) {
-    final weekDays = ['L', 'M', 'M', 'G', 'V', 'S', 'D'];
+    final weekDays = widget.presenter.getWeekdayHeaders();
 
     return Column(
       children: [
@@ -211,30 +211,45 @@ class _HabitDetailViewState extends State<HabitDetailView> {
   }
 
   Widget _buildCalendarGrid(HabitStats stats) {
-    final firstDayOfMonth = DateTime(_selectedMonth.year, _selectedMonth.month, 1);
-    final firstWeekday = firstDayOfMonth.weekday;
+    final firstDayOffset = widget.presenter.getFirstDayOffset(
+      _selectedMonth.year,
+      _selectedMonth.month,
+    );
     final daysInMonth = stats.totalDaysInMonth;
 
-    final List<Widget> dayWidgets = [];
+    final totalCells = firstDayOffset + daysInMonth;
+    final rows = (totalCells / 7).ceil();
 
-    for (int i = 1; i < firstWeekday; i++) {
-      dayWidgets.add(const SizedBox(width: 40, height: 40));
-    }
+    return Column(
+      children: List.generate(rows, (rowIndex) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(7, (colIndex) {
+              final cellIndex = rowIndex * 7 + colIndex;
 
-    for (int day = 1; day <= daysInMonth; day++) {
-      final isCompleted = stats.completedDays.contains(day);
-      final isMissing = stats.missingDays.contains(day);
-      final isToday = _selectedMonth.year == DateTime.now().year &&
-          _selectedMonth.month == DateTime.now().month &&
-          day == DateTime.now().day;
+              if (cellIndex < firstDayOffset) {
+                return const SizedBox(width: 40, height: 40);
+              }
 
-      dayWidgets.add(_buildDayCell(day, isCompleted, isMissing, isToday));
-    }
+              final day = cellIndex - firstDayOffset + 1;
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: dayWidgets,
+              if (day > daysInMonth) {
+                return const SizedBox(width: 40, height: 40);
+              }
+
+              final isCompleted = stats.completedDays.contains(day);
+              final isMissing = stats.missingDays.contains(day);
+              final isToday = _selectedMonth.year == DateTime.now().year &&
+                  _selectedMonth.month == DateTime.now().month &&
+                  day == DateTime.now().day;
+
+              return _buildDayCell(day, isCompleted, isMissing, isToday);
+            }),
+          ),
+        );
+      }),
     );
   }
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../states/habit_model.dart';
@@ -20,6 +21,29 @@ class HabitTrackerPresenter {
     Color(0xFFF57C00),
     Color(0xFFC62828),
   ];
+
+
+  List<String> getWeekdayHeaders() {
+    final List<String> headers = [];
+
+    // DateTime(2024, 1, 1) = Lunedì
+    final baseMonday = DateTime(2024, 1, 1);
+
+    for (int i = 0; i < 7; i++) {
+      final day = baseMonday.add(Duration(days: i));
+      // Usa locale del sistema (NO forzatura!)
+      final weekdayName = DateFormat.E().format(day);
+      // Prendi solo prima lettera maiuscola
+      headers.add(weekdayName[0].toUpperCase());
+    }
+
+    return headers;
+  }
+
+  int getFirstDayOffset(int year, int month) {
+    final firstDayOfMonth = DateTime(year, month, 1);
+    return firstDayOfMonth.weekday - 1;
+  }
 
   Future<void> loadHabits() async {
     final prefs = await SharedPreferences.getInstance();
