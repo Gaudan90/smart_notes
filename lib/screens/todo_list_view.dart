@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../controllers/todo_presenter.dart';
+import '../theme/theme_config.dart';
 
 class TodoListView extends StatefulWidget {
   const TodoListView({super.key});
@@ -42,6 +43,35 @@ class _TodoListViewState extends State<TodoListView> {
     setState(() {});
   }
 
+  Future<bool> _showDeleteConfirmDialog(String todoText) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Conferma eliminazione'),
+        content: Text(
+          'Vuoi eliminare "$todoText"?',
+          style: const TextStyle(fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Annulla'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.defaultColors['red']!,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+
+    return confirmed ?? false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -63,6 +93,10 @@ class _TodoListViewState extends State<TodoListView> {
                         child: const Text('Annulla'),
                       ),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.defaultColors['red']!,
+                          foregroundColor: Colors.white,
+                        ),
                         onPressed: () => Navigator.pop(context, true),
                         child: const Text('Elimina tutto'),
                       ),
@@ -149,7 +183,7 @@ class _TodoListViewState extends State<TodoListView> {
                       padding: const EdgeInsets.only(right: 20),
                       margin: const EdgeInsets.only(bottom: 8),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.error,
+                        color: AppTheme.defaultColors['red']!,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -157,6 +191,9 @@ class _TodoListViewState extends State<TodoListView> {
                         color: Colors.white,
                       ),
                     ),
+                    confirmDismiss: (direction) async {
+                      return await _showDeleteConfirmDialog(todo.text);
+                    },
                     onDismissed: (direction) {
                       _deleteTodo(todo.id);
                     },
@@ -189,11 +226,15 @@ class _TodoListViewState extends State<TodoListView> {
                         trailing: IconButton(
                           icon: Icon(
                             Icons.delete,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .error,
+                            color: AppTheme.defaultColors['red']!,
                           ),
-                          onPressed: () => _deleteTodo(todo.id),
+                          onPressed: () async {
+                            final confirmed =
+                            await _showDeleteConfirmDialog(todo.text);
+                            if (confirmed) {
+                              _deleteTodo(todo.id);
+                            }
+                          },
                         ),
                       ),
                     ),
