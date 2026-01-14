@@ -1,0 +1,4 @@
+enum SortType {
+  byCategory,
+  alphabetical,
+}

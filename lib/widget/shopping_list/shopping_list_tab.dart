@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../controllers/shopping_list_presenter.dart';
+import '../../data/shopping_list/sort_type_enum.dart';
 import '../../states/shopping_item_model.dart';
 import 'shopping_add_dialog.dart';
 import 'shopping_edit_dialog.dart';
 import 'shopping_item_card.dart';
 import 'shopping_quick_add_sheet.dart';
+import 'shopping_search_bar.dart';
 
 class ShoppingListTab extends StatefulWidget {
   final ShoppingListPresenter presenter;
@@ -22,6 +24,7 @@ class ShoppingListTab extends StatefulWidget {
 
 class _ShoppingListTabState extends State<ShoppingListTab> {
   bool _showGrouped = false;
+  bool _showSearch = false;
 
   void _showAddItemDialog() {
     showDialog(
@@ -61,9 +64,22 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
     widget.onUpdate();
   }
 
+  void _onSearchQueryChanged(String query) {
+    setState(() {
+      widget.presenter.setSearchQuery(query);
+    });
+  }
+
+  void _clearSearch() {
+    setState(() {
+      widget.presenter.clearSearch();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isAlphabetical = widget.presenter.currentSortType == SortType.alphabetical;
+    final isAlphabetical = widget.presenter
+        .currentSortType == SortType.alphabetical;
 
     return Scaffold(
       appBar: AppBar(
@@ -73,6 +89,22 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
           style: const TextStyle(fontSize: 16),
         ),
         actions: [
+          // ← NUOVO: IconButton per toggle search
+          IconButton(
+            icon: Icon(
+              _showSearch ? Icons.search_off : Icons.search,
+              color: _showSearch ? Colors.blue : null,
+            ),
+            onPressed: () {
+              setState(() {
+                _showSearch = !_showSearch;
+                if (!_showSearch) {
+                  _clearSearch();
+                }
+              });
+            },
+            tooltip: _showSearch ? 'Nascondi ricerca' : 'Cerca prodotti',
+          ),
           IconButton(
             icon: Icon(
               isAlphabetical ? Icons.sort_by_alpha : Icons.category,
@@ -123,7 +155,17 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
             ),
         ],
       ),
-      body: _buildBody(),
+      body: Column(
+        children: [
+          if (_showSearch)
+            ShoppingSearchBar(
+              initialQuery: widget.presenter.searchQuery,
+              onQueryChanged: _onSearchQueryChanged,
+              onClear: _clearSearch,
+            ),
+          Expanded(child: _buildBody()),
+        ],
+      ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -144,7 +186,32 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
   }
 
   Widget _buildBody() {
-    if (widget.presenter.items.isEmpty) {
+    if (widget.presenter.filteredItems.isEmpty) {
+      if (widget.presenter.searchQuery.isNotEmpty) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.search_off,
+                size: 64,
+                color: Theme.of(context).disabledColor,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Nessun risultato',
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Prova con un\'altra ricerca',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+      }
+
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -177,11 +244,14 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
   }
 
   Widget _buildFlatList() {
+    // ← MODIFICATO: Usa filteredItems
+    final items = widget.presenter.filteredItems;
+
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
-      itemCount: widget.presenter.items.length,
+      itemCount: items.length,
       itemBuilder: (context, index) {
-        final item = widget.presenter.items[index];
+        final item = items[index];
         return ShoppingItemCard(
           item: item,
           onTogglePurchased: () async {
@@ -207,7 +277,13 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
   }
 
   Widget _buildGroupedList() {
-    final grouped = widget.presenter.getItemsByCategory();
+    final allItems = widget.presenter.filteredItems;
+    final Map<String, List<ShoppingItemModel>> grouped = {};
+
+    for (var item in allItems) {
+      grouped[item.category] = grouped[item.category] ?? [];
+      grouped[item.category]!.add(item);
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),

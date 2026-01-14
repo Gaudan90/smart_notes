@@ -1,12 +1,8 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../data/shopping_list/sort_type_enum.dart';
 import '../states/shopping_item_model.dart';
 import '../states/shopping_list_stats_model.dart';
-
-enum SortType {
-  byCategory,
-  alphabetical,
-}
 
 class ShoppingListPresenter {
   static const String _itemsKey = 'shopping_list_items';
@@ -14,9 +10,33 @@ class ShoppingListPresenter {
   final List<ShoppingItemModel> _items = [];
   Map<String, int> _purchaseHistory = {};
   SortType _currentSortType = SortType.byCategory;
+  String _searchQuery = '';
 
   List<ShoppingItemModel> get items => List.unmodifiable(_items);
   SortType get currentSortType => _currentSortType;
+  String get searchQuery => _searchQuery;
+
+  List<ShoppingItemModel> get filteredItems {
+    if (_searchQuery.isEmpty) {
+      return items;
+    }
+
+    final query = _searchQuery.toLowerCase();
+    return _items.where((item) {
+      final name = item.name.toLowerCase();
+      final category = item.category.toLowerCase();
+      // Cerca sia nel nome che nella categoria
+      return name.contains(query) || category.contains(query);
+    }).toList();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query.trim();
+  }
+
+  void clearSearch() {
+    _searchQuery = '';
+  }
 
   static const List<String> categories = [
     'Frutta e Verdura',
