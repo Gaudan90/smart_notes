@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
@@ -9,7 +10,9 @@ class AlarmBackgroundService {
   FlutterLocalNotificationsPlugin();
 
   static Future<void> initialize() async {
-    print('Initializing AlarmBackgroundService...');
+    if (kDebugMode) {
+      print('Initializing AlarmBackgroundService...');
+    }
 
     tz.initializeTimeZones();
     final String timeZoneName = await FlutterTimezone.getLocalTimezone();
@@ -30,7 +33,9 @@ class AlarmBackgroundService {
     await _notifications.initialize(
       settings,
       onDidReceiveNotificationResponse: (details) {
-        print('Notification tapped: ${details.payload}');
+        if (kDebugMode) {
+          print('Notification tapped: ${details.payload}');
+        }
         if (details.payload != null) {
           AlarmTriggerManager.triggerAlarm(details.payload!);
         }
@@ -53,17 +58,29 @@ class AlarmBackgroundService {
       await androidPlugin.createNotificationChannel(androidChannel);
     }
 
-    print('AlarmBackgroundService initialized');
+    if (kDebugMode) {
+      print('AlarmBackgroundService initialized');
+    }
   }
 
   static Future<void> scheduleAlarm(AlarmModel alarm) async {
-    print('\nScheduling alarm: ${alarm.title}');
-    print('   ID: ${alarm.id}');
-    print('   Time: ${alarm.dateTime}');
-    print('   Repeating: ${alarm.isRepeating}');
+    if (kDebugMode) {
+      print('\nScheduling alarm: ${alarm.title}');
+    }
+    if (kDebugMode) {
+      print('   ID: ${alarm.id}');
+    }
+    if (kDebugMode) {
+      print('   Time: ${alarm.dateTime}');
+    }
+    if (kDebugMode) {
+      print('   Repeating: ${alarm.isRepeating}');
+    }
 
     if (!alarm.isActive) {
-      print('Alarm not active, skipping');
+      if (kDebugMode) {
+        print('Alarm not active, skipping');
+      }
       return;
     }
 
@@ -80,13 +97,17 @@ class AlarmBackgroundService {
 
   static Future<void> _scheduleOneShotAlarm(AlarmModel alarm) async {
     if (alarm.dateTime.isBefore(DateTime.now())) {
-      print('Alarm time in the past');
+      if (kDebugMode) {
+        print('Alarm time in the past');
+      }
       return;
     }
 
     final tzTime = tz.TZDateTime.from(alarm.dateTime, tz.local);
     final secondsUntil = alarm.dateTime.difference(DateTime.now()).inSeconds;
-    print('Scheduling in $secondsUntil seconds at $tzTime');
+    if (kDebugMode) {
+      print('Scheduling in $secondsUntil seconds at $tzTime');
+    }
 
     await _notifications.zonedSchedule(
       alarm.id.hashCode,
@@ -113,7 +134,9 @@ class AlarmBackgroundService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
 
-    print('Alarm scheduled successfully');
+    if (kDebugMode) {
+      print('Alarm scheduled successfully');
+    }
   }
 
   static Future<void> _scheduleDailyAlarm(AlarmModel alarm) async {
@@ -131,7 +154,9 @@ class AlarmBackgroundService {
     }
 
     final tzTime = tz.TZDateTime.from(scheduledTime, tz.local);
-    print('Daily alarm at ${alarm.dateTime.hour}:${alarm.dateTime.minute}');
+    if (kDebugMode) {
+      print('Daily alarm at ${alarm.dateTime.hour}:${alarm.dateTime.minute}');
+    }
 
     await _notifications.zonedSchedule(
       alarm.id.hashCode,
@@ -157,7 +182,9 @@ class AlarmBackgroundService {
       matchDateTimeComponents: DateTimeComponents.time,
     );
 
-    print('Daily alarm scheduled');
+    if (kDebugMode) {
+      print('Daily alarm scheduled');
+    }
   }
 
   static Future<void> _scheduleWeeklyAlarm(AlarmModel alarm) async {
@@ -213,7 +240,9 @@ class AlarmBackgroundService {
       );
     }
 
-    print('Weekly alarm scheduled for ${alarm.repeatDays.length} days');
+    if (kDebugMode) {
+      print('Weekly alarm scheduled for ${alarm.repeatDays.length} days');
+    }
   }
 
   static Future<void> cancelAlarm(String alarmId) async {
@@ -222,7 +251,9 @@ class AlarmBackgroundService {
     for (int i = 1; i <= 7; i++) {
       await _notifications.cancel(alarmId.hashCode + i);
     }
-    print('Alarm cancelled');
+    if (kDebugMode) {
+      print('Alarm cancelled');
+    }
   }
 }
 
@@ -230,7 +261,9 @@ class AlarmTriggerManager {
   static Function(String)? onAlarmTriggered;
 
   static void triggerAlarm(String alarmId) {
-    print('Triggering alarm UI: $alarmId');
+    if (kDebugMode) {
+      print('Triggering alarm UI: $alarmId');
+    }
     onAlarmTriggered?.call(alarmId);
   }
 }

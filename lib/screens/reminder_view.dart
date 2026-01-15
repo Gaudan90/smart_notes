@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../controllers/reminder_presenter.dart';
+import '../theme/theme_config.dart';
 
 class ReminderView extends StatefulWidget {
   const ReminderView({super.key});
@@ -170,7 +171,7 @@ class _ReminderViewState extends State<ReminderView> {
               color: Theme.of(context)
                   .colorScheme
                   .onBackground
-                  .withOpacity(0.3),
+                  .withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
@@ -179,7 +180,7 @@ class _ReminderViewState extends State<ReminderView> {
                 color: Theme.of(context)
                     .colorScheme
                     .onBackground
-                    .withOpacity(0.5),
+                    .withValues(alpha: 0.5),
                 fontSize: 16,
               ),
             ),
@@ -190,7 +191,7 @@ class _ReminderViewState extends State<ReminderView> {
                 color: Theme.of(context)
                     .colorScheme
                     .onBackground
-                    .withOpacity(0.4),
+                    .withValues(alpha: 0.4),
                 fontSize: 14,
               ),
             ),
@@ -247,11 +248,36 @@ class _ReminderViewState extends State<ReminderView> {
                   IconButton(
                     icon: Icon(
                       Icons.delete,
-                      color: Theme.of(context).colorScheme.error,
+                        color: AppTheme.defaultColors['red']!,
                     ),
                     onPressed: () async {
-                      await _presenter.deleteReminder(reminder.id);
-                      setState(() {});
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Conferma eliminazione'),
+                          content: Text(
+                            'Vuoi eliminare il promemoria "${reminder.title}"?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Annulla'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              child: const Text('Elimina'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        await _presenter.deleteReminder(reminder.id);
+                        setState(() {});
+                      }
                     },
                   ),
                 ],

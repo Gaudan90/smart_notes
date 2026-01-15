@@ -45,7 +45,34 @@ class TextAnalysisHistoryItem extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.delete, size: 20),
                     color: Colors.red,
-                    onPressed: onDelete,
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Conferma eliminazione'),
+                          content: const Text(
+                            'Vuoi eliminare questa analisi dalla cronologia?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Annulla'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.red,
+                              ),
+                              child: const Text('Elimina'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        onDelete();
+                      }
+                    },
                   ),
                 ],
               ),
