@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../data/notification_service.dart';
 import '../states/countdown_model.dart';
 
 class CountdownPresenter {
   static const String _countdownsKey = 'countdowns';
   final List<CountdownModel> _countdowns = [];
   final Random _random = Random();
+  final NotificationService _notificationService = NotificationService();
 
   List<CountdownModel> get countdowns => List.unmodifiable(_countdowns);
 
@@ -68,6 +70,13 @@ class CountdownPresenter {
     _countdowns.add(countdown);
     _sortCountdowns();
     await _saveCountdowns();
+
+    await _notificationService.scheduleCountdownNotification(
+      countdownId: countdown.id,
+      title: countdown.title,
+      targetDate: countdown.targetDate,
+      description: countdown.description,
+    );
   }
 
   Future<void> updateCountdown({
@@ -85,26 +94,79 @@ class CountdownPresenter {
       targetDate: targetDate,
       description: description?.trim(),
       emoji: emoji,
+      notified: false,
     );
 
     _sortCountdowns();
     await _saveCountdowns();
+
+    await _notificationService.cancelCountdownNotification(id);
+    await _notificationService.scheduleCountdownNotification(
+      countdownId: id,
+      title: title.trim(),
+      targetDate: targetDate,
+      description: description?.trim(),
+    );
   }
 
   Future<void> deleteCountdown(String id) async {
+    await _notificationService.cancelCountdownNotification(id);
+
     _countdowns.removeWhere((c) => c.id == id);
     await _saveCountdowns();
   }
 
   Future<void> deleteExpiredCountdowns() async {
+    final expired = _countdowns.where((c) => c.isExpired).toList();
+    for (final countdown in expired) {
+      await _notificationService.cancelCountdownNotification(countdown.id);
+    }
+
     _countdowns.removeWhere((c) => c.isExpired);
     await _saveCountdowns();
   }
 
   Future<void> clearAll() async {
+    for (final countdown in _countdowns) {
+      await _notificationService.cancelCountdownNotification(countdown.id);
+    }
+
     _countdowns.clear();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_countdownsKey);
+  }
+
+  List<CountdownModel> getJustExpiredCountdowns() {
+    return _countdowns.where((c) => c.isExpired && !c.notified).toList();
+  }
+
+  Future<void> markAsNotified(String id) async {
+    final index = _countdowns.indexWhere((c) => c.id == id);
+    if (index == -1) return;
+
+    _countdowns[index] = _countdowns[index].copyWith(notified: true);
+    await _saveCountdowns();
+  }
+
+  Future<void> showInAppNotification(CountdownModel countdown) async {
+    await _notificationService.showCountdownCompletedNotification(
+      title: countdown.title,
+      description: countdown.description,
+    );
+    await markAsNotified(countdown.id);
+  }
+
+  Future<void> rescheduleAllNotifications() async {
+    for (final countdown in _countdowns) {
+      if (!countdown.isExpired) {
+        await _notificationService.scheduleCountdownNotification(
+          countdownId: countdown.id,
+          title: countdown.title,
+          targetDate: countdown.targetDate,
+          description: countdown.description,
+        );
+      }
+    }
   }
 
   List<CountdownModel> searchCountdowns(String query) {
@@ -153,11 +215,14 @@ class CountdownPresenter {
     final seconds = countdown.secondsRemaining;
 
     if (days > 0) {
-      return '$days ${days == 1 ? 'giorno' : 'giorni'}, $hours ${hours == 1 ? 'ora' : 'ore'}';
+      return '$days ${days == 1 ? 'giorno' : 'giorni'}, '
+          '$hours ${hours == 1 ? 'ora' : 'ore'}';
     } else if (hours > 0) {
-      return '$hours ${hours == 1 ? 'ora' : 'ore'}, $minutes ${minutes == 1 ? 'minuto' : 'minuti'}';
+      return '$hours ${hours == 1 ? 'ora' : 'ore'}, '
+          '$minutes ${minutes == 1 ? 'minuto' : 'minuti'}';
     } else if (minutes > 0) {
-      return '$minutes ${minutes == 1 ? 'minuto' : 'minuti'}, $seconds ${seconds == 1 ? 'secondo' : 'secondi'}';
+      return '$minutes ${minutes == 1 ? 'minuto' : 'minuti'}, '
+          '$seconds ${seconds == 1 ? 'secondo' : 'secondi'}';
     } else {
       return '$seconds ${seconds == 1 ? 'secondo' : 'secondi'}';
     }

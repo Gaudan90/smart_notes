@@ -7,12 +7,14 @@ class CountdownCard extends StatefulWidget {
   final CountdownModel countdown;
   final VoidCallback onTap;
   final VoidCallback onDelete;
+  final VoidCallback? onExpired;
 
   const CountdownCard({
     super.key,
     required this.countdown,
     required this.onTap,
     required this.onDelete,
+    this.onExpired,
   });
 
   @override
@@ -21,15 +23,30 @@ class CountdownCard extends StatefulWidget {
 
 class _CountdownCardState extends State<CountdownCard> {
   Timer? _timer;
+  bool _wasExpired = false;
 
   @override
   void initState() {
     super.initState();
+    _wasExpired = widget.countdown.isExpired;
+
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) {
+        if (!_wasExpired && widget.countdown.isExpired) {
+          _wasExpired = true;
+          widget.onExpired?.call();
+        }
         setState(() {});
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(CountdownCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.countdown.id != widget.countdown.id) {
+      _wasExpired = widget.countdown.isExpired;
+    }
   }
 
   @override

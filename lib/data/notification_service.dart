@@ -176,4 +176,103 @@ class NotificationService {
       platformDetails,
     );
   }
+
+  Future<void> scheduleCountdownNotification({
+    required String countdownId,
+    required String title,
+    required DateTime targetDate,
+    String? description,
+  }) async {
+    if (targetDate.isBefore(DateTime.now())) {
+      return;
+    }
+
+    final int notificationId = countdownId.hashCode;
+    final tz.TZDateTime scheduledDate = tz.TZDateTime.from(targetDate, tz.local);
+
+    const AndroidNotificationDetails androidDetails =
+    AndroidNotificationDetails(
+      'countdown_channel',
+      'Countdown',
+      channelDescription: 'Notifiche per countdown completati',
+      importance: Importance.high,
+      priority: Priority.high,
+      showWhen: true,
+      enableVibration: true,
+      enableLights: true,
+      playSound: true,
+      icon: '@mipmap/ic_launcher',
+    );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    final String body = description?.isNotEmpty == true
+        ? description!
+        : 'Il tuo countdown è terminato!';
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationId,
+      title,
+      body,
+      scheduledDate,
+      platformDetails,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      payload: 'countdown_$countdownId',
+    );
+
+    log('Notifica countdown schedulata: '
+        '$title per $scheduledDate (ID: $notificationId)');
+  }
+
+  Future<void> cancelCountdownNotification(String countdownId) async {
+    final int notificationId = countdownId.hashCode;
+    await flutterLocalNotificationsPlugin.cancel(notificationId);
+    log('Notifica countdown cancellata (ID: $notificationId)');
+  }
+
+  Future<void> showCountdownCompletedNotification({
+    required String title,
+    String? description,
+  }) async {
+    const AndroidNotificationDetails androidDetails =
+    AndroidNotificationDetails(
+      'countdown_channel',
+      'Countdown',
+      channelDescription: 'Notifiche per countdown completati',
+      importance: Importance.high,
+      priority: Priority.high,
+      playSound: true,
+    );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    final String body = description?.isNotEmpty == true
+        ? description!
+        : 'Il tuo countdown è terminato!';
+
+    await flutterLocalNotificationsPlugin.show(
+      DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title,
+      body,
+      platformDetails,
+    );
+  }
 }

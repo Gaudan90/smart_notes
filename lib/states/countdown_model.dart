@@ -5,6 +5,7 @@ class CountdownModel {
   final String? description;
   final String? emoji;
   final DateTime createdAt;
+  final bool notified;
 
   CountdownModel({
     required this.id,
@@ -13,6 +14,7 @@ class CountdownModel {
     this.description,
     this.emoji,
     required this.createdAt,
+    this.notified = false,
   });
 
   Duration get timeRemaining {
@@ -38,6 +40,7 @@ class CountdownModel {
       'description': description,
       'emoji': emoji,
       'createdAt': createdAt.toIso8601String(),
+      'notified': notified,
     };
   }
 
@@ -49,6 +52,7 @@ class CountdownModel {
       description: json['description'] as String?,
       emoji: json['emoji'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
+      notified: json['notified'] as bool? ?? false,
     );
   }
 
@@ -57,6 +61,7 @@ class CountdownModel {
     DateTime? targetDate,
     String? description,
     String? emoji,
+    bool? notified,
   }) {
     return CountdownModel(
       id: id,
@@ -65,6 +70,7 @@ class CountdownModel {
       description: description ?? this.description,
       emoji: emoji ?? this.emoji,
       createdAt: createdAt,
+      notified: notified ?? this.notified,
     );
   }
 }

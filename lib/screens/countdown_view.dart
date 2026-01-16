@@ -34,8 +34,53 @@ class _CountdownViewState extends State<CountdownView> {
   Future<void> _loadCountdowns() async {
     setState(() => _isLoading = true);
     await _presenter.loadCountdowns();
+
+    await _presenter.rescheduleAllNotifications();
+
+    await _checkAndNotifyExpiredCountdowns();
+
     if (mounted) {
       setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _checkAndNotifyExpiredCountdowns() async {
+    final justExpired = _presenter.getJustExpiredCountdowns();
+    for (final countdown in justExpired) {
+      await _presenter.showInAppNotification(countdown);
+      if (mounted) {
+        _showExpiredSnackBar(countdown.title);
+      }
+    }
+  }
+
+  void _showExpiredSnackBar(String title) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(Icons.celebration, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text('"$title" è terminato!'),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+  }
+
+  void _handleCountdownExpired(String countdownId) async {
+    final countdown = _presenter.getCountdownById(countdownId);
+    if (countdown != null && !countdown.notified) {
+      await _presenter.showInAppNotification(countdown);
+      if (mounted) {
+        _showExpiredSnackBar(countdown.title);
+        setState(() {});
+      }
     }
   }
 
@@ -92,7 +137,7 @@ class _CountdownViewState extends State<CountdownView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✓ Countdown eliminato'),
+            content: Text('Countdown eliminato'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -134,7 +179,7 @@ class _CountdownViewState extends State<CountdownView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✓ $expiredCount countdown eliminati'),
+            content: Text('$expiredCount countdown eliminati'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -170,7 +215,6 @@ class _CountdownViewState extends State<CountdownView> {
       appBar: AppBar(
         title: const Text('Countdown Obiettivi'),
         actions: [
-          // Toggle per mostrare completati
           if (expiredCount > 0)
             IconButton(
               icon: Icon(
@@ -258,7 +302,8 @@ class _CountdownViewState extends State<CountdownView> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        '$activeCount ${activeCount == 1 ? 'obiettivo attivo' : 'obiettivi attivi'}',
+                        '$activeCount ${activeCount == 1 ? 'obiettivo attivo' :
+                        'obiettivi attivi'}',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -288,6 +333,7 @@ class _CountdownViewState extends State<CountdownView> {
                     countdown.id,
                     countdown.title,
                   ),
+                  onExpired: () => _handleCountdownExpired(countdown.id),
                 );
               },
             ),
