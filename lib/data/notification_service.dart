@@ -116,7 +116,7 @@ class NotificationService {
         await scheduleDaily(
           id: notificationId + i,
           title: 'Promemoria: $title',
-          body: 'È ora di: $title',
+          body: 'Ãˆ ora di: $title',
           hour: hour,
           minute: minute,
         );
@@ -177,12 +177,16 @@ class NotificationService {
     );
   }
 
+  // ============ COUNTDOWN NOTIFICATIONS ============
+
+  /// Schedula una notifica per quando un countdown termina
   Future<void> scheduleCountdownNotification({
     required String countdownId,
     required String title,
     required DateTime targetDate,
     String? description,
   }) async {
+    // Non schedulare se la data è già passata
     if (targetDate.isBefore(DateTime.now())) {
       return;
     }
@@ -221,7 +225,7 @@ class NotificationService {
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       notificationId,
-      title,
+      '🎉 $title',
       body,
       scheduledDate,
       platformDetails,
@@ -229,16 +233,17 @@ class NotificationService {
       payload: 'countdown_$countdownId',
     );
 
-    log('Notifica countdown schedulata: '
-        '$title per $scheduledDate (ID: $notificationId)');
+    log('Notifica countdown schedulata: $title per $scheduledDate (ID: $notificationId)');
   }
 
+  /// Cancella la notifica di un countdown specifico
   Future<void> cancelCountdownNotification(String countdownId) async {
     final int notificationId = countdownId.hashCode;
     await flutterLocalNotificationsPlugin.cancel(notificationId);
     log('Notifica countdown cancellata (ID: $notificationId)');
   }
 
+  /// Mostra notifica immediata per countdown completato (quando app è aperta)
   Future<void> showCountdownCompletedNotification({
     required String title,
     String? description,
@@ -270,8 +275,106 @@ class NotificationService {
 
     await flutterLocalNotificationsPlugin.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title,
+      '🎉 $title',
       body,
+      platformDetails,
+    );
+  }
+
+  /// KITCHEN TIMER NOTIFICATIONS
+
+  /// Schedula una notifica per quando un timer da cucina termina
+  Future<void> scheduleTimerNotification({
+    required String timerId,
+    required String timerName,
+    required DateTime completionTime,
+  }) async {
+    // Non schedulare se la data è già passata
+    if (completionTime.isBefore(DateTime.now())) {
+      return;
+    }
+
+    final int notificationId = timerId.hashCode + 100000;
+    final tz.TZDateTime scheduledDate =
+    tz.TZDateTime.from(completionTime, tz.local);
+
+    const AndroidNotificationDetails androidDetails =
+    AndroidNotificationDetails(
+      'timer_channel',
+      'Timer Cucina',
+      channelDescription: 'Notifiche per timer da cucina completati',
+      importance: Importance.max,
+      priority: Priority.max,
+      showWhen: true,
+      enableVibration: true,
+      enableLights: true,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('alarm'),
+      icon: '@mipmap/ic_launcher',
+    );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationId,
+      'Timer completato!',
+      '$timerName è pronto!',
+      scheduledDate,
+      platformDetails,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      payload: 'timer_$timerId',
+    );
+
+    log('Notifica timer schedulata: $timerName '
+        'per $scheduledDate (ID: $notificationId)');
+  }
+
+  /// Cancella la notifica di un timer specifico
+  Future<void> cancelTimerNotification(String timerId) async {
+    final int notificationId = timerId.hashCode + 100000;
+    await flutterLocalNotificationsPlugin.cancel(notificationId);
+    log('Notifica timer cancellata (ID: $notificationId)');
+  }
+
+  /// Mostra notifica immediata per timer completato
+  Future<void> showTimerCompletedNotification({
+    required String timerName,
+  }) async {
+    const AndroidNotificationDetails androidDetails =
+    AndroidNotificationDetails(
+      'timer_channel',
+      'Timer Cucina',
+      channelDescription: 'Notifiche per timer da cucina completati',
+      importance: Importance.max,
+      priority: Priority.max,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('alarm'),
+    );
+
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
+    );
+
+    const NotificationDetails platformDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      '⏰ Timer completato!',
+      '$timerName è pronto!',
       platformDetails,
     );
   }

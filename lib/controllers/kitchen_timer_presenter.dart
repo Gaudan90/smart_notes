@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../states/kitchen_timer_model.dart';
+import '../data/notification_service.dart';
 
 class KitchenTimerPresenter {
   static const String _activeTimersKey = 'active_timers';
@@ -13,6 +14,9 @@ class KitchenTimerPresenter {
   final List<KitchenTimerModel> _history = [];
   final Map<String, Timer> _timerInstances = {};
   final Map<String, StreamController<KitchenTimerModel>> _timerControllers = {};
+  final NotificationService _notificationService = NotificationService();
+
+  void Function(KitchenTimerModel timer)? onTimerCompleted;
 
   List<KitchenTimerModel> get activeTimers => List.unmodifiable(_activeTimers);
   List<KitchenTimerModel> get history => List.unmodifiable(_history);
@@ -47,12 +51,22 @@ class KitchenTimerPresenter {
 
     if (timer.state == TimerState.running) return;
 
+    final now = DateTime.now();
     timer = timer.copyWith(
       state: TimerState.running,
-      startedAt: timer.startedAt ?? DateTime.now(),
+      startedAt: timer.startedAt ?? now,
     );
     _activeTimers[index] = timer;
     _notifyTimerUpdate(timer);
+
+    // Calcola quando il timer finirà e schedula la notifica
+    final remainingSeconds = timer.durationSeconds - timer.elapsedSeconds;
+    final completionTime = now.add(Duration(seconds: remainingSeconds));
+    _notificationService.scheduleTimerNotification(
+      timerId: timer.id,
+      timerName: timer.name,
+      completionTime: completionTime,
+    );
 
     _timerInstances[timerId] = Timer.periodic(
       const Duration(seconds: 1),
@@ -88,6 +102,12 @@ class KitchenTimerPresenter {
       periodicTimer.cancel();
       _timerInstances.remove(timerId);
 
+      // Cancella la notifica schedulata (il timer è completato in-app)
+      _notificationService.cancelTimerNotification(timerId);
+
+      // Chiama il callback per mostrare overlay/suoneria
+      onTimerCompleted?.call(timer);
+
       _moveToHistory(timer);
 
       _notifyTimerUpdate(timer);
@@ -108,6 +128,9 @@ class KitchenTimerPresenter {
     _timerInstances[timerId]?.cancel();
     _timerInstances.remove(timerId);
 
+    // Cancella la notifica schedulata
+    _notificationService.cancelTimerNotification(timerId);
+
     final timer = _activeTimers[index].copyWith(state: TimerState.paused);
     _activeTimers[index] = timer;
     _notifyTimerUpdate(timer);
@@ -122,6 +145,9 @@ class KitchenTimerPresenter {
 
     _timerInstances[timerId]?.cancel();
     _timerInstances.remove(timerId);
+
+    // Cancella la notifica schedulata
+    _notificationService.cancelTimerNotification(timerId);
 
     final timer = _activeTimers[index].copyWith(
       elapsedSeconds: 0,
@@ -138,6 +164,9 @@ class KitchenTimerPresenter {
   Future<void> deleteTimer(String timerId) async {
     _timerInstances[timerId]?.cancel();
     _timerInstances.remove(timerId);
+
+    // Cancella la notifica schedulata
+    await _notificationService.cancelTimerNotification(timerId);
 
     _timerControllers[timerId]?.close();
     _timerControllers.remove(timerId);
@@ -185,11 +214,20 @@ class KitchenTimerPresenter {
             final newElapsed = timer.elapsedSeconds + elapsed;
 
             if (newElapsed >= timer.durationSeconds) {
-              _moveToHistory(timer.copyWith(
+              // Timer completato mentre app era chiusa
+              final completedTimer = timer.copyWith(
                 elapsedSeconds: timer.durationSeconds,
                 state: TimerState.completed,
                 completedAt: DateTime.now(),
-              ));
+              );
+
+              // Cancella la notifica (già mostrata dal sistema)
+              await _notificationService.cancelTimerNotification(timer.id);
+
+              // Notifica il completamento per mostrare overlay
+              onTimerCompleted?.call(completedTimer);
+
+              _moveToHistory(completedTimer);
             } else {
               final index = _activeTimers.indexOf(timer);
               _activeTimers[index] = timer.copyWith(elapsedSeconds: newElapsed);

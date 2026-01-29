@@ -6,6 +6,7 @@ import '../states/kitchen_timer_preset_model.dart';
 import '../widget/kitchen_timer/timer_card.dart';
 import '../widget/kitchen_timer/timer_presets_grid.dart';
 import '../widget/kitchen_timer/timer_history_tab.dart';
+import '../widget/kitchen_timer/timer_completed_overlay.dart';
 
 class KitchenTimerView extends StatefulWidget {
   const KitchenTimerView({super.key});
@@ -19,12 +20,34 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
   final _presenter = KitchenTimerPresenter();
   late TabController _tabController;
   bool _isLoading = true;
+  OverlayEntry? _timerOverlay;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    // Imposta il callback per quando un timer completa
+    _presenter.onTimerCompleted = _onTimerCompleted;
+
     _loadData();
+  }
+
+  void _onTimerCompleted(KitchenTimerModel timer) {
+    if (_timerOverlay != null) return; // Già mostrando un overlay
+
+    _timerOverlay = OverlayEntry(
+      builder: (context) => TimerCompletedOverlay(
+        timer: timer,
+        onDismiss: () {
+          _timerOverlay?.remove();
+          _timerOverlay = null;
+          setState(() {}); // Refresh UI
+        },
+      ),
+    );
+
+    Overlay.of(context).insert(_timerOverlay!);
   }
 
   Future<void> _loadData() async {
@@ -37,6 +60,7 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
 
   @override
   void dispose() {
+    _timerOverlay?.remove();
     _presenter.dispose();
     _tabController.dispose();
     super.dispose();
