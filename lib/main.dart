@@ -6,7 +6,6 @@ import 'package:smart_notes/screens/pin_setup_view.dart';
 import 'package:smart_notes/screens/pin_unlock_view.dart';
 import 'package:smart_notes/theme/theme_config.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
-import 'package:timezone/data/latest.dart' as tz;
 import 'data/alarm_background_service.dart';
 import 'data/notification_service.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -19,11 +18,12 @@ void main() async {
   if (kDebugMode) {
     print('✅ AlarmBackgroundService initialized');
   }
-  tz.initializeTimeZones();
   runApp(EasyLocalization(
-    supportedLocales: const [Locale('it', 'IT'), Locale('en', 'US')],
+    supportedLocales: const [Locale('en', 'US'), Locale('it', 'IT')],
     path: 'assets/translations',
-    fallbackLocale: const Locale('it', 'IT'),
+    fallbackLocale: const Locale('en', 'US'),
+    startLocale: const Locale('en', 'US'),
+    saveLocale: true, // Salva la lingua in SharedPreferences
     child: const MyApp(),
   ),);
 }

@@ -1,11 +1,63 @@
 {
   "app_title": "SmartNotes",
-  "countdowns": "Countdown",
-  "events": "Eventi",
-  "notes": "Note",
-  "settings": "Impostazioni",
-  "new_countdown": "Nuovo Countdown",
-  "edit_countdown": "Modifica Countdown",
+  "smart_notebook": "Blocchetto Intelligente",
+  "useful_tools": "Strumenti utili per la vita quotidiana",
+  "customize_theme": "Personalizza Tema",
+  "light_mode": "Modalità Chiara",
+  "dark_mode": "Modalità Scura",
+  "change_language": "Cambia Lingua",
+
+  "todo_list": "Lista To-Do",
+  "todo_list_subtitle": "Gestisci le tue attività",
+
+  "habit_tracker": "Tracker Abitudini",
+  "habit_tracker_subtitle": "Monitora abitudini mensili",
+
+  "shopping_list": "Lista Spesa",
+  "shopping_list_subtitle": "Spesa ottimizzata senza duplicati",
+
+  "expense_tracker": "Analizza Spese",
+  "expense_tracker_subtitle": "Traccia e analizza le tue spese",
+
+  "countdown": "Countdown Obiettivi",
+  "countdown_subtitle": "Timer per eventi futuri",
+
+  "smart_alarm": "Sveglia Smart",
+  "smart_alarm_subtitle": "Sveglie intelligenti con ripetizione",
+
+  "timer": "Timer",
+  "timer_subtitle": "Timer multipli con notifiche",
+
+  "event_calendar": "Calendario Eventi",
+  "event_calendar_subtitle": "Genera date eventi ricorrenti",
+
+  "reminder": "Promemoria",
+  "reminder_subtitle": "Attività ricorrenti giornaliere",
+
+  "routine_planner": "Routine Planner",
+  "routine_planner_subtitle": "Pianifica routine ricorrenti",
+
+  "password_generator": "Password Sicure",
+  "password_generator_subtitle": "Genera password sicure con PIN",
+
+  "text_analyzer": "Analizzatore Testi",
+  "text_analyzer_subtitle": "Conta parole e caratteri",
+
+  "meal_plan": "Piano Pasti",
+  "meal_plan_subtitle": "Genera menu settimanale",
+
+  "mini_planner": "Mini Planner",
+  "mini_planner_subtitle": "Timeline task con scadenze e progresso",
+
+  "number_stats": "Statistiche Numeriche",
+  "number_stats_subtitle": "Trova il numero più frequente",
+
+  "sentence_reverser": "Riformulatore Frasi",
+  "sentence_reverser_subtitle": "Inverti le parole della frase",
+
+  "missing_numbers": "Numeri Mancanti",
+  "missing_numbers_subtitle": "Trova i numeri saltati",
+
   "title": "Titolo",
   "description": "Descrizione",
   "date": "Data",
@@ -14,5 +66,16 @@
   "cancel": "Annulla",
   "create": "Crea",
   "delete": "Elimina",
-  "change": "Cambia"
+  "change": "Cambia",
+  "confirm": "Conferma",
+  "close": "Chiudi",
+  "add": "Aggiungi",
+  "edit": "Modifica",
+  "search": "Cerca",
+  "clear": "Cancella",
+  "reset": "Reset",
+  "start": "Avvia",
+  "stop": "Ferma",
+  "pause": "Pausa",
+  "resume": "Riprendi"
 }

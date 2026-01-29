@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_notes/screens/reminder_view.dart';
 import 'package:smart_notes/screens/sentence_reverse_view.dart';
 import 'package:smart_notes/screens/shopping_list_view.dart';
@@ -67,14 +68,24 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
+  void _toggleLanguage() {
+    final currentLocale = context.locale;
+    if (currentLocale.languageCode == 'en') {
+      context.setLocale(const Locale('it', 'IT'));
+    } else {
+      context.setLocale(const Locale('en', 'US'));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final isItalian = context.locale.languageCode == 'it';
 
     final features = [
       FeatureCard(
-        title: 'Lista To-Do',
-        subtitle: 'Gestisci le tue attività',
+        title: 'todo_list'.tr(),
+        subtitle: 'todo_list_subtitle'.tr(),
         icon: Icons.checklist,
         color: Colors.orange,
         animation: _animations[0],
@@ -84,8 +95,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Tracker Abitudini',
-        subtitle: 'Monitora abitudini mensili',
+        title: 'habit_tracker'.tr(),
+        subtitle: 'habit_tracker_subtitle'.tr(),
         icon: Icons.track_changes,
         color: Colors.teal,
         animation: _animations[1],
@@ -95,8 +106,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Lista Spesa',
-        subtitle: 'Spesa ottimizzata senza duplicati',
+        title: 'shopping_list'.tr(),
+        subtitle: 'shopping_list_subtitle'.tr(),
         icon: Icons.shopping_cart,
         color: Colors.lightGreen,
         animation: _animations[2],
@@ -106,8 +117,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Analizza Spese',
-        subtitle: 'Traccia e analizza le tue spese',
+        title: 'expense_tracker'.tr(),
+        subtitle: 'expense_tracker_subtitle'.tr(),
         icon: Icons.account_balance_wallet,
         color: Colors.indigo,
         animation: _animations[3],
@@ -117,8 +128,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Countdown Obiettivi',
-        subtitle: 'Timer per eventi futuri',
+        title: 'countdown'.tr(),
+        subtitle: 'countdown_subtitle'.tr(),
         icon: Icons.timer,
         color: Colors.pink,
         animation: _animations[4],
@@ -128,8 +139,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Sveglia Smart',
-        subtitle: 'Sveglie intelligenti con ripetizione',
+        title: 'smart_alarm'.tr(),
+        subtitle: 'smart_alarm_subtitle'.tr(),
         icon: Icons.alarm,
         color: Colors.cyan,
         animation: _animations[5],
@@ -139,8 +150,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Timer',
-        subtitle: 'Timer multipli con notifiche',
+        title: 'timer'.tr(),
+        subtitle: 'timer_subtitle'.tr(),
         icon: Icons.kitchen_outlined,
         color: Colors.redAccent,
         animation: _animations[6],
@@ -150,8 +161,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Calendario Eventi',
-        subtitle: 'Genera date eventi ricorrenti',
+        title: 'event_calendar'.tr(),
+        subtitle: 'event_calendar_subtitle'.tr(),
         icon: Icons.event_repeat,
         color: Colors.deepPurple,
         animation: _animations[7],
@@ -160,10 +171,9 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
           MaterialPageRoute(builder: (_) => const EventCalendarView()),
         ),
       ),
-
       FeatureCard(
-        title: 'Promemoria',
-        subtitle: 'Attività ricorrenti giornaliere',
+        title: 'reminder'.tr(),
+        subtitle: 'reminder_subtitle'.tr(),
         icon: Icons.notifications_active,
         color: Colors.amber,
         animation: _animations[8],
@@ -173,8 +183,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Routine Planner',
-        subtitle: 'Pianifica routine ricorrenti',
+        title: 'routine_planner'.tr(),
+        subtitle: 'routine_planner_subtitle'.tr(),
         icon: Icons.event_repeat,
         color: Colors.red,
         animation: _animations[9],
@@ -184,8 +194,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Password Sicure',
-        subtitle: 'Genera password sicure con PIN',
+        title: 'password_generator'.tr(),
+        subtitle: 'password_generator_subtitle'.tr(),
         icon: Icons.security,
         color: Colors.deepPurple,
         animation: _animations[10],
@@ -195,8 +205,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Analizzatore Testi',
-        subtitle: 'Conta parole e caratteri',
+        title: 'text_analyzer'.tr(),
+        subtitle: 'text_analyzer_subtitle'.tr(),
         icon: Icons.text_snippet,
         color: Colors.deepOrange,
         animation: _animations[11],
@@ -206,8 +216,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Piano Pasti',
-        subtitle: 'Genera menu settimanale',
+        title: 'meal_plan'.tr(),
+        subtitle: 'meal_plan_subtitle'.tr(),
         icon: Icons.restaurant_menu,
         color: Colors.teal,
         animation: _animations[12],
@@ -217,8 +227,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Mini Planner',
-        subtitle: 'Timeline task con scadenze e progresso',
+        title: 'mini_planner'.tr(),
+        subtitle: 'mini_planner_subtitle'.tr(),
         icon: Icons.timeline,
         color: Colors.amberAccent,
         animation: _animations[13],
@@ -228,8 +238,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Statistiche Numeriche',
-        subtitle: 'Trova il numero più frequente',
+        title: 'number_stats'.tr(),
+        subtitle: 'number_stats_subtitle'.tr(),
         icon: Icons.analytics_outlined,
         color: Colors.blue,
         animation: _animations[14],
@@ -239,8 +249,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Riformulatore Frasi',
-        subtitle: 'Inverti le parole della frase',
+        title: 'sentence_reverser'.tr(),
+        subtitle: 'sentence_reverser_subtitle'.tr(),
         icon: Icons.text_rotation_none,
         color: Colors.green,
         animation: _animations[15],
@@ -250,8 +260,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'Numeri Mancanti',
-        subtitle: 'Trova i numeri saltati',
+        title: 'missing_numbers'.tr(),
+        subtitle: 'missing_numbers_subtitle'.tr(),
         icon: Icons.search,
         color: Colors.purple,
         animation: _animations[16],
@@ -264,7 +274,18 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SmartNotes'),
+        leading: IconButton(
+          icon: Text(
+            isItalian ? 'IT' : 'EN',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          onPressed: _toggleLanguage,
+          tooltip: 'change_language'.tr(),
+        ),
+        title: Text('app_title'.tr()),
         actions: [
           IconButton(
             icon: const Icon(Icons.palette),
@@ -274,7 +295,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                 builder: (_) => ThemeSettingsView(themeProvider: widget.themeProvider),
               ),
             ),
-            tooltip: 'Personalizza Tema',
+            tooltip: 'customize_theme'.tr(),
           ),
           IconButton(
             icon: AnimatedSwitcher(
@@ -291,7 +312,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
               ),
             ),
             onPressed: () => widget.themeProvider.toggleTheme(),
-            tooltip: isDarkMode ? 'Light Mode' : 'Dark Mode',
+            tooltip: isDarkMode ? 'light_mode'.tr() : 'dark_mode'.tr(),
           ),
         ],
       ),
@@ -302,7 +323,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Blocchetto Intelligente',
+                'smart_notebook'.tr(),
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onBackground,
@@ -310,7 +331,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
               ),
               const SizedBox(height: 8),
               Text(
-                'Strumenti utili per la vita quotidiana',
+                'useful_tools'.tr(),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme
                       .onBackground.withValues(alpha: 0.7),

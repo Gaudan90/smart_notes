@@ -1,11 +1,63 @@
 {
   "app_title": "SmartNotes",
-  "countdowns": "Countdowns",
-  "events": "Events",
-  "notes": "Notes",
-  "settings": "Settings",
-  "new_countdown": "New Countdown",
-  "edit_countdown": "Edit Countdown",
+  "smart_notebook": "Smart Notebook",
+  "useful_tools": "Useful tools for everyday life",
+  "customize_theme": "Customize Theme",
+  "light_mode": "Light Mode",
+  "dark_mode": "Dark Mode",
+  "change_language": "Change Language",
+
+  "todo_list": "To-Do List",
+  "todo_list_subtitle": "Manage your activities",
+
+  "habit_tracker": "Habit Tracker",
+  "habit_tracker_subtitle": "Track monthly habits",
+
+  "shopping_list": "Shopping List",
+  "shopping_list_subtitle": "Optimized shopping without duplicates",
+
+  "expense_tracker": "Expense Tracker",
+  "expense_tracker_subtitle": "Track and analyze your expenses",
+
+  "countdown": "Goal Countdown",
+  "countdown_subtitle": "Timer for future events",
+
+  "smart_alarm": "Smart Alarm",
+  "smart_alarm_subtitle": "Smart alarms with repeat",
+
+  "timer": "Timer",
+  "timer_subtitle": "Multiple timers with notifications",
+
+  "event_calendar": "Event Calendar",
+  "event_calendar_subtitle": "Generate recurring event dates",
+
+  "reminder": "Reminder",
+  "reminder_subtitle": "Daily recurring activities",
+
+  "routine_planner": "Routine Planner",
+  "routine_planner_subtitle": "Plan recurring routines",
+
+  "password_generator": "Secure Passwords",
+  "password_generator_subtitle": "Generate secure passwords with PIN",
+
+  "text_analyzer": "Text Analyzer",
+  "text_analyzer_subtitle": "Count words and characters",
+
+  "meal_plan": "Meal Plan",
+  "meal_plan_subtitle": "Generate weekly menu",
+
+  "mini_planner": "Mini Planner",
+  "mini_planner_subtitle": "Task timeline with deadlines and progress",
+
+  "number_stats": "Number Statistics",
+  "number_stats_subtitle": "Find the most frequent number",
+
+  "sentence_reverser": "Sentence Reverser",
+  "sentence_reverser_subtitle": "Reverse words in sentence",
+
+  "missing_numbers": "Missing Numbers",
+  "missing_numbers_subtitle": "Find skipped numbers",
+
   "title": "Title",
   "description": "Description",
   "date": "Date",
@@ -14,5 +66,16 @@
   "cancel": "Cancel",
   "create": "Create",
   "delete": "Delete",
-  "change": "Change"
+  "change": "Change",
+  "confirm": "Confirm",
+  "close": "Close",
+  "add": "Add",
+  "edit": "Edit",
+  "search": "Search",
+  "clear": "Clear",
+  "reset": "Reset",
+  "start": "Start",
+  "stop": "Stop",
+  "pause": "Pause",
+  "resume": "Resume"
 }
