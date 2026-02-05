@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/missing_numbers_presenter.dart';
 
 class MissingNumbersView extends StatefulWidget {
@@ -24,7 +24,7 @@ class _MissingNumbersViewState extends State<MissingNumbersView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Numeri Mancanti'),
+        title: Text('mn_title'.tr()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -38,12 +38,12 @@ class _MissingNumbersViewState extends State<MissingNumbersView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Inserisci sequenza',
+                      'mn_enter_sequence'.tr(),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Esempio: giorni di allenamento del mese',
+                      'mn_example_hint'.tr(),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme
                             .onSurface.withValues(alpha: 0.6),
@@ -52,9 +52,9 @@ class _MissingNumbersViewState extends State<MissingNumbersView> {
                     const SizedBox(height: 8),
                     TextField(
                       controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Es: 1, 2, 3, 5, 6, 8, 10',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: 'mn_input_hint'.tr(),
+                        border: const OutlineInputBorder(),
                       ),
                       maxLines: 3,
                     ),
@@ -62,7 +62,7 @@ class _MissingNumbersViewState extends State<MissingNumbersView> {
                     ElevatedButton.icon(
                       onPressed: _findMissing,
                       icon: const Icon(Icons.search),
-                      label: const Text('Trova Mancanti'),
+                      label: Text('mn_find_btn'.tr()),
                     ),
                   ],
                 ),
@@ -80,7 +80,7 @@ class _MissingNumbersViewState extends State<MissingNumbersView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Risultato',
+                          'mn_result'.tr(),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 8),

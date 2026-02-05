@@ -1,8 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import '../states/missing_number_model.dart';
 
 class MissingNumbersPresenter {
   String findMissingNumbers(String input) {
-    if (input.isEmpty) return 'Inserisci una sequenza di numeri';
+    if (input.isEmpty) return 'mn_empty_input'.tr();
 
     try {
       final numbers = input
@@ -12,21 +13,23 @@ class MissingNumbersPresenter {
           .toSet()
           .toList();
 
-      if (numbers.length < 2) return 'Inserisci almeno 2 numeri';
+      if (numbers.length < 2) return 'mn_min_two_numbers'.tr();
 
       final model = MissingNumbersModel(sequence: numbers);
       final missing = model.findMissing();
 
       if (missing.isEmpty) {
-        return 'Nessun numero mancante nella sequenza!';
+        return 'mn_no_missing'.tr();
       }
 
-      String result = 'Numeri mancanti trovati: ${missing.length}\n\n';
+      String result = '${'mn_missing_found'.tr(namedArgs: {
+        'count': '${missing.length}',
+      })}\n\n';
       result += missing.join(', ');
 
       return result;
     } catch (e) {
-      return 'Errore: inserisci numeri interi validi';
+      return 'mn_error_invalid'.tr();
     }
   }
 }

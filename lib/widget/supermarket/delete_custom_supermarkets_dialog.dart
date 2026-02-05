@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 import '../../states/custom_supermarket_model.dart';
 
@@ -24,7 +25,6 @@ class _DeleteCustomSupermarketsDialogState
 
   List<CustomSupermarketModel> get _availableSupermarkets {
     final markets = widget.presenter.customSupermarkets.toList();
-    // Ordinamento alfabetico
     markets.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     return markets;
   }
@@ -57,8 +57,8 @@ class _DeleteCustomSupermarketsDialogState
   Future<void> _deleteSelected() async {
     if (_selectedIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Seleziona almeno un supermercato'),
+        SnackBar(
+          content: Text('select_to_delete'.tr()),
           backgroundColor: Colors.orange,
         ),
       );
@@ -68,23 +68,21 @@ class _DeleteCustomSupermarketsDialogState
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
+        title: Text('confirm_deletion'.tr()),
         content: Text(
-          'Eliminare ${_selectedIds.length} supermercati?\n\n'
-              'ATTENZIONE: Gli acquisti associati a questi supermercati '
-              'verranno spostati in "Non Assegnato".',
+          'supermarkets_deleted'.tr(namedArgs: {'count': '${_selectedIds.length}'}),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
@@ -104,7 +102,7 @@ class _DeleteCustomSupermarketsDialogState
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✓ $deleted supermercati eliminati'),
+            content: Text('supermarkets_deleted'.tr(namedArgs: {'count': '$deleted'})),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
           ),
@@ -118,32 +116,26 @@ class _DeleteCustomSupermarketsDialogState
     final availableSupermarkets = _availableSupermarkets;
 
     return AlertDialog(
-      title: const Text('Elimina Supermercati'),
+      title: Text('delete_custom_supermarkets'.tr()),
       content: SizedBox(
         width: double.maxFinite,
         height: 500,
         child: availableSupermarkets.isEmpty
-            ? const Center(
+            ? Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.store_outlined, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
+              const Icon(Icons.store_outlined, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
               Text(
-                'Nessun supermercato personalizzato',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Crea il tuo primo supermercato',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                'no_custom_supermarkets'.tr(),
+                style: const TextStyle(fontSize: 16),
               ),
             ],
           ),
         )
             : Column(
           children: [
-            // Header con contatore e seleziona tutti
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -159,8 +151,9 @@ class _DeleteCustomSupermarketsDialogState
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${_selectedIds.length}'
-                          '/${availableSupermarkets.length} selezionati',
+                      'selected_count'.tr(namedArgs: {
+                        'count': '${_selectedIds.length}/${availableSupermarkets.length}'
+                      }),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color:
@@ -175,7 +168,7 @@ class _DeleteCustomSupermarketsDialogState
                       size: 18,
                     ),
                     label: Text(_selectAll
-                        ? 'Deseleziona' : 'Seleziona tutti'),
+                        ? 'deselect_all'.tr() : 'select_all'.tr()),
                     style: TextButton.styleFrom(
                       foregroundColor:
                       Theme.of(context).colorScheme.onErrorContainer,
@@ -187,7 +180,6 @@ class _DeleteCustomSupermarketsDialogState
 
             const SizedBox(height: 12),
 
-            // Lista supermercati
             Expanded(
               child: ListView.builder(
                 itemCount: availableSupermarkets.length,
@@ -235,7 +227,7 @@ class _DeleteCustomSupermarketsDialogState
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         if (availableSupermarkets.isNotEmpty)
           ElevatedButton(
@@ -243,7 +235,7 @@ class _DeleteCustomSupermarketsDialogState
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
       ],
     );

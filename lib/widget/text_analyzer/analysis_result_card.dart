@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/text_analyzer_model.dart';
 
 class AnalysisResultCard extends StatelessWidget {
@@ -26,9 +27,9 @@ class AnalysisResultCard extends StatelessWidget {
                   size: 28,
                 ),
                 const SizedBox(width: 12),
-                const Text(
-                  'Risultati Analisi',
-                  style: TextStyle(
+                Text(
+                  'analysis_results'.tr(),
+                  style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -40,28 +41,28 @@ class AnalysisResultCard extends StatelessWidget {
             // Statistiche principali
             _buildStatRow(
               Icons.format_quote,
-              'Parole',
+              'stat_words'.tr(),
               analysis.wordCount.toString(),
               Colors.blue,
             ),
             const SizedBox(height: 12),
             _buildStatRow(
               Icons.text_fields,
-              'Caratteri (senza spazi)',
+              'stat_chars_no_spaces'.tr(),
               analysis.characterCount.toString(),
               Colors.orange,
             ),
             const SizedBox(height: 12),
             _buildStatRow(
               Icons.space_bar,
-              'Caratteri (con spazi)',
+              'stat_chars_with_spaces'.tr(),
               analysis.characterCountWithSpaces.toString(),
               Colors.purple,
             ),
             const SizedBox(height: 12),
             _buildStatRow(
               Icons.trending_up,
-              'Parola più lunga',
+              'stat_longest_word'.tr(),
               analysis.longestWord,
               Colors.green,
             ),
@@ -70,7 +71,7 @@ class AnalysisResultCard extends StatelessWidget {
 
             // Statistiche aggiuntive
             Text(
-              'Statistiche Avanzate',
+              'advanced_stats'.tr(),
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -84,17 +85,17 @@ class AnalysisResultCard extends StatelessWidget {
               runSpacing: 12,
               children: [
                 _buildStatChip(
-                  'Frasi',
+                  'stat_sentences'.tr(),
                   analysis.sentenceCount.toString(),
                   Colors.teal,
                 ),
                 _buildStatChip(
-                  'Paragrafi',
+                  'stat_paragraphs'.tr(),
                   analysis.paragraphCount.toString(),
                   Colors.indigo,
                 ),
                 _buildStatChip(
-                  'Media lunghezza parole',
+                  'stat_avg_word_length'.tr(),
                   analysis.averageWordLength.toStringAsFixed(1),
                   Colors.deepOrange,
                 ),

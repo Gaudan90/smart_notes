@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/kitchen_timer_preset_model.dart';
 
 class TimerPresetsGrid extends StatelessWidget {
@@ -8,6 +9,21 @@ class TimerPresetsGrid extends StatelessWidget {
     super.key,
     required this.onPresetSelected,
   });
+
+  // Mappa per tradurre i nomi dei preset
+  static const Map<String, String> _presetTranslationKeys = {
+    'Veloce': 'preset_quick',
+    'Breve': 'preset_short',
+    'Medio': 'preset_medium',
+    'Standard': 'preset_standard',
+    'Prolungato': 'preset_extended',
+    'Lungo': 'preset_long',
+  };
+
+  String _translatePresetName(String name) {
+    final key = _presetTranslationKeys[name];
+    return key != null ? key.tr() : name;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +41,7 @@ class TimerPresetsGrid extends StatelessWidget {
         final preset = TimerPreset.presets[index];
         return _PresetButton(
           preset: preset,
+          translatedName: _translatePresetName(preset.name),
           onTap: () => onPresetSelected(preset),
         );
       },
@@ -34,10 +51,12 @@ class TimerPresetsGrid extends StatelessWidget {
 
 class _PresetButton extends StatelessWidget {
   final TimerPreset preset;
+  final String translatedName;
   final VoidCallback onTap;
 
   const _PresetButton({
     required this.preset,
+    required this.translatedName,
     required this.onTap,
   });
 
@@ -70,7 +89,7 @@ class _PresetButton extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                preset.name,
+                translatedName,
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -78,9 +97,9 @@ class _PresetButton extends StatelessWidget {
               ),
               Text(
                 '${preset.minutes} min',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
-                    color: Colors.white60,
+                  color: Colors.white60,
                 ),
               ),
             ],

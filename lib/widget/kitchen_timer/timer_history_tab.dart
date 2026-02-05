@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/kitchen_timer_model.dart';
 
 class TimerHistoryTab extends StatelessWidget {
@@ -36,14 +37,14 @@ class TimerHistoryTab extends StatelessWidget {
             color: Theme.of(context).disabledColor,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Nessun timer completato',
-            style: TextStyle(fontSize: 16),
+          Text(
+            'no_completed_timers'.tr(),
+            style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Completa un timer per vederlo qui',
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+          Text(
+            'complete_timer_to_see'.tr(),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],
       ),
@@ -58,7 +59,7 @@ class TimerHistoryTab extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Timer Completati (${history.length})',
+            'completed_timers_count'.tr(namedArgs: {'count': '${history.length}'}),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -67,7 +68,7 @@ class TimerHistoryTab extends StatelessWidget {
           TextButton.icon(
             onPressed: () => _showClearConfirmDialog(context),
             icon: const Icon(Icons.delete_sweep),
-            label: const Text('Cancella tutto'),
+            label: Text('clear_all_history'.tr()),
           ),
         ],
       ),
@@ -110,19 +111,19 @@ class TimerHistoryTab extends StatelessWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma'),
-        content: const Text('Cancellare tutta la cronologia?'),
+        title: Text('confirm'.tr()),
+        content: Text('clear_history_confirm'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
@@ -137,10 +138,10 @@ class TimerHistoryTab extends StatelessWidget {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
-    if (difference.inMinutes < 1) return 'Adesso';
-    if (difference.inHours < 1) return '${difference.inMinutes}m fa';
-    if (difference.inDays < 1) return '${difference.inHours}h fa';
-    if (difference.inDays < 7) return '${difference.inDays}g fa';
+    if (difference.inMinutes < 1) return 'time_now'.tr();
+    if (difference.inHours < 1) return 'time_minutes_ago'.tr(namedArgs: {'min': '${difference.inMinutes}'});
+    if (difference.inDays < 1) return 'time_hours_ago'.tr(namedArgs: {'hours': '${difference.inHours}'});
+    if (difference.inDays < 7) return 'time_days_ago'.tr(namedArgs: {'days': '${difference.inDays}'});
 
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }

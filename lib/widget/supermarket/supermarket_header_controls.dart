@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SupermarketHeaderControls extends StatelessWidget {
   final bool isLandscape;
@@ -35,7 +36,6 @@ class SupermarketHeaderControls extends StatelessWidget {
   Widget _buildLandscapeControls(BuildContext context) {
     return Row(
       children: [
-        // Ordinamento compatto
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
@@ -54,7 +54,7 @@ class SupermarketHeaderControls extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  isAlphabeticalSort ? 'A-Z' : 'Data',
+                  isAlphabeticalSort ? 'sort_az'.tr() : 'sort_by_date_short'.tr(),
                   style: const TextStyle(fontSize: 11),
                 ),
               ],
@@ -63,12 +63,11 @@ class SupermarketHeaderControls extends StatelessWidget {
         ),
         const SizedBox(width: 6),
 
-        // Bottone Importa compatto
         Expanded(
           child: ElevatedButton.icon(
             onPressed: onImport,
             icon: const Icon(Icons.file_download, size: 14),
-            label: const Text('Imp.', style: TextStyle(fontSize: 11)),
+            label: Text('import_short'.tr(), style: const TextStyle(fontSize: 11)),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               minimumSize: const Size(0, 32),
@@ -77,13 +76,12 @@ class SupermarketHeaderControls extends StatelessWidget {
         ),
         const SizedBox(width: 6),
 
-        // Bottone Aggiungi compatto
         Expanded(
           flex: 2,
           child: ElevatedButton.icon(
             onPressed: onAddPurchase,
             icon: const Icon(Icons.add_shopping_cart, size: 14),
-            label: const Text('Aggiungi', style: TextStyle(fontSize: 11)),
+            label: Text('add'.tr(), style: const TextStyle(fontSize: 11)),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               minimumSize: const Size(0, 32),
@@ -92,20 +90,19 @@ class SupermarketHeaderControls extends StatelessWidget {
         ),
         const SizedBox(width: 6),
 
-        // Icone azioni
         IconButton(
           icon: const Icon(Icons.upload_file, size: 18),
           padding: const EdgeInsets.all(4),
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           onPressed: onExport,
-          tooltip: 'Esporta',
+          tooltip: 'export_data'.tr(),
         ),
         IconButton(
           icon: const Icon(Icons.download, size: 18),
           padding: const EdgeInsets.all(4),
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           onPressed: onImportTxt,
-          tooltip: 'Importa',
+          tooltip: 'import_data'.tr(),
         ),
         if (hasPurchases && onClearAll != null)
           IconButton(
@@ -113,7 +110,7 @@ class SupermarketHeaderControls extends StatelessWidget {
             padding: const EdgeInsets.all(4),
             constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             onPressed: onClearAll,
-            tooltip: 'Cancella',
+            tooltip: 'clear'.tr(),
           ),
       ],
     );
@@ -126,7 +123,7 @@ class SupermarketHeaderControls extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: onImport,
             icon: const Icon(Icons.file_download, size: 18),
-            label: const Text('Importa'),
+            label: Text('import'.tr()),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 10),
             ),
@@ -138,7 +135,7 @@ class SupermarketHeaderControls extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: onAddPurchase,
             icon: const Icon(Icons.add_shopping_cart),
-            label: const Text('Registro Acquisto Manuale'),
+            label: Text('manual_purchase_register'.tr()),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(

@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 enum DishCategory {
   breakfast,
   first,
@@ -9,17 +11,17 @@ enum DishCategory {
   String get label {
     switch (this) {
       case DishCategory.breakfast:
-        return 'Colazione';
+        return 'dish_cat_breakfast'.tr();
       case DishCategory.first:
-        return 'Primo';
+        return 'dish_cat_first'.tr();
       case DishCategory.second:
-        return 'Secondo';
+        return 'dish_cat_second'.tr();
       case DishCategory.side:
-        return 'Contorno';
+        return 'dish_cat_side'.tr();
       case DishCategory.pizza:
-        return 'Pizza';
+        return 'dish_cat_pizza'.tr();
       case DishCategory.dessert:
-        return 'Dolce';
+        return 'dish_cat_dessert'.tr();
     }
   }
 

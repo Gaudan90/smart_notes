@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../data/meal_data/meal_type.dart';
 import '../../states/meal_model.dart';
 
@@ -12,11 +13,22 @@ class MealPlanDayCard extends StatelessWidget {
     required this.meals,
   });
 
+  String _getWeekdayName(int weekday) {
+    const weekdayKeys = [
+      'weekday_monday',
+      'weekday_tuesday',
+      'weekday_wednesday',
+      'weekday_thursday',
+      'weekday_friday',
+      'weekday_saturday',
+      'weekday_sunday',
+    ];
+    return weekdayKeys[weekday - 1].tr();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final weekdays = ['Lunedì', 'Martedì', 'Mercoledì',
-      'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
-    final weekday = weekdays[date.weekday - 1];
+    final weekday = _getWeekdayName(date.weekday);
 
     // Ordina pasti per tipo
     final sortedMeals = List<MealModel>.from(meals)
@@ -187,7 +199,7 @@ class MealPlanDayCard extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   meal.type.label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -216,7 +228,7 @@ class MealPlanDayCard extends StatelessWidget {
                         color: color.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.restaurant,
                         size: 14,
                         color: Colors.white,

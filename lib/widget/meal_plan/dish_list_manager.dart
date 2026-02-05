@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../data/meal_data/dish_category.dart';
 import '../../states/dish_model.dart';
 
@@ -45,14 +46,14 @@ class DishListManager extends StatelessWidget {
             color: Theme.of(context).disabledColor,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Nessun piatto aggiunto',
-            style: TextStyle(fontSize: 16),
+          Text(
+            'no_dishes_added'.tr(),
+            style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Aggiungi piatti nelle varie categorie',
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+          Text(
+            'add_dishes_in_categories'.tr(),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],
       ),
@@ -67,7 +68,7 @@ class DishListManager extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Piatti disponibili (${dishes.length})',
+            'available_dishes'.tr(namedArgs: {'count': '${dishes.length}'}),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -77,7 +78,7 @@ class DishListManager extends StatelessWidget {
             TextButton.icon(
               onPressed: () => _showClearConfirmDialog(context),
               icon: const Icon(Icons.delete_sweep),
-              label: const Text('Cancella tutto'),
+              label: Text('clear_all'.tr()),
             ),
         ],
       ),
@@ -117,12 +118,12 @@ class DishListManager extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.edit, color: Colors.blue),
                   onPressed: () => _showEditDialog(context, index, dish),
-                  tooltip: 'Modifica',
+                  tooltip: 'edit'.tr(),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () => _showDeleteConfirm(context, dish),
-                  tooltip: 'Elimina',
+                  tooltip: 'delete'.tr(),
                 ),
               ],
             ),
@@ -144,25 +145,25 @@ class DishListManager extends StatelessWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Modifica Piatto'),
+          title: Text('edit_dish_title'.tr()),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome piatto',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'dish_name_label'.tr(),
+                    border: const OutlineInputBorder(),
                   ),
                   autofocus: true,
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<DishCategory>(
                   value: selectedCategory,
-                  decoration: const InputDecoration(
-                    labelText: 'Categoria',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'category_label'.tr(),
+                    border: const OutlineInputBorder(),
                   ),
                   items: DishCategory.values.map((cat) {
                     return DropdownMenuItem(
@@ -190,7 +191,7 @@ class DishListManager extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Annulla'),
+              child: Text('cancel'.tr()),
             ),
             ElevatedButton(
               onPressed: () {
@@ -202,7 +203,7 @@ class DishListManager extends StatelessWidget {
                   });
                 }
               },
-              child: const Text('Salva'),
+              child: Text('save'.tr()),
             ),
           ],
         ),
@@ -218,19 +219,19 @@ class DishListManager extends StatelessWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Elimina Piatto'),
-        content: Text('Vuoi eliminare "${dish.name}"?'),
+        title: Text('delete_dish_title'.tr()),
+        content: Text('delete_dish_confirm'.tr(namedArgs: {'name': dish.name})),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
@@ -245,19 +246,19 @@ class DishListManager extends StatelessWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma'),
-        content: const Text('Cancellare tutti i piatti?'),
+        title: Text('confirm'.tr()),
+        content: Text('clear_all_dishes'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),

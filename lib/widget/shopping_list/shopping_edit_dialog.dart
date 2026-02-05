@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/shopping_list_presenter.dart';
 import '../../states/shopping_item_model.dart';
 
@@ -62,25 +63,25 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Modifica Prodotto'),
+      title: Text('edit_product'.tr()),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nome prodotto',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.shopping_basket),
+              decoration: InputDecoration(
+                labelText: 'product_name'.tr(),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.shopping_basket),
               ),
               textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 16),
 
             SwitchListTile(
-              title: const Text('Venduto al peso'),
-              subtitle: const Text('Es: frutta, verdura, carne'),
+              title: Text('sold_by_weight'.tr()),
+              subtitle: Text('sold_by_weight_hint'.tr()),
               value: _isSoldByWeight,
               onChanged: (value) {
                 setState(() {
@@ -108,10 +109,10 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
                   Expanded(
                     child: TextField(
                       controller: _quantityController,
-                      decoration: const InputDecoration(
-                        labelText: 'Quantità',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.add_circle_outline),
+                      decoration: InputDecoration(
+                        labelText: 'quantity'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.add_circle_outline),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -123,11 +124,11 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
                   Expanded(
                     child: TextField(
                       controller: _priceController,
-                      decoration: const InputDecoration(
-                        labelText: 'Prezzo €',
-                        hintText: 'Opzionale',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.euro),
+                      decoration: InputDecoration(
+                        labelText: 'price_euro'.tr(),
+                        hintText: 'optional'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.euro),
                       ),
                       keyboardType: const TextInputType
                           .numberWithOptions(decimal: true),
@@ -145,11 +146,11 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
                   Expanded(
                     child: TextField(
                       controller: _weightController,
-                      decoration: const InputDecoration(
-                        labelText: 'Peso (kg)',
-                        hintText: 'Es: 0.5',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.scale),
+                      decoration: InputDecoration(
+                        labelText: 'weight_kg'.tr(),
+                        hintText: 'weight_hint'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.scale),
                       ),
                       keyboardType: const TextInputType
                           .numberWithOptions(decimal: true),
@@ -163,11 +164,11 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
                   Expanded(
                     child: TextField(
                       controller: _pricePerKgController,
-                      decoration: const InputDecoration(
-                        labelText: '€/kg',
-                        hintText: 'Opzionale',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.euro),
+                      decoration: InputDecoration(
+                        labelText: 'price_per_kg'.tr(),
+                        hintText: 'optional'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.euro),
                       ),
                       keyboardType: const TextInputType
                           .numberWithOptions(decimal: true),
@@ -185,10 +186,10 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
 
             DropdownButtonFormField<String>(
               value: _selectedCategory,
-              decoration: const InputDecoration(
-                labelText: 'Categoria',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.category),
+              decoration: InputDecoration(
+                labelText: 'category'.tr(),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.category),
               ),
               items: ShoppingListPresenter.categories.map((cat) {
                 return DropdownMenuItem(
@@ -208,7 +209,7 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -240,8 +241,8 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
               if (context.mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('✓ Prodotto aggiornato'),
+                  SnackBar(
+                    content: Text('product_updated'.tr()),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -249,7 +250,7 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
               }
             }
           },
-          child: const Text('Salva'),
+          child: Text('save'.tr()),
         ),
       ],
     );

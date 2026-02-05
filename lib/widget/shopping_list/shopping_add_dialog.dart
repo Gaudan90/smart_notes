@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/shopping_list_presenter.dart';
 
 class ShoppingAddDialog extends StatefulWidget {
@@ -38,18 +39,18 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Aggiungi Prodotto'),
+      title: Text('add_product'.tr()),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nome prodotto',
-                hintText: 'Es: Latte',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.shopping_basket),
+              decoration: InputDecoration(
+                labelText: 'product_name'.tr(),
+                hintText: 'product_name_hint'.tr(),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.shopping_basket),
               ),
               textCapitalization: TextCapitalization.words,
               onChanged: (value) {
@@ -73,11 +74,12 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Già in lista (${widget.presenter
-                            .getItemQuantity(_nameController.text)}x)\n'
-                            'La quantità verrà aggiornata',
+                        'already_in_list'.tr(namedArgs: {
+                          'quantity': widget.presenter
+                              .getItemQuantity(_nameController.text).toString()
+                        }),
                         style: const TextStyle(fontSize: 12,
-                        color: Colors.black),
+                            color: Colors.black),
                       ),
                     ),
                   ],
@@ -87,8 +89,8 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
             const SizedBox(height: 16),
 
             SwitchListTile(
-              title: const Text('Venduto al peso'),
-              subtitle: const Text('Es: frutta, verdura, carne'),
+              title: Text('sold_by_weight'.tr()),
+              subtitle: Text('sold_by_weight_hint'.tr()),
               value: _isSoldByWeight,
               onChanged: (value) {
                 setState(() {
@@ -116,10 +118,10 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
                   Expanded(
                     child: TextField(
                       controller: _quantityController,
-                      decoration: const InputDecoration(
-                        labelText: 'Quantità',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.add_circle_outline),
+                      decoration: InputDecoration(
+                        labelText: 'quantity'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.add_circle_outline),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -131,11 +133,11 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
                   Expanded(
                     child: TextField(
                       controller: _priceController,
-                      decoration: const InputDecoration(
-                        labelText: 'Prezzo €',
-                        hintText: 'Opzionale',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.euro),
+                      decoration: InputDecoration(
+                        labelText: 'price_euro'.tr(),
+                        hintText: 'optional'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.euro),
                       ),
                       keyboardType: const TextInputType
                           .numberWithOptions(decimal: true),
@@ -148,17 +150,16 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
                 ],
               ),
             ] else ...[
-              // Campi per prodotti al peso
               Row(
                 children: [
                   Expanded(
                     child: TextField(
                       controller: _weightController,
-                      decoration: const InputDecoration(
-                        labelText: 'Peso (kg)',
-                        hintText: 'Es: 0.5',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.scale),
+                      decoration: InputDecoration(
+                        labelText: 'weight_kg'.tr(),
+                        hintText: 'weight_hint'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.scale),
                       ),
                       keyboardType: const TextInputType
                           .numberWithOptions(decimal: true),
@@ -172,11 +173,11 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
                   Expanded(
                     child: TextField(
                       controller: _pricePerKgController,
-                      decoration: const InputDecoration(
-                        labelText: '€/kg',
-                        hintText: 'Opzionale',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.euro),
+                      decoration: InputDecoration(
+                        labelText: 'price_per_kg'.tr(),
+                        hintText: 'optional'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.euro),
                       ),
                       keyboardType: const TextInputType
                           .numberWithOptions(decimal: true),
@@ -194,10 +195,10 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
 
             DropdownButtonFormField<String>(
               value: _selectedCategory,
-              decoration: const InputDecoration(
-                labelText: 'Categoria',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.category),
+              decoration: InputDecoration(
+                labelText: 'category'.tr(),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.category),
               ),
               items: ShoppingListPresenter.categories.map((cat) {
                 return DropdownMenuItem(
@@ -217,7 +218,7 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -249,7 +250,7 @@ class _ShoppingAddDialogState extends State<ShoppingAddDialog> {
               }
             }
           },
-          child: const Text('Aggiungi'),
+          child: Text('add'.tr()),
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/event_model.dart';
 import '../../states/event_occurrence_model.dart';
 import 'event_calendar_helpers.dart';
@@ -37,10 +38,10 @@ class EventCard extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(event.recurrenceType.displayName),
+            Text(EventCalendarHelpers.getRecurrenceDisplayName(event.recurrenceType)),
             const SizedBox(height: 4),
             Text(
-              '$totalOccurrences date generate',
+              'dates_generated'.tr(namedArgs: {'count': '$totalOccurrences'}),
               style: TextStyle(
                 fontSize: 12,
                 color: Theme.of(context).colorScheme.primary,
@@ -49,7 +50,7 @@ class EventCard extends StatelessWidget {
             ),
             if (nextOccurrence != null)
               Text(
-                'Prossima: ${nextOccurrence!.formattedDate}',
+                'next_occurrence'.tr(namedArgs: {'date': nextOccurrence!.formattedDate}),
                 style: const TextStyle(
                   fontSize: 11,
                   color: Colors.orange,

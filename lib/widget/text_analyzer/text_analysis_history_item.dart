@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/text_analyzer_model.dart';
 
 class TextAnalysisHistoryItem extends StatelessWidget {
@@ -45,34 +46,7 @@ class TextAnalysisHistoryItem extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.delete, size: 20),
                     color: Colors.red,
-                    onPressed: () async {
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Conferma eliminazione'),
-                          content: const Text(
-                            'Vuoi eliminare questa analisi dalla cronologia?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Annulla'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                              child: const Text('Elimina'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (confirm == true) {
-                        onDelete();
-                      }
-                    },
+                    onPressed: onDelete,
                   ),
                 ],
               ),
@@ -80,12 +54,12 @@ class TextAnalysisHistoryItem extends StatelessWidget {
               Row(
                 children: [
                   _buildInfoChip(
-                    '${analysis.wordCount} parole',
+                    'words_count'.tr(namedArgs: {'count': '${analysis.wordCount}'}),
                     Icons.format_quote,
                   ),
                   const SizedBox(width: 8),
                   _buildInfoChip(
-                    '${analysis.characterCount} caratteri',
+                    'chars_count'.tr(namedArgs: {'count': '${analysis.characterCount}'}),
                     Icons.text_fields,
                   ),
                 ],
@@ -133,10 +107,16 @@ class TextAnalysisHistoryItem extends StatelessWidget {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
-    if (difference.inMinutes < 1) return 'Adesso';
-    if (difference.inHours < 1) return '${difference.inMinutes}m fa';
-    if (difference.inDays < 1) return '${difference.inHours}h fa';
-    if (difference.inDays < 7) return '${difference.inDays}g fa';
+    if (difference.inMinutes < 1) return 'time_now'.tr();
+    if (difference.inHours < 1) {
+      return 'time_minutes_ago'.tr(namedArgs: {'min': '${difference.inMinutes}'});
+    }
+    if (difference.inDays < 1) {
+      return 'time_hours_ago'.tr(namedArgs: {'hours': '${difference.inHours}'});
+    }
+    if (difference.inDays < 7) {
+      return 'time_days_ago'.tr(namedArgs: {'days': '${difference.inDays}'});
+    }
 
     return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }

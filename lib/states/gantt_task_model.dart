@@ -63,17 +63,18 @@ class GanttTaskModel {
     }
   }
 
+  /// Countdown text - usare getLocalizedCountdownText() per versione tradotta
   String get countdownText {
-    if (completed) return 'Completato';
+    if (completed) return 'Completed';
 
     if (daysRemaining < 0) {
       final days = daysRemaining.abs();
-      return 'SCADUTO da $days ${days == 1 ? 'giorno' : 'giorni'}';
+      return 'OVERDUE by $days ${days == 1 ? 'day' : 'days'}';
     }
 
-    if (daysRemaining == 0) return 'Scade a breve!';
+    if (daysRemaining == 0) return 'Expires soon!';
 
-    return 'Mancano $daysRemaining ${daysRemaining == 1 ? 'giorno' : 'giorni'}';
+    return '$daysRemaining ${daysRemaining == 1 ? 'day' : 'days'} remaining';
   }
 
   GanttTaskModel copyWith({
@@ -82,7 +83,7 @@ class GanttTaskModel {
     DateTime? endDate,
     bool? completed,
     String? assignedTo,
-    bool? notificationsEnabled, // ← NUOVO
+    bool? notificationsEnabled,
   }) {
     return GanttTaskModel(
       id: id,
@@ -124,5 +125,32 @@ class GanttTaskModel {
   String toString() {
     return 'GanttTask(name: $name, progress: '
         '${(progressPercentage * 100).toStringAsFixed(0)}%, status: $status)';
+  }
+}
+
+extension GanttTaskModelLocalization on GanttTaskModel {
+  /// Genera il testo countdown tradotto
+  /// Richiede le chiavi: countdown_completed, countdown_overdue,
+  /// countdown_expires_soon, countdown_remaining, day_singular, days_plural
+  String getLocalizedCountdownText({
+    required String completedText,
+    required String Function(int days, String dayLabel) overdueText,
+    required String expiresSoonText,
+    required String Function(int days, String dayLabel) remainingText,
+    required String daySingular,
+    required String daysPlural,
+  }) {
+    if (completed) return completedText;
+
+    dayLabel(int count) => count == 1 ? daySingular : daysPlural;
+
+    if (daysRemaining < 0) {
+      final days = daysRemaining.abs();
+      return overdueText(days, dayLabel(days));
+    }
+
+    if (daysRemaining == 0) return expiresSoonText;
+
+    return remainingText(daysRemaining, dayLabel(daysRemaining));
   }
 }

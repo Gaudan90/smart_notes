@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HistoryStatsHeader extends StatelessWidget {
   final Map<String, dynamic> stats;
@@ -20,9 +21,9 @@ class HistoryStatsHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Statistiche Cronologia',
-                style: TextStyle(
+              Text(
+                'history_stats_title'.tr(),
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -32,19 +33,19 @@ class HistoryStatsHeader extends StatelessWidget {
                   final confirm = await showDialog<bool>(
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: const Text('Conferma'),
-                      content: const Text('Cancellare tutta la cronologia?'),
+                      title: Text('confirm'.tr()),
+                      content: Text('clear_history_confirm_text'.tr()),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Annulla'),
+                          child: Text('cancel'.tr()),
                         ),
                         ElevatedButton(
                           onPressed: () => Navigator.pop(context, true),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.red,
                           ),
-                          child: const Text('Elimina'),
+                          child: Text('delete'.tr()),
                         ),
                       ],
                     ),
@@ -55,7 +56,7 @@ class HistoryStatsHeader extends StatelessWidget {
                   }
                 },
                 icon: const Icon(Icons.delete_sweep),
-                label: const Text('Cancella tutto'),
+                label: Text('clear_all_history_pwd'.tr()),
               ),
             ],
           ),
@@ -65,17 +66,17 @@ class HistoryStatsHeader extends StatelessWidget {
             runSpacing: 8,
             children: [
               _buildStatChip(
-                'Analisi',
+                'stat_analyses'.tr(),
                 stats['totalAnalyses'].toString(),
                 Colors.blue,
               ),
               _buildStatChip(
-                'Parole totali',
+                'stat_total_words'.tr(),
                 stats['totalWords'].toString(),
                 Colors.orange,
               ),
               _buildStatChip(
-                'Media parole',
+                'stat_avg_words'.tr(),
                 stats['averageWords'].toStringAsFixed(0),
                 Colors.green,
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/shopping_item_model.dart';
 
 class ShoppingItemCard extends StatelessWidget {
@@ -132,16 +133,17 @@ class ShoppingItemCard extends StatelessWidget {
                         final confirm = await showDialog<bool>(
                           context: context,
                           builder: (context) => AlertDialog(
-                            title: const Text('Elimina prodotto'),
-                            content: Text('Rimuovere "${item.name}" dalla lista?'),
+                            title: Text('delete_product'.tr()),
+                            content: Text('delete_product_confirm'.tr(
+                                namedArgs: {'item': item.name})),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context, false),
-                                child: const Text('Annulla'),
+                                child: Text('cancel'.tr()),
                               ),
                               ElevatedButton(
                                 onPressed: () => Navigator.pop(context, true),
-                                child: const Text('Elimina'),
+                                child: Text('delete'.tr()),
                               ),
                             ],
                           ),

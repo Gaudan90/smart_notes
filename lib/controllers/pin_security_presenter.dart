@@ -18,19 +18,19 @@ class PinSecurityPresenter {
   bool _isUnlocked = false;
   bool get isUnlocked => _isUnlocked;
 
-  // Domande di sicurezza predefinite
-  static const List<String> securityQuestions = [
-    'Qual è il nome del tuo primo animale domestico?',
-    'In che città sei nato/a?',
-    'Qual è la tua squadra preferita?',
-    'Qual è il cognome da nubile di tua madre?',
-    'Qual è il nome della tua scuola elementare?',
-    'Qual è il tuo cibo preferito?',
-    'Qual è il nome della tua prima strada?',
-    'Qual è il tuo libro preferito?',
-    'Qual è il nome del tuo migliore amico d\'infanzia?',
-    'Qual è la marca della tua prima auto?',
-    'In quale anno hai iniziato le scuole superiori?',
+  // Chiavi delle domande di sicurezza (da tradurre con .tr())
+  static const List<String> securityQuestionKeys = [
+    'security_q_1',
+    'security_q_2',
+    'security_q_3',
+    'security_q_4',
+    'security_q_5',
+    'security_q_6',
+    'security_q_7',
+    'security_q_8',
+    'security_q_9',
+    'security_q_10',
+    'security_q_11',
   ];
 
   /// Controlla se il setup è stato completato
@@ -40,9 +40,10 @@ class PinSecurityPresenter {
   }
 
   /// Salva il setup iniziale con PIN e domanda di sicurezza
+  /// [securityQuestionKey] è la chiave di traduzione (es. 'security_q_1')
   Future<void> saveInitialSetup({
     required String pin,
-    required String securityQuestion,
+    required String securityQuestionKey,
     required String answer,
   }) async {
     final pinHash = _hashString(pin);
@@ -50,7 +51,7 @@ class PinSecurityPresenter {
 
     final model = PinSecurityModel(
       pinHash: pinHash,
-      securityQuestion: securityQuestion,
+      securityQuestion: securityQuestionKey, // Salva la chiave, non la stringa tradotta
       answerHash: answerHash,
       isSetupComplete: true,
     );
@@ -121,8 +122,9 @@ class PinSecurityPresenter {
     _isUnlocked = true;
   }
 
-  /// Ottiene la domanda di sicurezza salvata
-  Future<String?> getSecurityQuestion() async {
+  /// Ottiene la chiave della domanda di sicurezza salvata
+  /// Ritorna la chiave di traduzione (es. 'security_q_1')
+  Future<String?> getSecurityQuestionKey() async {
     final data = await _loadSecurityData();
     return data?.securityQuestion;
   }

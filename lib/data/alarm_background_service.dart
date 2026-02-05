@@ -5,9 +5,33 @@ import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import '../states/alarm_model.dart';
 
+/// Helper per le stringhe di notifica allarmi
+/// Usare con easy_localization: AlarmStrings.tapToOpen.tr()
+class AlarmStrings {
+  static const String tapToOpen = 'notif_tap_to_open';
+  static const String alarms = 'notif_alarms';
+  static const String alarmsDesc = 'notif_alarms_desc';
+}
+
 class AlarmBackgroundService {
   static final FlutterLocalNotificationsPlugin _notifications =
   FlutterLocalNotificationsPlugin();
+
+  // Stringhe localizzate (impostate da UI)
+  static String _tapToOpen = 'Tap to open';
+  static String _alarmsChannelName = 'Alarms';
+  static String _alarmsChannelDesc = 'Alarms with auto-open';
+
+  /// Imposta le stringhe tradotte (chiamare da UI con .tr())
+  static void setLocalizedStrings({
+    required String tapToOpen,
+    required String alarmsChannelName,
+    required String alarmsChannelDesc,
+  }) {
+    _tapToOpen = tapToOpen;
+    _alarmsChannelName = alarmsChannelName;
+    _alarmsChannelDesc = alarmsChannelDesc;
+  }
 
   static Future<void> initialize() async {
     if (kDebugMode) {
@@ -42,10 +66,10 @@ class AlarmBackgroundService {
       },
     );
 
-    const androidChannel = AndroidNotificationChannel(
+    final androidChannel = AndroidNotificationChannel(
       'alarm_channel',
-      'Allarmi',
-      description: 'Sveglie con apertura automatica',
+      _alarmsChannelName,
+      description: _alarmsChannelDesc,
       importance: Importance.max,
       playSound: false,
       enableVibration: true,
@@ -112,13 +136,13 @@ class AlarmBackgroundService {
     await _notifications.zonedSchedule(
       alarm.id.hashCode,
       alarm.title,
-      'Tocca per aprire',
+      _tapToOpen,
       tzTime,
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           'alarm_channel',
-          'Allarmi',
-          channelDescription: 'Sveglie',
+          _alarmsChannelName,
+          channelDescription: _alarmsChannelDesc,
           importance: Importance.max,
           priority: Priority.max,
           playSound: false,
@@ -161,12 +185,12 @@ class AlarmBackgroundService {
     await _notifications.zonedSchedule(
       alarm.id.hashCode,
       alarm.title,
-      'Tocca per aprire',
+      _tapToOpen,
       tzTime,
-      const NotificationDetails(
+      NotificationDetails(
         android: AndroidNotificationDetails(
           'alarm_channel',
-          'Allarmi',
+          _alarmsChannelName,
           importance: Importance.max,
           priority: Priority.max,
           playSound: false,
@@ -218,12 +242,12 @@ class AlarmBackgroundService {
       await _notifications.zonedSchedule(
         alarm.id.hashCode + dayOfWeek,
         alarm.title,
-        'Tocca per aprire',
+        _tapToOpen,
         tzTime,
-        const NotificationDetails(
+        NotificationDetails(
           android: AndroidNotificationDetails(
             'alarm_channel',
-            'Allarmi',
+            _alarmsChannelName,
             importance: Importance.max,
             priority: Priority.max,
             playSound: false,

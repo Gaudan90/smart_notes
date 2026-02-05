@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/number_stats_presenter.dart';
 
 class NumberStatsView extends StatefulWidget {
@@ -23,7 +24,7 @@ class _NumberStatsViewState extends State<NumberStatsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Statistiche Numeriche'),
+        title: Text('ns_title'.tr()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -37,15 +38,15 @@ class _NumberStatsViewState extends State<NumberStatsView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Inserisci i numeri',
+                      'ns_enter_numbers'.tr(),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Es: 10, 20, 10, 30, 10, 40',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: 'ns_input_hint'.tr(),
+                        border: const OutlineInputBorder(),
                       ),
                       maxLines: 3,
                     ),
@@ -53,7 +54,7 @@ class _NumberStatsViewState extends State<NumberStatsView> {
                     ElevatedButton.icon(
                       onPressed: _analyze,
                       icon: const Icon(Icons.analytics),
-                      label: const Text('Analizza'),
+                      label: Text('ns_analyze_btn'.tr()),
                     ),
                   ],
                 ),
@@ -70,7 +71,7 @@ class _NumberStatsViewState extends State<NumberStatsView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Risultati',
+                            'ns_results'.tr(),
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 8),

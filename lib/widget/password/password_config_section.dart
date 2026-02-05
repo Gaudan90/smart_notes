@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class PasswordConfigSection extends StatelessWidget {
   final double length;
@@ -35,7 +36,7 @@ class PasswordConfigSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Configurazione',
+              'configuration'.tr(),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -48,7 +49,7 @@ class PasswordConfigSection extends StatelessWidget {
                 const Icon(Icons.straighten, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Lunghezza: ${length.toInt()} caratteri',
+                  'length_characters'.tr(namedArgs: {'count': '${length.toInt()}'}),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -69,28 +70,28 @@ class PasswordConfigSection extends StatelessWidget {
 
             // Opzioni
             CheckboxListTile(
-              title: const Text('Lettere maiuscole (A-Z)'),
+              title: Text('uppercase_letters'.tr()),
               subtitle: const Text('ABCDEFGHIJKLMNOPQRSTUVWXYZ'),
               value: includeUppercase,
               onChanged: (value) => onUppercaseChanged(value ?? true),
             ),
 
             CheckboxListTile(
-              title: const Text('Lettere minuscole (a-z)'),
+              title: Text('lowercase_letters'.tr()),
               subtitle: const Text('abcdefghijklmnopqrstuvwxyz'),
               value: includeLowercase,
               onChanged: (value) => onLowercaseChanged(value ?? true),
             ),
 
             CheckboxListTile(
-              title: const Text('Numeri (0-9)'),
+              title: Text('numbers_option'.tr()),
               subtitle: const Text('0123456789'),
               value: includeNumbers,
               onChanged: (value) => onNumbersChanged(value ?? true),
             ),
 
             CheckboxListTile(
-              title: const Text('Simboli speciali'),
+              title: Text('special_symbols'.tr()),
               subtitle: const Text('!@#\$%^&*()_+-=[]{}|;:,.<>?'),
               value: includeSymbols,
               onChanged: (value) => onSymbolsChanged(value ?? true),

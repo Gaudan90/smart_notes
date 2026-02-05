@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ShoppingSearchBar extends StatefulWidget {
   final String initialQuery;
@@ -49,13 +50,13 @@ class _ShoppingSearchBarState extends State<ShoppingSearchBar> {
         controller: _controller,
         focusNode: _focusNode,
         decoration: InputDecoration(
-          hintText: 'Cerca prodotto o categoria...',
+          hintText: 'search_product_or_category'.tr(),
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _controller.text.isNotEmpty
               ? IconButton(
             icon: const Icon(Icons.clear),
             onPressed: _clearSearch,
-            tooltip: 'Cancella ricerca',
+            tooltip: 'clear_search'.tr(),
           )
               : null,
           border: OutlineInputBorder(
@@ -70,7 +71,7 @@ class _ShoppingSearchBarState extends State<ShoppingSearchBar> {
         ),
         textInputAction: TextInputAction.search,
         onChanged: (value) {
-          setState(() {}); // Per aggiornare suffixIcon
+          setState(() {});
           widget.onQueryChanged(value);
         },
       ),

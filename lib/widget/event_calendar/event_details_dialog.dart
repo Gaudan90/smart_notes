@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/event_model.dart';
 import '../../states/event_occurrence_model.dart';
 import 'event_calendar_helpers.dart';
@@ -34,18 +35,18 @@ class EventDetailsDialog extends StatelessWidget {
             ],
             _buildInfoRow(
               Icons.event,
-              'Tipo',
-              event.recurrenceType.displayName,
+              'type_label'.tr(),
+              EventCalendarHelpers.getRecurrenceDisplayName(event.recurrenceType),
             ),
             _buildInfoRow(
               Icons.calendar_today,
-              'Periodo',
+              'period_label'.tr(),
               '${EventCalendarHelpers.formatDate(event.startDate)} - ${EventCalendarHelpers.formatDate(event.endDate)}',
             ),
             _buildInfoRow(
               Icons.repeat,
-              'Ripetizioni generate',
-              '${occurrences.length} date',
+              'generated_repetitions'.tr(),
+              'dates_count'.tr(namedArgs: {'count': '${occurrences.length}'}),
             ),
             if (occurrences.isNotEmpty) ...[
               const SizedBox(height: 16),
@@ -57,14 +58,14 @@ class EventDetailsDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => _confirmDelete(context),
-          child: const Text(
-            'Elimina',
-            style: TextStyle(color: Colors.red),
+          child: Text(
+            'delete'.tr(),
+            style: const TextStyle(color: Colors.red),
           ),
         ),
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Chiudi'),
+          child: Text('close'.tr()),
         ),
       ],
     );
@@ -97,7 +98,7 @@ class EventDetailsDialog extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Prime date:',
+          'first_dates'.tr(),
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.primary,
@@ -127,7 +128,7 @@ class EventDetailsDialog extends StatelessWidget {
         ),
         if (occurrences.length > 10)
           Text(
-            '... e altre ${occurrences.length - 10} date',
+            'and_more_dates'.tr(namedArgs: {'count': '${occurrences.length - 10}'}),
             style: const TextStyle(
               fontSize: 12,
               fontStyle: FontStyle.italic,
@@ -142,21 +143,21 @@ class EventDetailsDialog extends StatelessWidget {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
+        title: Text('confirm_deletion'.tr()),
         content: Text(
-          'Vuoi eliminare l\'evento "${event.title}" e tutte le sue occorrenze?',
+          'delete_event_confirm'.tr(namedArgs: {'title': event.title}),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),

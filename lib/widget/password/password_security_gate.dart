@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_notes/controllers/pin_security_presenter.dart';
 import '../../screens/password_generator_view.dart';
 import '../../screens/pin_setup_view.dart';
@@ -49,7 +50,7 @@ class _PasswordSecurityGateState extends State<PasswordSecurityGate> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Password Sicure')),
+        appBar: AppBar(title: Text('password_generator'.tr())),
         body: const Center(
           child: CircularProgressIndicator(),
         ),

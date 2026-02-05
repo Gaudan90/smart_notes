@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/password_model.dart';
+import 'password_helpers.dart';
 
 class PasswordHistoryItem extends StatelessWidget {
   final PasswordModel password;
@@ -23,18 +25,6 @@ class PasswordHistoryItem extends StatelessWidget {
     if (strength >= 40) return Colors.orange;
     if (strength >= 20) return Colors.deepOrange;
     return Colors.red;
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-
-    if (difference.inMinutes < 1) return 'Adesso';
-    if (difference.inHours < 1) return '${difference.inMinutes}m fa';
-    if (difference.inDays < 1) return '${difference.inHours}h fa';
-    if (difference.inDays < 7) return '${difference.inDays}g fa';
-
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year}';
   }
 
   String _getObscuredPassword() {
@@ -90,11 +80,11 @@ class PasswordHistoryItem extends StatelessWidget {
           children: [
             const SizedBox(height: 4),
             Text(
-              '${password.length} caratteri • ${password.strengthLabel}',
+              '${password.length} ${'characters_count'.tr(namedArgs: {'count': '${password.length}'}).split(' ').last} • ${PasswordHelpers.translateStrengthLabel(password.strength)}',
               style: TextStyle(fontSize: 12, color: strengthColor),
             ),
             Text(
-              _formatDateTime(password.generatedAt),
+              PasswordHelpers.formatDateTime(password.generatedAt),
               style: const TextStyle(fontSize: 11),
             ),
           ],
@@ -106,21 +96,21 @@ class PasswordHistoryItem extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.visibility, size: 20),
                 onPressed: onUnlock,
-                tooltip: 'Visualizza',
+                tooltip: 'view_btn'.tr(),
                 color: Colors.blue,
               ),
             ] else ...[
               IconButton(
                 icon: const Icon(Icons.copy, size: 20),
                 onPressed: onCopy,
-                tooltip: 'Copia',
+                tooltip: 'copy_btn'.tr(),
               ),
             ],
             IconButton(
               icon: const Icon(Icons.delete, size: 20),
               color: Colors.red,
               onPressed: onDelete,
-              tooltip: 'Elimina',
+              tooltip: 'delete'.tr(),
             ),
           ],
         ),

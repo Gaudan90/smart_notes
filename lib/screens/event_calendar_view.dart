@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/event_calendar_presenter.dart';
 import '../states/event_occurrence_model.dart';
 import '../widget/event_calendar/event_add_dialog.dart';
@@ -42,12 +43,12 @@ class _EventCalendarViewState extends State<EventCalendarView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calendario Eventi'),
+        title: Text('event_calendar'.tr()),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'I Miei Eventi', icon: Icon(Icons.event_note)),
-            Tab(text: 'Date Future', icon: Icon(Icons.calendar_month)),
+          tabs: [
+            Tab(text: 'tab_my_events'.tr(), icon: const Icon(Icons.event_note)),
+            Tab(text: 'tab_future_dates'.tr(), icon: const Icon(Icons.calendar_month)),
           ],
         ),
       ),
@@ -63,7 +64,7 @@ class _EventCalendarViewState extends State<EventCalendarView>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddEventDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Nuovo Evento'),
+        label: Text('new_event'.tr()),
       ),
     );
   }
@@ -92,8 +93,8 @@ class _EventCalendarViewState extends State<EventCalendarView>
     final upcomingOccurrences = _presenter.getAllUpcomingOccurrences();
 
     if (upcomingOccurrences.isEmpty) {
-      return const Center(
-        child: Text('Nessuna data futura disponibile'),
+      return Center(
+        child: Text('no_future_dates'.tr()),
       );
     }
 
@@ -123,14 +124,14 @@ class _EventCalendarViewState extends State<EventCalendarView>
             color: Theme.of(context).disabledColor,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Nessun evento creato',
-            style: TextStyle(fontSize: 16),
+          Text(
+            'no_events'.tr(),
+            style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Aggiungi un evento ricorrente',
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+          Text(
+            'add_recurring_event'.tr(),
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
           ),
         ],
       ),
@@ -187,7 +188,7 @@ class _EventCalendarViewState extends State<EventCalendarView>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '✓ Evento creato con ${occurrences.length} date generate',
+            'event_created'.tr(namedArgs: {'count': '${occurrences.length}'}),
           ),
           backgroundColor: Colors.green,
         ),

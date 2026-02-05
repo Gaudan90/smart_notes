@@ -99,12 +99,17 @@ class AlarmManager {
     await saveAlarms();
   }
 
-  Future<void> snoozeAlarm(String id, int minutes) async {
+  /// Posticipa un allarme
+  /// [snoozedTitle] è la stringa tradotta per indicare che è stato posticipato
+  /// Es: 'alarm_postponed'.tr(namedArgs: {'title': alarm.title})
+  Future<void> snoozeAlarm(String id, int minutes, {String? snoozedTitle}) async {
     final alarm = _alarms.firstWhere((a) => a.id == id);
+
+    final title = snoozedTitle ?? '${alarm.title} (Snoozed)';
 
     final snoozeAlarm = AlarmModel(
       id: 'snooze_${DateTime.now().millisecondsSinceEpoch}',
-      title: '${alarm.title} (Posticipata)',
+      title: title,
       dateTime: DateTime.now().add(Duration(minutes: minutes)),
       isActive: true,
       isRepeating: false,

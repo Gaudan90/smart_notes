@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/kitchen_timer_model.dart';
 
 class TimerCard extends StatelessWidget {
@@ -30,7 +31,6 @@ class TimerCard extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Nome timer
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -48,14 +48,13 @@ class TimerCard extends StatelessWidget {
                   icon: const Icon(Icons.delete),
                   color: Colors.red,
                   onPressed: onDelete,
-                  tooltip: 'Elimina',
+                  tooltip: 'delete'.tr(),
                 ),
               ],
             ),
 
             const SizedBox(height: 20),
 
-            // Circular progress indicator con tempo
             Stack(
               alignment: Alignment.center,
               children: [
@@ -88,7 +87,7 @@ class TimerCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'di ${timer.formattedDuration}',
+                      'timer_of'.tr(namedArgs: {'duration': timer.formattedDuration}),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey.shade600,
@@ -101,7 +100,6 @@ class TimerCard extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Controlli
             if (isCompleted)
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
@@ -115,7 +113,7 @@ class TimerCard extends StatelessWidget {
                     const Icon(Icons.check_circle, color: Colors.green, size: 24),
                     const SizedBox(width: 8),
                     Text(
-                      'Completato!',
+                      'timer_completed'.tr(),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -129,7 +127,6 @@ class TimerCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Play/Pause
                   ElevatedButton.icon(
                     onPressed: isRunning ? onPause : onStart,
                     icon: Icon(
@@ -137,7 +134,9 @@ class TimerCard extends StatelessWidget {
                       size: 28,
                     ),
                     label: Text(
-                      isRunning ? 'Pausa' : (isPaused ? 'Riprendi' : 'Avvia'),
+                      isRunning
+                          ? 'timer_pause'.tr()
+                          : (isPaused ? 'timer_resume'.tr() : 'timer_start'.tr()),
                       style: const TextStyle(fontSize: 16),
                     ),
                     style: ElevatedButton.styleFrom(
@@ -151,11 +150,10 @@ class TimerCard extends StatelessWidget {
 
                   if (timer.elapsedSeconds > 0) ...[
                     const SizedBox(width: 12),
-                    // Reset
                     OutlinedButton.icon(
                       onPressed: onReset,
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Reset'),
+                      label: Text('timer_reset'.tr()),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,

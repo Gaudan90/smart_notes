@@ -5,6 +5,26 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+/// Helper per ottenere le stringhe di notifica tradotte
+/// Usare con easy_localization: NotificationStrings.tapToOpen.tr()
+class NotificationStrings {
+  static const String tapToOpen = 'notif_tap_to_open';
+  static const String alarms = 'notif_alarms';
+  static const String alarmsDesc = 'notif_alarms_desc';
+  static const String reminderTitle = 'notif_reminder_title';
+  static const String reminderBody = 'notif_reminder_body';
+  static const String reminders = 'notif_reminders';
+  static const String remindersDesc = 'notif_reminders_desc';
+  static const String countdownCompleted = 'notif_countdown_completed';
+  static const String countdown = 'notif_countdown';
+  static const String countdownDesc = 'notif_countdown_desc';
+  static const String timerCompleted = 'notif_timer_completed';
+  static const String timerReady = 'notif_timer_ready';
+  static const String timer = 'notif_timer';
+  static const String timerDesc = 'notif_timer_desc';
+  static const String instant = 'notif_instant';
+}
+
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
@@ -54,7 +74,7 @@ class NotificationService {
   }
 
   void _onNotificationTapped(NotificationResponse notificationResponse) {
-    log('Notifica tappata: ${notificationResponse.payload}');
+    log('Notification tapped: ${notificationResponse.payload}');
   }
 
   Future<void> scheduleDaily({
@@ -63,14 +83,16 @@ class NotificationService {
     required String body,
     required int hour,
     required int minute,
+    String channelName = 'Reminders',
+    String channelDescription = 'Channel for daily reminders',
   }) async {
     final tz.TZDateTime scheduledDate = _nextInstanceOfTime(hour, minute);
 
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
     AndroidNotificationDetails(
       'reminders_channel',
-      'Promemoria',
-      channelDescription: 'Canale per i promemoria giornalieri',
+      channelName,
+      channelDescription: channelDescription,
       importance: Importance.high,
       priority: Priority.high,
       showWhen: true,
@@ -84,7 +106,7 @@ class NotificationService {
       presentSound: true,
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(
+    final NotificationDetails platformDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
@@ -104,8 +126,16 @@ class NotificationService {
     required String reminderId,
     required String title,
     required List<String> times,
+    String? notificationTitle,
+    String? notificationBody,
+    String channelName = 'Reminders',
+    String channelDescription = 'Channel for daily reminders',
   }) async {
     int notificationId = reminderId.hashCode;
+
+    // Usa valori di default se non forniti
+    final actualTitle = notificationTitle ?? 'Reminder: $title';
+    final actualBody = notificationBody ?? 'It\'s time for: $title';
 
     for (int i = 0; i < times.length; i++) {
       final timeParts = times[i].split(':');
@@ -115,10 +145,12 @@ class NotificationService {
 
         await scheduleDaily(
           id: notificationId + i,
-          title: 'Promemoria: $title',
-          body: 'Ãˆ ora di: $title',
+          title: actualTitle,
+          body: actualBody,
           hour: hour,
           minute: minute,
+          channelName: channelName,
+          channelDescription: channelDescription,
         );
       }
     }
@@ -156,16 +188,17 @@ class NotificationService {
   Future<void> showInstantNotification({
     required String title,
     required String body,
+    String channelName = 'Instant Notifications',
   }) async {
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
     AndroidNotificationDetails(
       'instant_channel',
-      'Notifiche Immediate',
+      channelName,
       importance: Importance.high,
       priority: Priority.high,
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(
+    final NotificationDetails platformDetails = NotificationDetails(
       android: androidDetails,
     );
 
@@ -185,6 +218,9 @@ class NotificationService {
     required String title,
     required DateTime targetDate,
     String? description,
+    String defaultBody = 'Your countdown is completed!',
+    String channelName = 'Countdown',
+    String channelDescription = 'Notifications for completed countdowns',
   }) async {
     // Non schedulare se la data è già passata
     if (targetDate.isBefore(DateTime.now())) {
@@ -194,11 +230,11 @@ class NotificationService {
     final int notificationId = countdownId.hashCode;
     final tz.TZDateTime scheduledDate = tz.TZDateTime.from(targetDate, tz.local);
 
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
     AndroidNotificationDetails(
       'countdown_channel',
-      'Countdown',
-      channelDescription: 'Notifiche per countdown completati',
+      channelName,
+      channelDescription: channelDescription,
       importance: Importance.high,
       priority: Priority.high,
       showWhen: true,
@@ -214,14 +250,14 @@ class NotificationService {
       presentSound: true,
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(
+    final NotificationDetails platformDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     final String body = description?.isNotEmpty == true
         ? description!
-        : 'Il tuo countdown è terminato!';
+        : defaultBody;
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       notificationId,
@@ -233,26 +269,29 @@ class NotificationService {
       payload: 'countdown_$countdownId',
     );
 
-    log('Notifica countdown schedulata: $title per $scheduledDate (ID: $notificationId)');
+    log('Countdown notification scheduled: $title for $scheduledDate (ID: $notificationId)');
   }
 
   /// Cancella la notifica di un countdown specifico
   Future<void> cancelCountdownNotification(String countdownId) async {
     final int notificationId = countdownId.hashCode;
     await flutterLocalNotificationsPlugin.cancel(notificationId);
-    log('Notifica countdown cancellata (ID: $notificationId)');
+    log('Countdown notification cancelled (ID: $notificationId)');
   }
 
   /// Mostra notifica immediata per countdown completato (quando app è aperta)
   Future<void> showCountdownCompletedNotification({
     required String title,
     String? description,
+    String defaultBody = 'Your countdown is completed!',
+    String channelName = 'Countdown',
+    String channelDescription = 'Notifications for completed countdowns',
   }) async {
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
     AndroidNotificationDetails(
       'countdown_channel',
-      'Countdown',
-      channelDescription: 'Notifiche per countdown completati',
+      channelName,
+      channelDescription: channelDescription,
       importance: Importance.high,
       priority: Priority.high,
       playSound: true,
@@ -264,14 +303,14 @@ class NotificationService {
       presentSound: true,
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(
+    final NotificationDetails platformDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     final String body = description?.isNotEmpty == true
         ? description!
-        : 'Il tuo countdown è terminato!';
+        : defaultBody;
 
     await flutterLocalNotificationsPlugin.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
@@ -288,6 +327,10 @@ class NotificationService {
     required String timerId,
     required String timerName,
     required DateTime completionTime,
+    String notificationTitle = 'Timer completed!',
+    String notificationBodySuffix = 'is ready!',
+    String channelName = 'Kitchen Timer',
+    String channelDescription = 'Notifications for completed kitchen timers',
   }) async {
     // Non schedulare se la data è già passata
     if (completionTime.isBefore(DateTime.now())) {
@@ -298,18 +341,18 @@ class NotificationService {
     final tz.TZDateTime scheduledDate =
     tz.TZDateTime.from(completionTime, tz.local);
 
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
     AndroidNotificationDetails(
       'timer_channel',
-      'Timer Cucina',
-      channelDescription: 'Notifiche per timer da cucina completati',
+      channelName,
+      channelDescription: channelDescription,
       importance: Importance.max,
       priority: Priority.max,
       showWhen: true,
       enableVibration: true,
       enableLights: true,
       playSound: true,
-      sound: RawResourceAndroidNotificationSound('alarm'),
+      sound: const RawResourceAndroidNotificationSound('alarm'),
       icon: '@mipmap/ic_launcher',
     );
 
@@ -319,45 +362,49 @@ class NotificationService {
       presentSound: true,
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(
+    final NotificationDetails platformDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       notificationId,
-      'Timer completato!',
-      '$timerName è pronto!',
+      notificationTitle,
+      '$timerName $notificationBodySuffix',
       scheduledDate,
       platformDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       payload: 'timer_$timerId',
     );
 
-    log('Notifica timer schedulata: $timerName '
-        'per $scheduledDate (ID: $notificationId)');
+    log('Timer notification scheduled: $timerName '
+        'for $scheduledDate (ID: $notificationId)');
   }
 
   /// Cancella la notifica di un timer specifico
   Future<void> cancelTimerNotification(String timerId) async {
     final int notificationId = timerId.hashCode + 100000;
     await flutterLocalNotificationsPlugin.cancel(notificationId);
-    log('Notifica timer cancellata (ID: $notificationId)');
+    log('Timer notification cancelled (ID: $notificationId)');
   }
 
   /// Mostra notifica immediata per timer completato
   Future<void> showTimerCompletedNotification({
     required String timerName,
+    String notificationTitle = 'Timer completed!',
+    String notificationBodySuffix = 'is ready!',
+    String channelName = 'Kitchen Timer',
+    String channelDescription = 'Notifications for completed kitchen timers',
   }) async {
-    const AndroidNotificationDetails androidDetails =
+    final AndroidNotificationDetails androidDetails =
     AndroidNotificationDetails(
       'timer_channel',
-      'Timer Cucina',
-      channelDescription: 'Notifiche per timer da cucina completati',
+      channelName,
+      channelDescription: channelDescription,
       importance: Importance.max,
       priority: Priority.max,
       playSound: true,
-      sound: RawResourceAndroidNotificationSound('alarm'),
+      sound: const RawResourceAndroidNotificationSound('alarm'),
     );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
@@ -366,15 +413,15 @@ class NotificationService {
       presentSound: true,
     );
 
-    const NotificationDetails platformDetails = NotificationDetails(
+    final NotificationDetails platformDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
 
     await flutterLocalNotificationsPlugin.show(
       DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      '⏰ Timer completato!',
-      '$timerName è pronto!',
+      '⏰ $notificationTitle',
+      '$timerName $notificationBodySuffix',
       platformDetails,
     );
   }

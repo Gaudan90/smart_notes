@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // Dialog per inserire il PIN e sbloccare la visualizzazione di una password
 class PinUnlockDialog extends StatefulWidget {
@@ -30,8 +31,8 @@ class _PinUnlockDialogState extends State<PinUnlockDialog> {
     if (_pinController.text.length != 8) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Il PIN deve essere di 8 cifre'),
+          SnackBar(
+            content: Text('pin_must_be_8'.tr()),
             backgroundColor: Colors.red,
           ),
         );
@@ -58,7 +59,7 @@ class _PinUnlockDialogState extends State<PinUnlockDialog> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('PIN errato. Tentativi rimasti: ${3 - attempts}'),
+              content: Text('wrong_pin_attempts'.tr(namedArgs: {'count': '${3 - attempts}'})),
               backgroundColor: Colors.red,
             ),
           );
@@ -71,23 +72,23 @@ class _PinUnlockDialogState extends State<PinUnlockDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Row(
+      title: Row(
         children: [
-          Icon(Icons.lock_open, color: Colors.blue),
-          SizedBox(width: 8),
-          Text('Sblocca Password'),
+          const Icon(Icons.lock_open, color: Colors.blue),
+          const SizedBox(width: 8),
+          Text('unlock_password'.tr()),
         ],
       ),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Inserisci il tuo PIN per visualizzare la password'),
+            Text('enter_pin_to_view'.tr()),
             const SizedBox(height: 16),
             TextField(
               controller: _pinController,
               decoration: InputDecoration(
-                labelText: 'PIN',
+                labelText: 'pin_label'.tr(),
                 hintText: '••••••••',
                 suffixIcon: IconButton(
                   icon: Icon(
@@ -115,11 +116,11 @@ class _PinUnlockDialogState extends State<PinUnlockDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, 'cancel'),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: () => _handleSubmit(context),
-          child: const Text('Sblocca'),
+          child: Text('unlock_btn'.tr()),
         ),
       ],
     );

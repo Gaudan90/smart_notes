@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 import '../../states/supermarket_purchase_model.dart';
 
@@ -77,17 +78,17 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
     final allSupermarkets = widget.presenter.allSupermarkets;
 
     return AlertDialog(
-      title: const Text('Modifica Acquisto'),
+      title: Text('edit_purchase'.tr()),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             DropdownButtonFormField<String>(
               value: _selectedSupermarket,
-              decoration: const InputDecoration(
-                labelText: 'Supermercato',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.store),
+              decoration: InputDecoration(
+                labelText: 'supermarket'.tr(),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.store),
               ),
               items: allSupermarkets.map((market) {
                 return DropdownMenuItem(
@@ -133,10 +134,10 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
                 return TextField(
                   controller: controller,
                   focusNode: focusNode,
-                  decoration: const InputDecoration(
-                    labelText: 'Prodotto',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.shopping_basket),
+                  decoration: InputDecoration(
+                    labelText: 'product'.tr(),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.shopping_basket),
                   ),
                   textCapitalization: TextCapitalization.words,
                 );
@@ -146,7 +147,7 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
             const SizedBox(height: 16),
 
             ListTile(
-              title: const Text('Data acquisto'),
+              title: Text('purchase_date'.tr()),
               subtitle: Text(
                 '${_selectedDate.day}'
                     '/${_selectedDate.month}/${_selectedDate.year}',
@@ -166,10 +167,10 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
                 Expanded(
                   child: TextField(
                     controller: _quantityController,
-                    decoration: const InputDecoration(
-                      labelText: 'Quantità',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.add_circle_outline),
+                    decoration: InputDecoration(
+                      labelText: 'quantity'.tr(),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.add_circle_outline),
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: [
@@ -181,10 +182,10 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
                 Expanded(
                   child: TextField(
                     controller: _priceController,
-                    decoration: const InputDecoration(
-                      labelText: 'Prezzo €',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.euro),
+                    decoration: InputDecoration(
+                      labelText: 'price_euro'.tr(),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.euro),
                     ),
                     keyboardType: const TextInputType
                         .numberWithOptions(decimal: true),
@@ -202,7 +203,7 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -226,8 +227,8 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
               if (context.mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Acquisto aggiornato'),
+                  SnackBar(
+                    content: Text('purchase_updated'.tr()),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -235,7 +236,7 @@ class _SupermarketEditDialogState extends State<SupermarketEditDialog> {
               }
             }
           },
-          child: const Text('Salva'),
+          child: Text('save'.tr()),
         ),
       ],
     );

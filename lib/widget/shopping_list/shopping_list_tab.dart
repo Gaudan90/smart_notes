@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/shopping_list_presenter.dart';
 import '../../data/shopping_list/sort_type_enum.dart';
 import '../../states/shopping_item_model.dart';
@@ -85,11 +86,10 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          isAlphabetical ? 'Ordinamento: A-Z' : 'Ordinamento: Categoria',
+          isAlphabetical ? 'sort_alphabetical'.tr() : 'sort_category'.tr(),
           style: const TextStyle(fontSize: 16),
         ),
         actions: [
-          // ← NUOVO: IconButton per toggle search
           IconButton(
             icon: Icon(
               _showSearch ? Icons.search_off : Icons.search,
@@ -103,7 +103,7 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
                 }
               });
             },
-            tooltip: _showSearch ? 'Nascondi ricerca' : 'Cerca prodotti',
+            tooltip: _showSearch ? 'hide_search'.tr() : 'search_products'.tr(),
           ),
           IconButton(
             icon: Icon(
@@ -112,8 +112,8 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
             ),
             onPressed: _toggleSortOrder,
             tooltip: isAlphabetical
-                ? 'Ordina per categoria'
-                : 'Ordina alfabeticamente',
+                ? 'sort_by_category'.tr()
+                : 'sort_alphabetically'.tr(),
           ),
           IconButton(
             icon: Icon(_showGrouped ? Icons.list : Icons.grid_view),
@@ -122,7 +122,7 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
                 _showGrouped = !_showGrouped;
               });
             },
-            tooltip: _showGrouped ? 'Vista Lista' : 'Raggruppa',
+            tooltip: _showGrouped ? 'list_view'.tr() : 'group_view'.tr(),
           ),
           if (widget.presenter.purchasedItems.isNotEmpty)
             IconButton(
@@ -131,16 +131,16 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
                 final confirm = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Svuota comprati'),
-                    content: const Text('Rimuovere tutti i prodotti già comprati?'),
+                    title: Text('clear_purchased'.tr()),
+                    content: Text('clear_purchased_confirm'.tr()),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Annulla'),
+                        child: Text('cancel'.tr()),
                       ),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context, true),
-                        child: const Text('Rimuovi'),
+                        child: Text('remove'.tr()),
                       ),
                     ],
                   ),
@@ -151,7 +151,7 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
                   widget.onUpdate();
                 }
               },
-              tooltip: 'Rimuovi comprati',
+              tooltip: 'remove_purchased'.tr(),
             ),
         ],
       ),
@@ -198,14 +198,14 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
                 color: Theme.of(context).disabledColor,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Nessun risultato',
-                style: TextStyle(fontSize: 16),
+              Text(
+                'no_results'.tr(),
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 8),
               Text(
-                'Prova con un\'altra ricerca',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                'try_another_search'.tr(),
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ],
           ),
@@ -222,14 +222,14 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
               color: Theme.of(context).disabledColor,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Lista vuota',
-              style: TextStyle(fontSize: 16),
+            Text(
+              'empty_list'.tr(),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Aggiungi i tuoi prodotti',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+            Text(
+              'add_your_products'.tr(),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
         ),
@@ -244,7 +244,6 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
   }
 
   Widget _buildFlatList() {
-    // ← MODIFICATO: Usa filteredItems
     final items = widget.presenter.filteredItems;
 
     return ListView.builder(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/event_occurrence_model.dart';
 import 'event_calendar_helpers.dart';
 
@@ -18,7 +19,7 @@ class EventOccurrenceCard extends StatelessWidget {
         leading: _buildDateBadge(context),
         title: Text(occurrence.eventTitle),
         subtitle: Text(
-          'Occorrenza #${occurrence.occurrenceNumber}',
+          'occurrence_number'.tr(namedArgs: {'num': '${occurrence.occurrenceNumber}'}),
           style: const TextStyle(fontSize: 12),
         ),
       ),

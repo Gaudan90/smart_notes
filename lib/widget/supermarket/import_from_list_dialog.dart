@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/shopping_list_presenter.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 import '../../states/shopping_item_model.dart';
@@ -28,7 +29,6 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
         .where((item) => !item.isPurchased)
         .toList();
 
-    // Ordinamento alfabetico
     items.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
 
     return items;
@@ -62,8 +62,8 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
   Future<void> _proceedToConfiguration() async {
     if (_selectedIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Seleziona almeno un prodotto'),
+        SnackBar(
+          content: Text('select_products_to_import'.tr()),
           backgroundColor: Colors.orange,
         ),
       );
@@ -75,7 +75,6 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
         .toList();
     Navigator.pop(context);
 
-    // Apri il dialog di configurazione
     if (mounted) {
       final result = await showDialog<bool>(
         context: context,
@@ -97,32 +96,26 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
     final availableItems = _availableItems;
 
     return AlertDialog(
-      title: const Text('Importa dalla Lista'),
+      title: Text('import_from_list'.tr()),
       content: SizedBox(
         width: double.maxFinite,
         height: 500,
         child: availableItems.isEmpty
-            ? const Center(
+            ? Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.inbox, size: 64, color: Colors.grey),
-              SizedBox(height: 16),
+              const Icon(Icons.inbox, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
               Text(
-                'Nessun prodotto disponibile',
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Tutti i prodotti sono giÃ  stati comprati',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+                'no_products_to_import'.tr(),
+                style: const TextStyle(fontSize: 16),
               ),
             ],
           ),
         )
             : Column(
           children: [
-            // Header con contatore e seleziona tutti
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -133,8 +126,9 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
                 children: [
                   Expanded(
                     child: Text(
-                      '${_selectedIds.length}'
-                          '/${availableItems.length} selezionati',
+                      'selected_count'.tr(namedArgs: {
+                        'count': '${_selectedIds.length}/${availableItems.length}'
+                      }),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -147,7 +141,7 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
                       _selectAll ? Icons.deselect : Icons.select_all,
                       size: 18,
                     ),
-                    label: Text(_selectAll ? 'Deseleziona' : 'Seleziona tutti'),
+                    label: Text(_selectAll ? 'deselect_all'.tr() : 'select_all'.tr()),
                     style: TextButton.styleFrom(
                       foregroundColor: Theme.of(context)
                           .colorScheme.onPrimaryContainer,
@@ -159,7 +153,6 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
 
             const SizedBox(height: 12),
 
-            // Lista prodotti
             Expanded(
               child: ListView.builder(
                 itemCount: availableItems.length,
@@ -229,12 +222,12 @@ class _ImportFromListDialogState extends State<ImportFromListDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         if (availableItems.isNotEmpty)
           ElevatedButton(
             onPressed: _proceedToConfiguration,
-            child: const Text('Avanti'),
+            child: Text('import'.tr()),
           ),
       ],
     );
@@ -265,7 +258,6 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
   @override
   void initState() {
     super.initState();
-    // Inizializza tutti con il primo supermercato
     for (var item in widget.items) {
       _supermarketChoices[item.id] =
           widget.supermarketPresenter.allSupermarkets.firstOrNull
@@ -296,20 +288,18 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma importazione'),
+        title: Text('confirm'.tr()),
         content: Text(
-          'Importare ${widget.items.length} prodotti?\n\n'
-              'I prodotti verranno registrati nei rispettivi supermercati '
-              'e marcati come "comprati" nella lista.',
+          'products_imported'.tr(namedArgs: {'count': '${widget.items.length}'}),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Conferma'),
+            child: Text('confirm'.tr()),
           ),
         ],
       ),
@@ -339,7 +329,6 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
         quantity: 1,
       );
 
-      // Marca come comprato nella lista
       await widget.shoppingPresenter.togglePurchased(item.id);
 
       imported++;
@@ -350,7 +339,7 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('$imported prodotti importati con successo'),
+          content: Text('products_imported'.tr(namedArgs: {'count': '$imported'})),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),
@@ -361,28 +350,26 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Configura importazione'),
+      title: Text('import'.tr()),
       content: SizedBox(
         width: double.maxFinite,
         height: 500,
         child: Column(
           children: [
-            // Data acquisto
             Card(
               child: ListTile(
                 leading: const Icon(Icons.calendar_today),
-                title: const Text('Data acquisto'),
+                title: Text('purchase_date'.tr()),
                 subtitle: Text(_formatDate(_selectedDate)),
                 trailing: TextButton(
                   onPressed: _selectDate,
-                  child: const Text('Cambia'),
+                  child: Text('change'.tr()),
                 ),
               ),
             ),
 
             const SizedBox(height: 16),
 
-            // Info
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -396,7 +383,7 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Seleziona il supermercato per ogni prodotto:',
+                      'select_products_to_import'.tr(),
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.blue.shade900,
@@ -409,7 +396,6 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
 
             const SizedBox(height: 12),
 
-            // Lista prodotti con dropdown supermercato
             Expanded(
               child: ListView.builder(
                 itemCount: widget.items.length,
@@ -441,10 +427,10 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
                           const SizedBox(height: 8),
                           DropdownButtonFormField<String>(
                             value: _supermarketChoices[item.id],
-                            decoration: const InputDecoration(
-                              labelText: 'Supermercato',
-                              border: OutlineInputBorder(),
-                              contentPadding: EdgeInsets.symmetric(
+                            decoration: InputDecoration(
+                              labelText: 'supermarket'.tr(),
+                              border: const OutlineInputBorder(),
+                              contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
                                 vertical: 8,
                               ),
@@ -476,11 +462,11 @@ class _ImportConfigurationDialogState extends State<ImportConfigurationDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Indietro'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: _confirmImport,
-          child: const Text('Importa'),
+          child: Text('import'.tr()),
         ),
       ],
     );

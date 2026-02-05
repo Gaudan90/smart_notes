@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 import '../data/alarm_manager.dart';
 import '../states/alarm_model.dart';
@@ -95,9 +96,9 @@ class _AlarmOverlayState extends State<AlarmOverlay>
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sveglia posticipata di 5 minuti'),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text('alarm_snoozed'.tr()),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -170,17 +171,17 @@ class _AlarmOverlayState extends State<AlarmOverlay>
                             shape: BoxShape.circle,
                             border: Border.all(color: Colors.white54, width: 2),
                           ),
-                          child: const Column(
+                          child: Column(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.snooze,
                                 color: Colors.white,
                                 size: 40,
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
-                                'POSPONI',
-                                style: TextStyle(
+                                'snooze_btn'.tr(),
+                                style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 12,
                                 ),
@@ -205,17 +206,17 @@ class _AlarmOverlayState extends State<AlarmOverlay>
                             shape: BoxShape.circle,
                             color: Colors.red,
                           ),
-                          child: const Column(
+                          child: Column(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.alarm_off,
                                 color: Colors.white,
                                 size: 50,
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               Text(
-                                'FERMA',
-                                style: TextStyle(
+                                'stop_btn'.tr(),
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,

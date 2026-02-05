@@ -54,7 +54,7 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(_isEditing ? 'Modifica Task' : 'Nuovo Task'),
+      title: Text(_isEditing ? 'edit_task'.tr() : 'new_task'.tr()),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -64,16 +64,16 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
               // Nome task
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome Task *',
-                  hintText: 'Es: Creare API backend',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.assignment),
+                decoration: InputDecoration(
+                  labelText: 'task_name_label'.tr(),
+                  hintText: 'task_name_hint'.tr(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.assignment),
                 ),
                 textCapitalization: TextCapitalization.sentences,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Inserisci il nome del task';
+                    return 'task_name_required'.tr();
                   }
                   return null;
                 },
@@ -83,7 +83,7 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
               const SizedBox(height: 16),
 
               ListTile(
-                title: const Text('Data Inizio'),
+                title: Text('start_date_label'.tr()),
                 subtitle: Text(_formatDate(_startDate)),
                 leading: const Icon(Icons.calendar_today),
                 trailing: const Icon(Icons.edit),
@@ -97,7 +97,7 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
               const SizedBox(height: 12),
 
               ListTile(
-                title: const Text('Data Scadenza'),
+                title: Text('due_date_label'.tr()),
                 subtitle: Text(_formatDate(_endDate)),
                 leading: const Icon(Icons.event),
                 trailing: const Icon(Icons.edit),
@@ -131,11 +131,11 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
                   return TextFormField(
                     controller: controller,
                     focusNode: focusNode,
-                    decoration: const InputDecoration(
-                      labelText: 'Assegnato a (opzionale)',
-                      hintText: 'Es: Mario Rossi',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person),
+                    decoration: InputDecoration(
+                      labelText: 'assigned_to_label'.tr(),
+                      hintText: 'assigned_to_hint'.tr(),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.person),
                     ),
                     textCapitalization: TextCapitalization.words,
                   );
@@ -148,11 +148,11 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: _saveTask,
-          child: Text(_isEditing ? 'Salva' : 'Aggiungi'),
+          child: Text(_isEditing ? 'save'.tr() : 'add'.tr()),
         ),
       ],
     );
@@ -164,7 +164,7 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
       initialDate: _startDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
-      helpText: 'Seleziona data inizio',
+      helpText: 'select_start_date'.tr(),
     );
 
     if (picked != null && picked != _startDate) {
@@ -183,7 +183,7 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
       initialDate: _endDate.isBefore(_startDate) ? _startDate : _endDate,
       firstDate: _startDate,
       lastDate: DateTime(2030),
-      helpText: 'Seleziona data scadenza',
+      helpText: 'select_due_date'.tr(),
     );
 
     if (picked != null && picked != _endDate) {
@@ -200,9 +200,12 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
     }
 
     if (_endDate.isBefore(_startDate)) {
-      _showError('La data di scadenza deve essere dopo la data di inizio');
+      _showError('due_date_after_start'.tr());
       return;
     }
+
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
 
     try {
       if (_isEditing) {
@@ -229,11 +232,11 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
       widget.onSaved();
 
       if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
+        navigator.pop();
+        messenger.showSnackBar(
           SnackBar(
             content: Text(
-              _isEditing ? 'Task aggiornato' : 'Task creato',
+              _isEditing ? 'task_updated'.tr() : 'task_created'.tr(),
             ),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
@@ -248,7 +251,7 @@ class _TaskAddEditDialogState extends State<TaskAddEditDialog> {
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Errore: $message'),
+        content: Text('error_msg'.tr(namedArgs: {'error': message})),
         backgroundColor: Colors.orange,
         behavior: SnackBarBehavior.floating,
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_notes/controllers/pin_security_presenter.dart';
 import '../controllers/password_generator_presenter.dart';
 import '../states/password_model.dart';
@@ -71,11 +72,11 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✓ Password copiata negli appunti'),
+        SnackBar(
+          content: Text('password_copied'.tr()),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -125,7 +126,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Generatore Password'),
+        title: Text('password_generator_title'.tr()),
         actions: [
           IconButton(
             icon: const Icon(Icons.lock),
@@ -137,14 +138,14 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
                 Navigator.of(context).pushReplacementNamed('/pin_unlock');
               }
             },
-            tooltip: 'Blocca',
+            tooltip: 'lock_btn'.tr(),
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Genera', icon: Icon(Icons.password, size: 20)),
-            Tab(text: 'Cronologia', icon: Icon(Icons.history, size: 20)),
+          tabs: [
+            Tab(text: 'tab_generate'.tr(), icon: const Icon(Icons.password, size: 20)),
+            Tab(text: 'tab_history_pwd'.tr(), icon: const Icon(Icons.history, size: 20)),
           ],
         ),
       ),
@@ -194,8 +195,8 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
           TextField(
             controller: _nameController,
             decoration: InputDecoration(
-              labelText: 'Nome password (opzionale)',
-              hintText: 'es. Gmail, Netflix, Banca...',
+              labelText: 'password_name_label'.tr(),
+              hintText: 'password_name_hint'.tr(),
               prefixIcon: const Icon(Icons.label_outline),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -211,9 +212,9 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
           ElevatedButton.icon(
             onPressed: _generatePassword,
             icon: const Icon(Icons.refresh, size: 28),
-            label: const Text(
-              'Genera Password',
-              style: TextStyle(fontSize: 18),
+            label: Text(
+              'generate_password_btn'.tr(),
+              style: const TextStyle(fontSize: 18),
             ),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -239,14 +240,14 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
               color: Theme.of(context).disabledColor,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Nessuna password in cronologia',
-              style: TextStyle(fontSize: 16),
+            Text(
+              'no_passwords_history'.tr(),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Genera la tua prima password sicura',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+            Text(
+              'generate_first_password'.tr(),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
         ),
@@ -262,7 +263,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${_presenter.history.length} password salvate',
+                  'passwords_saved'.tr(namedArgs: {'count': '${_presenter.history.length}'}),
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -271,7 +272,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
                 TextButton.icon(
                   onPressed: _clearAllHistory,
                   icon: const Icon(Icons.delete_sweep),
-                  label: const Text('Cancella tutto'),
+                  label: Text('clear_all_history_pwd'.tr()),
                 ),
               ],
             ),
@@ -304,19 +305,19 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma'),
-        content: const Text('Eliminare tutta la cronologia?'),
+        title: Text('confirm'.tr()),
+        content: Text('clear_history_confirm_pwd'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
@@ -332,19 +333,19 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma'),
-        content: const Text('Eliminare questa password dalla cronologia?'),
+        title: Text('confirm'.tr()),
+        content: Text('delete_password_confirm'.tr()),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),

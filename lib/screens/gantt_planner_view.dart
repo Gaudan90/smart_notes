@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_notes/data/gantt/task_filter_extension.dart';
 import '../controllers/gantt_planner_presenter.dart';
 import '../data/gantt/task_filter_enum.dart';
@@ -25,11 +26,9 @@ class _GanttPlannerViewState extends State<GanttPlannerView> {
     _loadData();
   }
 
-  // ← SEMPLIFICATO: Usa NotificationService esistente
   Future<void> _initializeNotifications() async {
     final notificationService = NotificationService();
 
-    // Inizializza service nel presenter (già configurato!)
     await _presenter.initializeNotifications(
       notificationService.flutterLocalNotificationsPlugin,
     );
@@ -45,7 +44,7 @@ class _GanttPlannerViewState extends State<GanttPlannerView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mini Planner'),
+        title: Text('gantt_title'.tr()),
         elevation: 2,
       ),
       body: _isLoading
@@ -67,7 +66,7 @@ class _GanttPlannerViewState extends State<GanttPlannerView> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddTaskDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Nuovo Task'),
+        label: Text('new_task'.tr()),
       ),
     );
   }
@@ -81,25 +80,25 @@ class _GanttPlannerViewState extends State<GanttPlannerView> {
         children: [
           _buildStatCard(
             icon: Icons.assignment,
-            label: 'Totali',
+            label: 'gantt_stat_total'.tr(),
             value: _presenter.totalTasks.toString(),
             color: Colors.blue,
           ),
           _buildStatCard(
             icon: Icons.play_circle_outline,
-            label: 'Attivi',
+            label: 'stat_active'.tr(),
             value: _presenter.activeTasks.toString(),
             color: Colors.orange,
           ),
           _buildStatCard(
             icon: Icons.check_circle,
-            label: 'Completati',
+            label: 'stat_completed'.tr(),
             value: _presenter.completedTasks.toString(),
             color: Colors.green,
           ),
           _buildStatCard(
             icon: Icons.warning_amber,
-            label: 'Scaduti',
+            label: 'stat_overdue'.tr(),
             value: _presenter.overdueTasks.toString(),
             color: Colors.red,
           ),
@@ -196,24 +195,24 @@ class _GanttPlannerViewState extends State<GanttPlannerView> {
   }
 
   Widget _buildEmptyState() {
-    String message;
+    String messageKey;
     IconData icon;
 
     switch (_presenter.currentFilter) {
       case TaskFilter.all:
-        message = 'Nessun task creato.\nPremi + per iniziare!';
+        messageKey = 'empty_all';
         icon = Icons.assignment_outlined;
         break;
       case TaskFilter.active:
-        message = 'Nessun task attivo';
+        messageKey = 'empty_active';
         icon = Icons.check_circle_outline;
         break;
       case TaskFilter.overdue:
-        message = 'Nessun task scaduto.\nBravo!';
+        messageKey = 'empty_overdue';
         icon = Icons.celebration;
         break;
       case TaskFilter.completed:
-        message = 'Nessun task completato';
+        messageKey = 'empty_completed';
         icon = Icons.pending_outlined;
         break;
     }
@@ -225,7 +224,7 @@ class _GanttPlannerViewState extends State<GanttPlannerView> {
           Icon(icon, size: 80, color: Colors.grey[300]),
           const SizedBox(height: 16),
           Text(
-            message,
+            messageKey.tr(),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
@@ -263,20 +262,19 @@ class _GanttPlannerViewState extends State<GanttPlannerView> {
     setState(() {});
   }
 
-  // Toggle notifiche task
   Future<void> _toggleNotifications(String id) async {
+    final messenger = ScaffoldMessenger.of(context);
     await _presenter.toggleTaskNotifications(id);
     setState(() {});
 
-    // Feedback visivo
     final task = _presenter.getTaskById(id);
     if (task != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(
           content: Text(
             task.notificationsEnabled
-                ? 'Notifiche attivate per "${task.name}"'
-                : 'Notifiche disattivate per "${task.name}"',
+                ? 'notifications_enabled'.tr(namedArgs: {'name': task.name})
+                : 'notifications_disabled'.tr(namedArgs: {'name': task.name}),
           ),
           duration: const Duration(seconds: 2),
           behavior: SnackBarBehavior.floating,
@@ -286,35 +284,38 @@ class _GanttPlannerViewState extends State<GanttPlannerView> {
   }
 
   Future<void> _deleteTask(GanttTaskModel task) async {
+    final messenger = ScaffoldMessenger.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
-        content: Text('Vuoi eliminare il task "${task.name}"?'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text('delete_task_title'.tr()),
+        content: Text('delete_task_confirm'.tr(namedArgs: {'name': task.name})),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
     );
+
+    if (!mounted) return;
 
     if (confirmed == true) {
       await _presenter.deleteTask(task.id);
       setState(() {});
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✓ Task eliminato'),
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('task_deleted'.tr()),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
           ),

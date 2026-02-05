@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/shopping_list_presenter.dart';
 import '../controllers/supermarket_tracker_presenter.dart';
 import '../widget/shopping_list/shopping_list_tab.dart';
@@ -50,7 +51,7 @@ class _ShoppingListViewState extends State<ShoppingListView>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista Spesa'),
+        title: Text('shopping_list'.tr()),
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(isLandscape ? 60 : 76),
           child: TabBar(
@@ -61,15 +62,15 @@ class _ShoppingListViewState extends State<ShoppingListView>
             ),
             indicatorSize: TabBarIndicatorSize.label,
             tabs: isLandscape
-                ? const [
-              Tab(text: 'Lista'),
-              Tab(text: 'Statistiche'),
-              Tab(text: 'Supermercati'),
+                ? [
+              Tab(text: 'tab_list'.tr()),
+              Tab(text: 'tab_statistics'.tr()),
+              Tab(text: 'tab_supermarkets'.tr()),
             ]
-                : const [
-              Tab(text: 'Lista', icon: Icon(Icons.shopping_cart, size: 20)),
-              Tab(text: 'Statistiche', icon: Icon(Icons.analytics, size: 20)),
-              Tab(text: 'Supermercati', icon: Icon(Icons.store, size: 20)),
+                : [
+              Tab(text: 'tab_list'.tr(), icon: const Icon(Icons.shopping_cart, size: 20)),
+              Tab(text: 'tab_statistics'.tr(), icon: const Icon(Icons.analytics, size: 20)),
+              Tab(text: 'tab_supermarkets'.tr(), icon: const Icon(Icons.store, size: 20)),
             ],
           ),
         ),

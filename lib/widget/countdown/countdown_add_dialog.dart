@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/countdown_presenter.dart';
 import 'emoji_icons.dart';
 
@@ -38,7 +39,6 @@ class _CountdownAddDialogState extends State<CountdownAddDialog> {
       initialDate: _selectedDate,
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 3650)),
-      locale: const Locale('it', 'IT'),
     );
 
     if (picked != null && picked != _selectedDate) {
@@ -110,8 +110,8 @@ class _CountdownAddDialogState extends State<CountdownAddDialog> {
       Navigator.pop(context);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✓ Countdown creato con successo'),
+        SnackBar(
+          content: Text('countdown_created'.tr()),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
         ),
@@ -122,7 +122,7 @@ class _CountdownAddDialogState extends State<CountdownAddDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nuovo Countdown'),
+      title: Text('new_countdown'.tr()),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -132,15 +132,15 @@ class _CountdownAddDialogState extends State<CountdownAddDialog> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Titolo *',
-                  hintText: 'Es: Esame di matematica',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.title),
+                decoration: InputDecoration(
+                  labelText: 'title_required'.tr(),
+                  hintText: 'title_hint'.tr(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.title),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Inserisci un titolo';
+                    return 'enter_title'.tr();
                   }
                   return null;
                 },
@@ -151,11 +151,11 @@ class _CountdownAddDialogState extends State<CountdownAddDialog> {
 
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Descrizione (opzionale)',
-                  hintText: 'Aggiungi dettagli...',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.description),
+                decoration: InputDecoration(
+                  labelText: 'description_optional'.tr(),
+                  hintText: 'add_details'.tr(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.description),
                 ),
                 maxLines: 2,
                 textCapitalization: TextCapitalization.sentences,
@@ -163,39 +163,37 @@ class _CountdownAddDialogState extends State<CountdownAddDialog> {
 
               const SizedBox(height: 16),
 
-              // Data
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.calendar_today),
-                  title: const Text('Data'),
+                  title: Text('date'.tr()),
                   subtitle: Text(_formatDate(_selectedDate)),
                   trailing: TextButton(
                     onPressed: _selectDate,
-                    child: const Text('Cambia'),
+                    child: Text('change'.tr()),
                   ),
                 ),
               ),
 
               const SizedBox(height: 8),
 
-              // Ora
               Card(
                 child: ListTile(
                   leading: const Icon(Icons.access_time),
-                  title: const Text('Ora'),
+                  title: Text('time'.tr()),
                   subtitle: Text(_formatTime(_selectedTime)),
                   trailing: TextButton(
                     onPressed: _selectTime,
-                    child: const Text('Cambia'),
+                    child: Text('change'.tr()),
                   ),
                 ),
               ),
 
               const SizedBox(height: 16),
 
-              const Text(
-                'Icona (opzionale)',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              Text(
+                'icon_optional'.tr(),
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               SizedBox(
@@ -252,11 +250,11 @@ class _CountdownAddDialogState extends State<CountdownAddDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: _saveCountdown,
-          child: const Text('Crea'),
+          child: Text('create'.tr()),
         ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 
 class SupermarketAddDialog extends StatefulWidget {
@@ -72,7 +73,7 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
     final allSupermarkets = widget.presenter.allSupermarkets;
 
     return AlertDialog(
-      title: const Text('Aggiungi Acquisto'),
+      title: Text('add_purchase'.tr()),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -81,10 +82,10 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
             children: [
               DropdownButtonFormField<String>(
                 value: _selectedSupermarket,
-                decoration: const InputDecoration(
-                  labelText: 'Supermercato',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.store),
+                decoration: InputDecoration(
+                  labelText: 'supermarket'.tr(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.store),
                 ),
                 items: allSupermarkets.map((market) {
                   return DropdownMenuItem(
@@ -122,16 +123,16 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
                   return TextFormField(
                     controller: controller,
                     focusNode: focusNode,
-                    decoration: const InputDecoration(
-                      labelText: 'Prodotto',
-                      hintText: 'Es: Latte',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.shopping_basket),
+                    decoration: InputDecoration(
+                      labelText: 'product'.tr(),
+                      hintText: 'product_name_hint'.tr(),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.shopping_basket),
                     ),
                     textCapitalization: TextCapitalization.words,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Inserisci il nome del prodotto';
+                        return 'enter_product_name'.tr();
                       }
                       return null;
                     },
@@ -142,7 +143,7 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
               const SizedBox(height: 16),
 
               ListTile(
-                title: const Text('Data acquisto'),
+                title: Text('purchase_date'.tr()),
                 subtitle: Text(
                   '${_selectedDate.day}'
                       '/${_selectedDate.month}/${_selectedDate.year}',
@@ -163,21 +164,21 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
                     child: TextFormField(
                       controller: _quantityController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Quantità',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.add_circle_outline),
+                      decoration: InputDecoration(
+                        labelText: 'quantity'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.add_circle_outline),
                       ),
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                       ],
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Richiesto';
+                          return 'required'.tr();
                         }
                         final qty = int.tryParse(value);
                         if (qty == null || qty < 1) {
-                          return 'Min 1';
+                          return 'min_one'.tr();
                         }
                         return null;
                       },
@@ -190,11 +191,11 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      decoration: const InputDecoration(
-                        labelText: 'Prezzo €',
-                        hintText: 'Opzionale',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.euro),
+                      decoration: InputDecoration(
+                        labelText: 'price_euro'.tr(),
+                        hintText: 'optional'.tr(),
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.euro),
                       ),
                       inputFormatters: [
                         FilteringTextInputFormatter
@@ -211,7 +212,7 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -234,8 +235,8 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
               if (context.mounted) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Acquisto registrato'),
+                  SnackBar(
+                    content: Text('purchase_registered'.tr()),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
                   ),
@@ -244,17 +245,17 @@ class _SupermarketAddDialogState extends State<SupermarketAddDialog> {
             } else {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Compila tutti i campi obbligatori'),
+                  SnackBar(
+                    content: Text('fill_required_fields'.tr()),
                     backgroundColor: Colors.orange,
                     behavior: SnackBarBehavior.floating,
-                    duration: Duration(seconds: 2),
+                    duration: const Duration(seconds: 2),
                   ),
                 );
               }
             }
           },
-          child: const Text('Aggiungi'),
+          child: Text('add'.tr()),
         ),
       ],
     );

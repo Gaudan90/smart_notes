@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:smart_notes/controllers/pin_security_presenter.dart';
 
 class PinUnlockView extends StatefulWidget {
@@ -17,7 +18,7 @@ class _PinUnlockViewState extends State<PinUnlockView> {
   bool _isPinVisible = false;
   bool _isLoading = true;
   bool _showRecovery = false;
-  String? _securityQuestion;
+  String? _securityQuestionKey; // Chiave di traduzione
   int _failedAttempts = 0;
 
   @override
@@ -31,10 +32,10 @@ class _PinUnlockViewState extends State<PinUnlockView> {
     final attempts = await _manager.getFailedAttempts();
 
     if (shouldShow) {
-      final question = await _manager.getSecurityQuestion();
+      final questionKey = await _manager.getSecurityQuestionKey();
       setState(() {
         _showRecovery = true;
-        _securityQuestion = question;
+        _securityQuestionKey = questionKey;
         _failedAttempts = attempts;
         _isLoading = false;
       });
@@ -48,7 +49,7 @@ class _PinUnlockViewState extends State<PinUnlockView> {
 
   Future<void> _verifyPin() async {
     if (_pinController.text.length != 8) {
-      _showError('Il PIN deve essere di 8 cifre');
+      _showError('pin_must_8_digits'.tr());
       return;
     }
 
@@ -68,14 +69,14 @@ class _PinUnlockViewState extends State<PinUnlockView> {
       });
 
       if (attempts >= 3) {
-        final question = await _manager.getSecurityQuestion();
+        final questionKey = await _manager.getSecurityQuestionKey();
         setState(() {
           _showRecovery = true;
-          _securityQuestion = question;
+          _securityQuestionKey = questionKey;
         });
-        _showError('Troppi tentativi falliti. Rispondi alla domanda di sicurezza.');
+        _showError('too_many_attempts'.tr());
       } else {
-        _showError('PIN errato. Tentativi rimasti: ${3 - attempts}');
+        _showError('wrong_pin_attempts'.tr(namedArgs: {'count': '${3 - attempts}'}));
         _pinController.clear();
       }
     }
@@ -83,7 +84,7 @@ class _PinUnlockViewState extends State<PinUnlockView> {
 
   Future<void> _verifySecurityAnswer() async {
     if (_answerController.text.trim().isEmpty) {
-      _showError('Inserisci la risposta alla domanda di sicurezza');
+      _showError('enter_security_answer'.tr());
       return;
     }
 
@@ -102,7 +103,7 @@ class _PinUnlockViewState extends State<PinUnlockView> {
       }
     } else {
       setState(() => _isLoading = false);
-      _showError('Risposta errata. Riprova.');
+      _showError('wrong_answer_retry'.tr());
       _answerController.clear();
     }
   }
@@ -112,19 +113,19 @@ class _PinUnlockViewState extends State<PinUnlockView> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.check_circle, color: Colors.green, size: 28),
-            SizedBox(width: 8),
-            Text('Nuovo PIN Generato'),
+            const Icon(Icons.check_circle, color: Colors.green, size: 28),
+            const SizedBox(width: 8),
+            Text('new_pin_generated'.tr()),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'La tua risposta è corretta! È stato generato un nuovo PIN:',
-              style: TextStyle(fontSize: 15),
+            Text(
+              'answer_correct_new_pin'.tr(),
+              style: const TextStyle(fontSize: 15),
             ),
             const SizedBox(height: 16),
             Container(
@@ -146,9 +147,9 @@ class _PinUnlockViewState extends State<PinUnlockView> {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
-              'MEMORIZZA questo PIN. Non verrà mostrato nuovamente.',
-              style: TextStyle(
+            Text(
+              'memorize_pin_warning'.tr(),
+              style: const TextStyle(
                 fontSize: 13,
                 color: Colors.orange,
                 fontWeight: FontWeight.bold,
@@ -160,7 +161,7 @@ class _PinUnlockViewState extends State<PinUnlockView> {
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Ho memorizzato il PIN'),
+            child: Text('pin_memorized'.tr()),
           ),
         ],
       ),
@@ -188,7 +189,7 @@ class _PinUnlockViewState extends State<PinUnlockView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sblocca Password'),
+        title: Text('unlock_passwords'.tr()),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
@@ -211,9 +212,9 @@ class _PinUnlockViewState extends State<PinUnlockView> {
 
             if (!_showRecovery) ...[
               // === SCHERMATA PIN ===
-              const Text(
-                'Inserisci il PIN',
-                style: TextStyle(
+              Text(
+                'enter_pin'.tr(),
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -222,8 +223,8 @@ class _PinUnlockViewState extends State<PinUnlockView> {
               const SizedBox(height: 8),
               Text(
                 _failedAttempts > 0
-                    ? 'Tentativi falliti: $_failedAttempts/3'
-                    : 'Inserisci il tuo PIN di 8 cifre',
+                    ? 'failed_attempts_count'.tr(namedArgs: {'count': '$_failedAttempts'})
+                    : 'enter_8_digit_pin'.tr(),
                 style: TextStyle(
                   fontSize: 15,
                   color: _failedAttempts > 0 ? Colors.red : Colors.grey,
@@ -235,7 +236,7 @@ class _PinUnlockViewState extends State<PinUnlockView> {
               TextField(
                 controller: _pinController,
                 decoration: InputDecoration(
-                  labelText: 'PIN',
+                  labelText: 'pin_label'.tr(),
                   hintText: '••••••••',
                   prefixIcon: const Icon(Icons.pin, size: 28),
                   suffixIcon: IconButton(
@@ -268,9 +269,9 @@ class _PinUnlockViewState extends State<PinUnlockView> {
               ElevatedButton.icon(
                 onPressed: _verifyPin,
                 icon: const Icon(Icons.lock_open, size: 24),
-                label: const Text(
-                  'Sblocca',
-                  style: TextStyle(fontSize: 18),
+                label: Text(
+                  'unlock_btn'.tr(),
+                  style: const TextStyle(fontSize: 18),
                 ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -281,18 +282,18 @@ class _PinUnlockViewState extends State<PinUnlockView> {
               ),
             ] else ...[
               // === SCHERMATA RECOVERY ===
-              const Text(
-                'Recupero Accesso',
-                style: TextStyle(
+              Text(
+                'access_recovery'.tr(),
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Hai superato il numero di tentativi.\nRispondi alla domanda di sicurezza.',
-                style: TextStyle(fontSize: 15, color: Colors.grey),
+              Text(
+                'exceeded_attempts_msg'.tr(),
+                style: const TextStyle(fontSize: 15, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -308,16 +309,16 @@ class _PinUnlockViewState extends State<PinUnlockView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Domanda di Sicurezza:',
-                      style: TextStyle(
+                    Text(
+                      'security_question_label'.tr(),
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      _securityQuestion ?? '',
+                      _securityQuestionKey?.tr() ?? '',
                       style: const TextStyle(fontSize: 16),
                       softWrap: true,
                     ),
@@ -329,8 +330,8 @@ class _PinUnlockViewState extends State<PinUnlockView> {
               TextField(
                 controller: _answerController,
                 decoration: InputDecoration(
-                  labelText: 'Risposta',
-                  hintText: 'Inserisci la tua risposta',
+                  labelText: 'answer_label'.tr(),
+                  hintText: 'enter_your_answer'.tr(),
                   prefixIcon: const Icon(Icons.edit),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -344,9 +345,9 @@ class _PinUnlockViewState extends State<PinUnlockView> {
               ElevatedButton.icon(
                 onPressed: _verifySecurityAnswer,
                 icon: const Icon(Icons.check, size: 24),
-                label: const Text(
-                  'Verifica e Genera Nuovo PIN',
-                  style: TextStyle(fontSize: 16),
+                label: Text(
+                  'verify_generate_pin'.tr(),
+                  style: const TextStyle(fontSize: 16),
                 ),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -374,8 +375,8 @@ class _PinUnlockViewState extends State<PinUnlockView> {
                   Expanded(
                     child: Text(
                       _showRecovery
-                          ? 'Verrà generato un nuovo PIN casuale'
-                          : 'Dopo 3 tentativi falliti, dovrai usare la domanda di sicurezza',
+                          ? 'new_pin_will_generate'.tr()
+                          : 'after_3_attempts_info'.tr(),
                       style: const TextStyle(fontSize: 12, color: Colors.blue),
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'dart:async';
 import '../../states/countdown_model.dart';
 import 'emoji_icons.dart';
@@ -7,14 +8,12 @@ class CountdownCard extends StatefulWidget {
   final CountdownModel countdown;
   final VoidCallback onTap;
   final VoidCallback onDelete;
-  final VoidCallback? onExpired;
 
   const CountdownCard({
     super.key,
     required this.countdown,
     required this.onTap,
     required this.onDelete,
-    this.onExpired,
   });
 
   @override
@@ -23,30 +22,15 @@ class CountdownCard extends StatefulWidget {
 
 class _CountdownCardState extends State<CountdownCard> {
   Timer? _timer;
-  bool _wasExpired = false;
 
   @override
   void initState() {
     super.initState();
-    _wasExpired = widget.countdown.isExpired;
-
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       if (mounted) {
-        if (!_wasExpired && widget.countdown.isExpired) {
-          _wasExpired = true;
-          widget.onExpired?.call();
-        }
         setState(() {});
       }
     });
-  }
-
-  @override
-  void didUpdateWidget(CountdownCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.countdown.id != widget.countdown.id) {
-      _wasExpired = widget.countdown.isExpired;
-    }
   }
 
   @override
@@ -161,14 +145,13 @@ class _CountdownCardState extends State<CountdownCard> {
 
               const SizedBox(height: 12),
 
-              // Data target
               Row(
                 children: [
                   Icon(Icons.calendar_today, size: 14, color: Colors.grey[600]),
                   const SizedBox(width: 6),
                   Text(
                     _formatDate(countdown.targetDate),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 13,
                       color: Colors.white,
                     ),
@@ -206,7 +189,7 @@ class _CountdownCardState extends State<CountdownCard> {
         Icon(Icons.check_circle, color: color, size: 32),
         const SizedBox(width: 12),
         Text(
-          'COMPLETATO!',
+          'completed_label'.tr(),
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -229,10 +212,10 @@ class _CountdownCardState extends State<CountdownCard> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildTimeUnit(days.toString(), 'Giorni', color),
-            _buildTimeUnit(hours.toString().padLeft(2, '0'), 'Ore', color),
-            _buildTimeUnit(minutes.toString().padLeft(2, '0'), 'Minuti', color),
-            _buildTimeUnit(seconds.toString().padLeft(2, '0'), 'Secondi', color),
+            _buildTimeUnit(days.toString(), 'time_days'.tr(), color),
+            _buildTimeUnit(hours.toString().padLeft(2, '0'), 'time_hours'.tr(), color),
+            _buildTimeUnit(minutes.toString().padLeft(2, '0'), 'time_minutes'.tr(), color),
+            _buildTimeUnit(seconds.toString().padLeft(2, '0'), 'time_seconds'.tr(), color),
           ],
         ),
 
@@ -271,7 +254,7 @@ class _CountdownCardState extends State<CountdownCard> {
         const SizedBox(height: 4),
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 11,
             color: Colors.white,
             fontWeight: FontWeight.w500,
@@ -285,15 +268,15 @@ class _CountdownCardState extends State<CountdownCard> {
     final days = widget.countdown.daysRemaining;
 
     if (days == 0) {
-      return 'Manca pochissimo!';
+      return 'status_very_soon'.tr();
     } else if (days == 1) {
-      return 'Manca solo 1 giorno! Sii pronto!';
+      return 'status_one_day'.tr();
     } else if (days <= 7) {
-      return 'Tra $days giorni, ci siamo quasi!';
+      return 'status_days_left'.tr(namedArgs: {'days': '$days'});
     } else if (days <= 30) {
-      return 'Tra ${(days / 7).ceil()} settimane circa';
+      return 'status_weeks_left'.tr(namedArgs: {'weeks': '${(days / 7).ceil()}'});
     } else {
-      return 'Tra ${(days / 30).ceil()} mesi circa';
+      return 'status_months_left'.tr(namedArgs: {'months': '${(days / 30).ceil()}'});
     }
   }
 }

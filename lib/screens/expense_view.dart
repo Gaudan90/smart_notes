@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/expense_presenter.dart';
 import '../states/expense_stats.dart';
 
@@ -20,6 +21,23 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
   String _selectedCategory = ExpensePresenter.categories.first;
   late TabController _tabController;
 
+  // Mappa per tradurre le categorie (chiave interna -> chiave traduzione)
+  static const Map<String, String> _categoryTranslationKeys = {
+    'Spesa': 'cat_grocery',
+    'Trasporti': 'cat_transport',
+    'Svago': 'cat_entertainment',
+    'Bollette': 'cat_bills',
+    'Salute': 'cat_health',
+    'Abbigliamento': 'cat_clothing',
+    'Ristorante': 'cat_restaurant',
+    'Altro': 'cat_other',
+  };
+
+  String _translateCategory(String category) {
+    final key = _categoryTranslationKeys[category];
+    return key != null ? key.tr() : category;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -34,19 +52,6 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
     });
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
 
   void _showAddExpenseDialog() {
     _nameController.clear();
@@ -56,94 +61,110 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Nuova Spesa'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Descrizione',
-                  hintText: 'Es: Spesa al supermercato',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.shopping_bag),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _amountController,
-                decoration: const InputDecoration(
-                  labelText: 'Importo',
-                  hintText: '0.00',
-                  border: OutlineInputBorder(),
-                  prefixText: '€ ',
-                  prefixIcon: Icon(Icons.euro),
-                ),
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: Text('new_expense'.tr()),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'expense_description'.tr(),
+                      hintText: 'expense_description_hint'.tr(),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.shopping_bag),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _amountController,
+                    decoration: InputDecoration(
+                      labelText: 'amount'.tr(),
+                      hintText: '0.00',
+                      border: const OutlineInputBorder(),
+                      prefixText: '€ ',
+                      prefixIcon: const Icon(Icons.euro),
+                    ),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  DropdownButtonFormField<String>(
+                    value: _selectedCategory,
+                    decoration: InputDecoration(
+                      labelText: 'category'.tr(),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.category),
+                    ),
+                    items: ExpensePresenter.categories.map((category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(_translateCategory(category)),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setDialogState(() {
+                        _selectedCategory = value!;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  ListTile(
+                    title: Text('date'.tr()),
+                    subtitle: Text(
+                      '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                    ),
+                    trailing: const Icon(Icons.calendar_today),
+                    onTap: () async {
+                      final DateTime? picked = await showDatePicker(
+                        context: context,
+                        initialDate: _selectedDate,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        setDialogState(() {
+                          _selectedDate = picked;
+                        });
+                      }
+                    },
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
-                decoration: const InputDecoration(
-                  labelText: 'Categoria',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.category),
-                ),
-                items: ExpensePresenter.categories.map((category) {
-                  return DropdownMenuItem(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value!;
-                  });
-                },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('cancel'.tr()),
               ),
-              const SizedBox(height: 16),
-              ListTile(
-                title: const Text('Data'),
-                subtitle: Text(
-                  '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
-                ),
-                trailing: const Icon(Icons.calendar_today),
-                onTap: () => _selectDate(context),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  side: BorderSide(color: Colors.grey.shade300),
-                ),
+              ElevatedButton(
+                onPressed: () async {
+                  final amount = double.tryParse(_amountController.text);
+                  if (_nameController.text.isNotEmpty && amount != null && amount > 0) {
+                    await _presenter.addExpense(
+                      name: _nameController.text,
+                      amount: amount,
+                      date: _selectedDate,
+                      category: _selectedCategory,
+                    );
+                    setState(() {});
+                    if (context.mounted) Navigator.pop(context);
+                  }
+                },
+                child: Text('add'.tr()),
               ),
             ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annulla'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final amount = double.tryParse(_amountController.text);
-              if (_nameController.text.isNotEmpty && amount != null && amount > 0) {
-                await _presenter.addExpense(
-                  name: _nameController.text,
-                  amount: amount,
-                  date: _selectedDate,
-                  category: _selectedCategory,
-                );
-                setState(() {});
-                if (context.mounted) Navigator.pop(context);
-              }
-            },
-            child: const Text('Aggiungi'),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -188,12 +209,12 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Analizzatore Spese'),
+        title: Text('expense_analyzer'.tr()),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Spese', icon: Icon(Icons.list)),
-            Tab(text: 'Statistiche', icon: Icon(Icons.analytics)),
+          tabs: [
+            Tab(text: 'tab_expenses'.tr(), icon: const Icon(Icons.list)),
+            Tab(text: 'tab_statistics'.tr(), icon: const Icon(Icons.analytics)),
           ],
         ),
       ),
@@ -212,14 +233,14 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
                   Icons.account_balance_wallet_outlined,
                   size: 64,
                   color: Theme.of(context).colorScheme
-                      .onBackground.withValues(alpha: 0.3),
+                      .onSurface.withValues(alpha: 0.3),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Nessuna spesa registrata',
+                  'no_expenses'.tr(),
                   style: TextStyle(
                     color: Theme.of(context).colorScheme
-                        .onBackground.withValues(alpha: 0.5),
+                        .onSurface.withValues(alpha: 0.5),
                     fontSize: 16,
                   ),
                 ),
@@ -243,7 +264,7 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
                   ),
                   title: Text(expense.name),
                   subtitle: Text(
-                    '${expense.category} • ${expense.date.day}/${expense.date.month}/${expense.date.year}',
+                    '${_translateCategory(expense.category)} • ${expense.date.day}/${expense.date.month}/${expense.date.year}',
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -279,7 +300,6 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Cards statistiche principali
                   GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -289,27 +309,27 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
                     crossAxisSpacing: 8,
                     children: [
                       _buildStatCard(
-                        'Totale',
+                        'stat_total'.tr(),
                         '€ ${stats.total.toStringAsFixed(2)}',
                         Icons.account_balance_wallet,
                         Colors.blue,
                       ),
                       _buildStatCard(
-                        'Media',
+                        'stat_average'.tr(),
                         '€ ${stats.average.toStringAsFixed(2)}',
                         Icons.trending_flat,
                         Colors.orange,
                       ),
                       if (stats.highest != null)
                         _buildStatCard(
-                          'Più alta',
+                          'stat_highest'.tr(),
                           '€ ${stats.highest!.amount.toStringAsFixed(2)}',
                           Icons.arrow_upward,
                           Colors.red,
                         ),
                       if (stats.lowest != null)
                         _buildStatCard(
-                          'Più bassa',
+                          'stat_lowest'.tr(),
                           '€ ${stats.lowest!.amount.toStringAsFixed(2)}',
                           Icons.arrow_downward,
                           Colors.green,
@@ -319,10 +339,9 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
 
                   const SizedBox(height: 24),
 
-                  // Spese per categoria
                   if (stats.categoryTotals.isNotEmpty) ...[
                     Text(
-                      'Spese per Categoria',
+                      'expenses_by_category'.tr(),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -333,7 +352,7 @@ class _ExpenseViewState extends State<ExpenseView> with SingleTickerProviderStat
                       return Card(
                         child: ListTile(
                           leading: Icon(_getCategoryIcon(entry.key)),
-                          title: Text(entry.key),
+                          title: Text(_translateCategory(entry.key)),
                           subtitle: LinearProgressIndicator(
                             value: percentage / 100,
                             backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),

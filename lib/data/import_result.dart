@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 class ImportResult {
   final int imported;
   final int skipped;
@@ -9,14 +11,15 @@ class ImportResult {
     required this.total,
   });
 
+  /// Messaggio localizzato del risultato import
   String get message {
     if (imported == 0) {
-      return 'Nessun acquisto importato. Verifica il formato del file.';
+      return 'import_no_purchases'.tr();
     }
 
-    String msg = 'Importati $imported acquisti';
+    String msg = 'import_success'.tr(namedArgs: {'count': '$imported'});
     if (skipped > 0) {
-      msg += ' ($skipped righe saltate)';
+      msg += ' ${'import_skipped'.tr(namedArgs: {'skipped': '$skipped'})}';
     }
     return msg;
   }

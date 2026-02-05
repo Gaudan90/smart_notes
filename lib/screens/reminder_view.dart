@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/reminder_presenter.dart';
-import '../theme/theme_config.dart';
 
 class ReminderView extends StatefulWidget {
   const ReminderView({super.key});
@@ -52,6 +52,16 @@ class _ReminderViewState extends State<ReminderView> {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 
+  // Helper per generare titolo notifica tradotto
+  String _getNotificationTitle(String title) {
+    return 'notif_reminder_title'.tr(namedArgs: {'title': title});
+  }
+
+  // Helper per generare body notifica tradotto
+  String _getNotificationBody(String title) {
+    return 'notif_reminder_body'.tr(namedArgs: {'title': title});
+  }
+
   void _showAddReminderDialog() {
     _titleController.clear();
     _intervalController.clear();
@@ -60,27 +70,27 @@ class _ReminderViewState extends State<ReminderView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Nuovo Promemoria'),
+        title: Text('new_reminder'.tr()),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Attività',
-                  hintText: 'Es: Bere acqua',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: 'activity_label'.tr(),
+                  hintText: 'activity_hint'.tr(),
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _intervalController,
-                decoration: const InputDecoration(
-                  labelText: 'Ogni quante ore?',
-                  hintText: 'Es: 2',
-                  border: OutlineInputBorder(),
-                  suffixText: 'ore',
+                decoration: InputDecoration(
+                  labelText: 'every_how_many_hours'.tr(),
+                  hintText: 'every_hours_hint'.tr(),
+                  border: const OutlineInputBorder(),
+                  suffixText: 'hours_suffix'.tr(),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -90,7 +100,7 @@ class _ReminderViewState extends State<ReminderView> {
               ),
               const SizedBox(height: 16),
               ListTile(
-                title: const Text('Ora di inizio'),
+                title: Text('start_time_label'.tr()),
                 subtitle: Text(_formatTimeOfDay(_selectedTime)),
                 trailing: const Icon(Icons.access_time),
                 onTap: _selectTime,
@@ -105,22 +115,27 @@ class _ReminderViewState extends State<ReminderView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () async {
               final interval = int.tryParse(_intervalController.text);
               if (_titleController.text.isNotEmpty && interval != null && interval > 0) {
+                final title = _titleController.text;
                 await _presenter.addReminder(
-                  title: _titleController.text,
+                  title: title,
                   intervalHours: interval,
                   startTime: _formatTimeOfDay(_selectedTime),
+                  notificationTitle: _getNotificationTitle(title),
+                  notificationBody: _getNotificationBody(title),
+                  channelName: 'notif_reminders'.tr(),
+                  channelDescription: 'notif_reminders_desc'.tr(),
                 );
                 setState(() {});
                 Navigator.pop(context);
               }
             },
-            child: const Text('Aggiungi'),
+            child: Text('add'.tr()),
           ),
         ],
       ),
@@ -131,7 +146,7 @@ class _ReminderViewState extends State<ReminderView> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Orari per: $title'),
+        title: Text('schedule_for'.tr(namedArgs: {'title': title})),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -145,7 +160,7 @@ class _ReminderViewState extends State<ReminderView> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Chiudi'),
+            child: Text('close'.tr()),
           ),
         ],
       ),
@@ -156,7 +171,7 @@ class _ReminderViewState extends State<ReminderView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Promemoria Giornalieri'),
+        title: Text('daily_reminders'.tr()),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -170,27 +185,27 @@ class _ReminderViewState extends State<ReminderView> {
               size: 64,
               color: Theme.of(context)
                   .colorScheme
-                  .onBackground
+                  .onSurface
                   .withValues(alpha: 0.3),
             ),
             const SizedBox(height: 16),
             Text(
-              'Nessun promemoria',
+              'no_reminders'.tr(),
               style: TextStyle(
                 color: Theme.of(context)
                     .colorScheme
-                    .onBackground
+                    .onSurface
                     .withValues(alpha: 0.5),
                 fontSize: 16,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Aggiungi attività ricorrenti',
+              'add_recurring_activities'.tr(),
               style: TextStyle(
                 color: Theme.of(context)
                     .colorScheme
-                    .onBackground
+                    .onSurface
                     .withValues(alpha: 0.4),
                 fontSize: 14,
               ),
@@ -210,7 +225,7 @@ class _ReminderViewState extends State<ReminderView> {
                 backgroundColor: reminder.isActive
                     ? Theme.of(context).colorScheme.primary
                     : Colors.grey,
-                child: Icon(
+                child: const Icon(
                   Icons.notifications_active,
                   color: Colors.white,
                   size: 20,
@@ -225,7 +240,10 @@ class _ReminderViewState extends State<ReminderView> {
                 ),
               ),
               subtitle: Text(
-                'Ogni ${reminder.intervalHours} ore dalle ${reminder.startTime}',
+                'every_x_hours_from'.tr(namedArgs: {
+                  'hours': '${reminder.intervalHours}',
+                  'time': reminder.startTime,
+                }),
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -236,48 +254,29 @@ class _ReminderViewState extends State<ReminderView> {
                       reminder.scheduledTimes,
                       reminder.title,
                     ),
-                    tooltip: 'Vedi orari',
+                    tooltip: 'view_schedule'.tr(),
                   ),
                   Switch(
                     value: reminder.isActive,
                     onChanged: (value) async {
-                      await _presenter.toggleReminder(reminder.id);
+                      await _presenter.toggleReminder(
+                        reminder.id,
+                        notificationTitle: _getNotificationTitle(reminder.title),
+                        notificationBody: _getNotificationBody(reminder.title),
+                        channelName: 'notif_reminders'.tr(),
+                        channelDescription: 'notif_reminders_desc'.tr(),
+                      );
                       setState(() {});
                     },
                   ),
                   IconButton(
                     icon: Icon(
                       Icons.delete,
-                        color: AppTheme.defaultColors['red']!,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                     onPressed: () async {
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Conferma eliminazione'),
-                          content: Text(
-                            'Vuoi eliminare il promemoria "${reminder.title}"?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Annulla'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                              ),
-                              child: const Text('Elimina'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (confirm == true) {
-                        await _presenter.deleteReminder(reminder.id);
-                        setState(() {});
-                      }
+                      await _presenter.deleteReminder(reminder.id);
+                      setState(() {});
                     },
                   ),
                 ],

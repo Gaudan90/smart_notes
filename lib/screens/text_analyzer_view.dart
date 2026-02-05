@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/text_analyzer_presenter.dart';
 import '../states/text_analyzer_model.dart';
 import '../widget/text_analyzer/analysis_result_card.dart';
@@ -41,8 +42,8 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
 
     if (text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Inserisci del testo da analizzare'),
+        SnackBar(
+          content: Text('enter_text_to_analyze'.tr()),
           backgroundColor: Colors.orange,
         ),
       );
@@ -74,10 +75,10 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Testo incollato'),
+          SnackBar(
+            content: Text('text_pasted'.tr()),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 1),
+            duration: const Duration(seconds: 1),
           ),
         );
       }
@@ -103,12 +104,12 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Analizzatore Testi'),
+        title: Text('text_analyzer_title'.tr()),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Analizza', icon: Icon(Icons.analytics, size: 20)),
-            Tab(text: 'Cronologia', icon: Icon(Icons.history, size: 20)),
+          tabs: [
+            Tab(text: 'tab_analyze'.tr(), icon: const Icon(Icons.analytics, size: 20)),
+            Tab(text: 'tab_history_pwd'.tr(), icon: const Icon(Icons.history, size: 20)),
           ],
         ),
       ),
@@ -145,9 +146,9 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Testo da analizzare',
-                        style: TextStyle(
+                      Text(
+                        'text_to_analyze'.tr(),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -157,12 +158,12 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
                           IconButton(
                             icon: const Icon(Icons.paste, size: 20),
                             onPressed: _pasteFromClipboard,
-                            tooltip: 'Incolla',
+                            tooltip: 'paste_btn'.tr(),
                           ),
                           IconButton(
                             icon: const Icon(Icons.clear, size: 20),
                             onPressed: _clearText,
-                            tooltip: 'Cancella',
+                            tooltip: 'clear_btn'.tr(),
                           ),
                         ],
                       ),
@@ -172,7 +173,7 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
                   TextField(
                     controller: _textController,
                     decoration: InputDecoration(
-                      hintText: 'Incolla o digita il testo qui...',
+                      hintText: 'text_hint'.tr(),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -191,9 +192,9 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
           ElevatedButton.icon(
             onPressed: _analyzeText,
             icon: const Icon(Icons.analytics, size: 28),
-            label: const Text(
-              'Analizza Testo',
-              style: TextStyle(fontSize: 18),
+            label: Text(
+              'analyze_text_btn'.tr(),
+              style: const TextStyle(fontSize: 18),
             ),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
@@ -219,7 +220,7 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Incolla un testo per analizzarne parole, caratteri e statistiche',
+                    'text_analyzer_info'.tr(),
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.blue.shade700,
@@ -246,14 +247,14 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
               color: Theme.of(context).disabledColor,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Nessuna analisi in cronologia',
-              style: TextStyle(fontSize: 16),
+            Text(
+              'no_analysis_history'.tr(),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Analizza un testo per iniziare',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+            Text(
+              'analyze_to_start'.tr(),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
         ),
@@ -292,5 +293,4 @@ class _TextAnalyzerViewState extends State<TextAnalyzerView>
       ],
     );
   }
-
 }

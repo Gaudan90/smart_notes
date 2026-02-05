@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -7,8 +8,6 @@ import '../../states/gantt_task_model.dart';
 class GanttNotificationService {
   static const int _dailyNotificationId = 9001;
   static const String _channelId = 'gantt_planner_channel';
-  static const String _channelName = 'Mini Planner';
-  static const String _channelDescription = 'Notifiche progresso task giornaliere';
 
   final FlutterLocalNotificationsPlugin _notifications;
 
@@ -35,7 +34,7 @@ class GanttNotificationService {
         .where((t) => t.daysRemaining < 0)
         .length;
 
-    final String title = 'Mini Planner';
+    final String title = 'notif_gantt_title'.tr();
     final String body = _buildNotificationBody(
       activeTasks,
       urgentTasks,
@@ -48,14 +47,20 @@ class GanttNotificationService {
   String _buildNotificationBody(int active, int urgent, int overdue) {
     final List<String> parts = [];
 
-    parts.add('$active task ${active == 1 ? 'attivo' : 'attivi'}');
+    parts.add('notif_gantt_tasks_active'.tr(
+      namedArgs: {'count': '$active'},
+    ));
 
     if (urgent > 0) {
-      parts.add('$urgent in scadenza');
+      parts.add('notif_gantt_tasks_urgent'.tr(
+        namedArgs: {'count': '$urgent'},
+      ));
     }
 
     if (overdue > 0) {
-      parts.add('$overdue scaduti');
+      parts.add('notif_gantt_tasks_overdue'.tr(
+        namedArgs: {'count': '$overdue'},
+      ));
     }
 
     return parts.join(', ');
@@ -67,7 +72,7 @@ class GanttNotificationService {
     final now = tz.TZDateTime.now(location);
 
     var scheduledDate = tz.TZDateTime(
-      location, // ← Usa timezone locale invece di tz.local
+      location,
       now.year,
       now.month,
       now.day,
@@ -80,10 +85,10 @@ class GanttNotificationService {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       _channelId,
-      _channelName,
-      channelDescription: _channelDescription,
+      'notif_gantt_channel'.tr(),
+      channelDescription: 'notif_gantt_channel_desc'.tr(),
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
@@ -95,7 +100,7 @@ class GanttNotificationService {
       presentSound: true,
     );
 
-    const NotificationDetails details = NotificationDetails(
+    final NotificationDetails details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
@@ -112,14 +117,14 @@ class GanttNotificationService {
     );
 
     if (kDebugMode) {
-      print('DEBUG: Notifica Gantt schedulata per ${scheduledDate.toString()}');
+      print('DEBUG: Gantt notification scheduled for ${scheduledDate.toString()}');
     }
   }
 
   Future<void> cancelDailyNotification() async {
     await _notifications.cancel(_dailyNotificationId);
     if (kDebugMode) {
-      print('DEBUG: Notifica Gantt cancellata');
+      print('DEBUG: Gantt notification cancelled');
     }
   }
 

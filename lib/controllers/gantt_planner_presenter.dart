@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,7 +14,7 @@ class GanttPlannerPresenter {
   List<GanttTaskModel> _tasks = [];
   TaskFilter _currentFilter = TaskFilter.all;
 
-  // ← NUOVO: Notification service
+  // NUOVO: Notification service
   GanttNotificationService? _notificationService;
 
   List<GanttTaskModel> get tasks {
@@ -84,7 +85,7 @@ class GanttPlannerPresenter {
     if (name.trim().isEmpty) return;
 
     if (endDate.isBefore(startDate)) {
-      throw ArgumentError('La data di fine deve essere dopo la data di inizio');
+      throw ArgumentError('due_date_after_start'.tr());
     }
 
     final task = GanttTaskModel(
@@ -116,7 +117,7 @@ class GanttPlannerPresenter {
     final newStart = startDate ?? oldTask.startDate;
     final newEnd = endDate ?? oldTask.endDate;
     if (newEnd.isBefore(newStart)) {
-      throw ArgumentError('La data di fine deve essere dopo la data di inizio');
+      throw ArgumentError('due_date_after_start'.tr());
     }
 
     _tasks[index] = oldTask.copyWith(

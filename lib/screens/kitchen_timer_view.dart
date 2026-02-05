@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/kitchen_timer_presenter.dart';
+import '../data/notification_service.dart';
 import '../states/kitchen_timer_model.dart';
 import '../states/kitchen_timer_preset_model.dart';
 import '../widget/kitchen_timer/timer_card.dart';
 import '../widget/kitchen_timer/timer_presets_grid.dart';
 import '../widget/kitchen_timer/timer_history_tab.dart';
-import '../widget/kitchen_timer/timer_completed_overlay.dart';
 
 class KitchenTimerView extends StatefulWidget {
   const KitchenTimerView({super.key});
@@ -18,36 +19,24 @@ class KitchenTimerView extends StatefulWidget {
 class _KitchenTimerViewState extends State<KitchenTimerView>
     with SingleTickerProviderStateMixin {
   final _presenter = KitchenTimerPresenter();
+  final _notificationService = NotificationService();
+  final Set<String> _notifiedTimers = {}; // Per evitare notifiche duplicate
   late TabController _tabController;
   bool _isLoading = true;
-  OverlayEntry? _timerOverlay;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-
-    // Imposta il callback per quando un timer completa
-    _presenter.onTimerCompleted = _onTimerCompleted;
-
+    _tabController.addListener(_onTabChanged);
     _loadData();
   }
 
-  void _onTimerCompleted(KitchenTimerModel timer) {
-    if (_timerOverlay != null) return; // Già mostrando un overlay
-
-    _timerOverlay = OverlayEntry(
-      builder: (context) => TimerCompletedOverlay(
-        timer: timer,
-        onDismiss: () {
-          _timerOverlay?.remove();
-          _timerOverlay = null;
-          setState(() {}); // Refresh UI
-        },
-      ),
-    );
-
-    Overlay.of(context).insert(_timerOverlay!);
+  void _onTabChanged() {
+    // Aggiorna la UI quando cambia tab (per mostrare/nascondere FAB)
+    if (_tabController.indexIsChanging == false) {
+      setState(() {});
+    }
   }
 
   Future<void> _loadData() async {
@@ -60,7 +49,7 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
 
   @override
   void dispose() {
-    _timerOverlay?.remove();
+    _tabController.removeListener(_onTabChanged);
     _presenter.dispose();
     _tabController.dispose();
     super.dispose();
@@ -77,27 +66,27 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Nuovo Timer'),
+        title: Text('new_timer'.tr()),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome',
-                  hintText: 'es. Pasta, Studio, Pausa...',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.label),
+                decoration: InputDecoration(
+                  labelText: 'timer_name'.tr(),
+                  hintText: 'timer_name_hint'.tr(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.label),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: minutesController,
-                decoration: const InputDecoration(
-                  labelText: 'Minuti',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.timer),
+                decoration: InputDecoration(
+                  labelText: 'timer_minutes'.tr(),
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.timer),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -110,7 +99,7 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -119,8 +108,8 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
 
               if (name.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Inserisci un nome'),
+                  SnackBar(
+                    content: Text('enter_name'.tr()),
                     backgroundColor: Colors.orange,
                   ),
                 );
@@ -129,8 +118,8 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
 
               if (minutes == null || minutes <= 0) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Inserisci minuti validi'),
+                  SnackBar(
+                    content: Text('enter_valid_minutes'.tr()),
                     backgroundColor: Colors.orange,
                   ),
                 );
@@ -144,13 +133,13 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Timer "$name" creato'),
+                    content: Text('timer_created'.tr(namedArgs: {'name': name})),
                     backgroundColor: Colors.green,
                   ),
                 );
               }
             },
-            child: const Text('Crea'),
+            child: Text('create'.tr()),
           ),
         ],
       ),
@@ -161,12 +150,12 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Timer'),
+        title: Text('timer_title'.tr()),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Timer', icon: Icon(Icons.timer, size: 20)),
-            Tab(text: 'Cronologia', icon: Icon(Icons.history, size: 20)),
+          tabs: [
+            Tab(text: 'tab_timer'.tr(), icon: const Icon(Icons.timer, size: 20)),
+            Tab(text: 'tab_history'.tr(), icon: const Icon(Icons.history, size: 20)),
           ],
         ),
       ),
@@ -189,7 +178,7 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
           ? FloatingActionButton.extended(
         onPressed: () => _showCreateTimerDialog(),
         icon: const Icon(Icons.add),
-        label: const Text('Timer Custom'),
+        label: Text('custom_timer'.tr()),
       )
           : null,
     );
@@ -197,14 +186,13 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
 
   Widget _buildTimersTab() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Preset rapidi
-          const Text(
-            'Preset Rapidi',
-            style: TextStyle(
+          Text(
+            'quick_presets'.tr(),
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
@@ -216,7 +204,6 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
 
           const SizedBox(height: 24),
 
-          // Timer attivi
           if (_presenter.activeTimers.isEmpty) ...[
             const SizedBox(height: 40),
             Center(
@@ -228,14 +215,14 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
                     color: Theme.of(context).disabledColor,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Nessun timer attivo',
-                    style: TextStyle(fontSize: 16),
+                  Text(
+                    'no_active_timers'.tr(),
+                    style: const TextStyle(fontSize: 16),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Crea un timer per iniziare',
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                  Text(
+                    'create_timer_to_start'.tr(),
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
               ),
@@ -244,9 +231,9 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Timer Attivi',
-                  style: TextStyle(
+                Text(
+                  'active_timers'.tr(),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -264,6 +251,17 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
                 initialData: timer,
                 builder: (context, snapshot) {
                   final currentTimer = snapshot.data ?? timer;
+
+                  // Invia notifica quando il timer si completa
+                  if (currentTimer.state == TimerState.completed &&
+                      !_notifiedTimers.contains(currentTimer.id)) {
+                    _notifiedTimers.add(currentTimer.id);
+                    _notificationService.showInstantNotification(
+                      title: 'timer_title'.tr(),
+                      body: '${currentTimer.name} - ${'timer_completed'.tr()}',
+                    );
+                  }
+
                   return TimerCard(
                     timer: currentTimer,
                     onStart: () {
@@ -275,6 +273,7 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
                       setState(() {});
                     },
                     onReset: () {
+                      _notifiedTimers.remove(currentTimer.id);
                       _presenter.resetTimer(currentTimer.id);
                       setState(() {});
                     },
@@ -282,27 +281,28 @@ class _KitchenTimerViewState extends State<KitchenTimerView>
                       final confirm = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text('Elimina Timer'),
+                          title: Text('delete_timer'.tr()),
                           content: Text(
-                            'Vuoi eliminare il timer "${currentTimer.name}"?',
+                            'delete_timer_confirm'.tr(namedArgs: {'name': currentTimer.name}),
                           ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Annulla'),
+                              child: Text('cancel'.tr()),
                             ),
                             ElevatedButton(
                               onPressed: () => Navigator.pop(context, true),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.red,
                               ),
-                              child: const Text('Elimina'),
+                              child: Text('delete'.tr()),
                             ),
                           ],
                         ),
                       );
 
                       if (confirm == true && mounted) {
+                        _notifiedTimers.remove(currentTimer.id);
                         await _presenter.deleteTimer(currentTimer.id);
                         setState(() {});
                       }

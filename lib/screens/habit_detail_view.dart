@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../controllers/habit_tracker_presenter.dart';
 import '../states/habit_model.dart';
@@ -51,9 +52,19 @@ class _HabitDetailViewState extends State<HabitDetailView> {
   }
 
   String _getMonthName(DateTime date) {
-    const months = [
-      'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
-      'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+    final months = [
+      'month_january'.tr(),
+      'month_february'.tr(),
+      'month_march'.tr(),
+      'month_april'.tr(),
+      'month_may'.tr(),
+      'month_june'.tr(),
+      'month_july'.tr(),
+      'month_august'.tr(),
+      'month_september'.tr(),
+      'month_october'.tr(),
+      'month_november'.tr(),
+      'month_december'.tr(),
     ];
     return '${months[date.month - 1]} ${date.year}';
   }
@@ -77,16 +88,16 @@ class _HabitDetailViewState extends State<HabitDetailView> {
               final confirm = await showDialog<bool>(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Conferma'),
-                  content: const Text('Eliminare questa abitudine?'),
+                  title: Text('confirm'.tr()),
+                  content: Text('delete_habit_confirm'.tr()),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context, false),
-                      child: const Text('Annulla'),
+                      child: Text('cancel'.tr()),
                     ),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context, true),
-                      child: const Text('Elimina'),
+                      child: Text('delete'.tr()),
                     ),
                   ],
                 ),
@@ -130,17 +141,16 @@ class _HabitDetailViewState extends State<HabitDetailView> {
                 ),
                 const SizedBox(height: 16),
 
-                // Statistiche mensili
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildStatColumn('Completati',
+                    _buildStatColumn('completed_stat'.tr(),
                         '${stats.completedCount}', Icons.check_circle),
-                    _buildStatColumn('Mancanti',
+                    _buildStatColumn('missing_stat'.tr(),
                         '${stats.missingCount}', Icons.cancel),
-                    _buildStatColumn('Streak',
+                    _buildStatColumn('streak'.tr(),
                         '${stats.currentStreak}', Icons.local_fire_department),
-                    _buildStatColumn('Record',
+                    _buildStatColumn('record'.tr(),
                         '${stats.longestStreak}', Icons.emoji_events),
                   ],
                 ),

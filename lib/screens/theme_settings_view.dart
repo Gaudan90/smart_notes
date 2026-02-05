@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../theme/color_picker_painter.dart';
 import '../theme/theme_provider.dart';
 
@@ -55,16 +56,16 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Aggiungi Colore Personalizzato'),
+        title: Text('add_custom_color_title'.tr()),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: _customColorController,
-                decoration: const InputDecoration(
-                  labelText: 'Nome colore',
-                  hintText: 'Es: Azzurro cielo',
+                decoration: InputDecoration(
+                  labelText: 'color_name_label'.tr(),
+                  hintText: 'color_name_hint'.tr(),
                 ),
               ),
               const SizedBox(height: 20),
@@ -162,7 +163,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () {
@@ -175,7 +176,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                 _customColorController.clear();
               }
             },
-            child: const Text('Aggiungi'),
+            child: Text('add'.tr()),
           ),
         ],
       ),
@@ -188,7 +189,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Personalizza Tema'),
+        title: Text('theme_settings_title'.tr()),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -203,7 +204,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Modalità Tema',
+                      'theme_mode'.tr(),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 16),
@@ -212,21 +213,21 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                       onSelectionChanged: (Set<ThemeMode> modes) {
                         widget.themeProvider.setThemeMode(modes.first);
                       },
-                      segments: const [
+                      segments: [
                         ButtonSegment(
                           value: ThemeMode.light,
-                          icon: Icon(Icons.light_mode),
-                          label: Text('Chiaro'),
+                          icon: const Icon(Icons.light_mode),
+                          label: Text('theme_light'.tr()),
                         ),
                         ButtonSegment(
                           value: ThemeMode.dark,
-                          icon: Icon(Icons.dark_mode),
-                          label: Text('Scuro'),
+                          icon: const Icon(Icons.dark_mode),
+                          label: Text('theme_dark'.tr()),
                         ),
                         ButtonSegment(
                           value: ThemeMode.system,
-                          icon: Icon(Icons.auto_mode),
-                          label: Text('Sistema'),
+                          icon: const Icon(Icons.auto_mode),
+                          label: Text('theme_system'.tr()),
                         ),
                       ],
                     ),
@@ -248,13 +249,13 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Colore Tema',
+                          'theme_color'.tr(),
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         IconButton(
                           icon: const Icon(Icons.add_circle_outline),
                           onPressed: _showCustomColorDialog,
-                          tooltip: 'Aggiungi colore personalizzato',
+                          tooltip: 'add_custom_color'.tr(),
                         ),
                       ],
                     ),
@@ -316,7 +317,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Anteprima',
+                      'preview'.tr(),
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 16),
@@ -345,7 +346,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Colore Primario',
+                                  'primary_color'.tr(),
                                   style: TextStyle(
                                     color: Theme.of(context).colorScheme.onPrimary,
                                     fontWeight: FontWeight.bold,
@@ -360,7 +361,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                               Expanded(
                                 child: ElevatedButton(
                                   onPressed: () {},
-                                  child: const Text('Bottone'),
+                                  child: Text('button_label'.tr()),
                                 ),
                               ),
                               const SizedBox(width: 12),

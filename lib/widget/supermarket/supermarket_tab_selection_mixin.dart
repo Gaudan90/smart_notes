@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 
 mixin SupermarketTabSelectionMixin<T extends StatefulWidget> on State<T> {
@@ -12,7 +13,6 @@ mixin SupermarketTabSelectionMixin<T extends StatefulWidget> on State<T> {
   SupermarketTrackerPresenter get presenter;
   Future<void> Function() get onUpdate;
 
-  // Attiva/disattiva la modalità selezione multipla
   void toggleSelectionMode(String? purchaseId) {
     if (!isSelectionMode) {
       setSelectionState(true);
@@ -27,7 +27,6 @@ mixin SupermarketTabSelectionMixin<T extends StatefulWidget> on State<T> {
     }
   }
 
-  // Aggiunge/rimuove un elemento dalla selezione
   void toggleSelection(String purchaseId) {
     final newIds = Set<String>.from(selectedIds);
 
@@ -43,26 +42,27 @@ mixin SupermarketTabSelectionMixin<T extends StatefulWidget> on State<T> {
     updateSelectedIds(newIds);
   }
 
-  // Elimina tutti gli elementi selezionati
   Future<void> deleteSelected(BuildContext context) async {
     if (selectedIds.isEmpty) return;
 
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
-        content: Text('Eliminare ${selectedIds.length} acquisti selezionati?'),
+        title: Text('confirm_deletion'.tr()),
+        content: Text('delete_selected_confirm'.tr(namedArgs: {
+          'count': '${selectedIds.length}'
+        })),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
@@ -82,7 +82,7 @@ mixin SupermarketTabSelectionMixin<T extends StatefulWidget> on State<T> {
 
       if (context.mounted) {
         showSnackBarMessage(
-          '$count acquisti eliminati',
+          'purchases_deleted'.tr(namedArgs: {'count': '$count'}),
           Colors.green,
         );
       }

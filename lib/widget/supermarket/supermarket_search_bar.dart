@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SupermarketSearchBar extends StatelessWidget {
   final bool isLandscape;
@@ -43,7 +44,7 @@ class SupermarketSearchBar extends StatelessWidget {
           child: TextField(
             controller: controller,
             decoration: InputDecoration(
-              hintText: 'Cerca...',
+              hintText: 'search_hint'.tr(),
               hintStyle: const TextStyle(fontSize: 12),
               prefixIcon: const Icon(Icons.search, size: 16),
               suffixIcon: searchQuery.isNotEmpty
@@ -68,7 +69,6 @@ class SupermarketSearchBar extends StatelessWidget {
             onChanged: onChanged,
           ),
         ),
-        // Info inline in landscape
         if (purchaseCount != null && purchaseCount! > 0 && searchQuery.isEmpty) ...[
           const SizedBox(width: 8),
           Container(
@@ -107,7 +107,7 @@ class SupermarketSearchBar extends StatelessWidget {
           padding: const EdgeInsets.all(4),
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           onPressed: onToggleSort,
-          tooltip: isAlphabeticalSort ? 'Data' : 'A-Z',
+          tooltip: isAlphabeticalSort ? 'sort_by_date_short'.tr() : 'sort_az'.tr(),
         ),
       ],
     );
@@ -120,7 +120,7 @@ class SupermarketSearchBar extends StatelessWidget {
           child: TextField(
             controller: controller,
             decoration: InputDecoration(
-              hintText: 'Cerca...',
+              hintText: 'search_hint'.tr(),
               prefixIcon: const Icon(Icons.search),
               suffixIcon: searchQuery.isNotEmpty
                   ? IconButton(
@@ -146,20 +146,20 @@ class SupermarketSearchBar extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.upload_file),
             onPressed: onExport,
-            tooltip: 'Esporta TXT',
+            tooltip: 'export_txt'.tr(),
           ),
         ],
         if (onImportTxt != null)
           IconButton(
             icon: const Icon(Icons.download),
             onPressed: onImportTxt,
-            tooltip: 'Importa TXT',
+            tooltip: 'import_txt'.tr(),
           ),
         if (onClearAll != null)
           IconButton(
             icon: const Icon(Icons.delete_sweep),
             onPressed: onClearAll,
-            tooltip: 'Cancella tutto',
+            tooltip: 'clear_all'.tr(),
           ),
       ],
     );

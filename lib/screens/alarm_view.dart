@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../data/alarm_manager.dart';
 import '../states/alarm_model.dart';
 import '../widget/alarm_overlay.dart';
@@ -23,7 +24,15 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
   bool _repeatDaily = false;
   List<int> _selectedDays = [];
 
-  final List<String> _weekDays = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+  List<String> get _weekDays => [
+    'weekday_mon'.tr(),
+    'weekday_tue'.tr(),
+    'weekday_wed'.tr(),
+    'weekday_thu'.tr(),
+    'weekday_fri'.tr(),
+    'weekday_sat'.tr(),
+    'weekday_sun'.tr(),
+  ];
 
   @override
   void initState() {
@@ -126,23 +135,23 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
           final isNextDay = !_isRepeating && smartTime.day != _selectedDateTime.day;
 
           return AlertDialog(
-            title: const Text('Nuova Sveglia'),
+            title: Text('new_alarm'.tr()),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
                     controller: _titleController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nome sveglia',
-                      hintText: 'Es: Sveglia mattina',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: 'alarm_name'.tr(),
+                      hintText: 'alarm_name_hint'.tr(),
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 16),
 
                   ListTile(
-                    title: const Text('Ora'),
+                    title: Text('time'.tr()),
                     subtitle: Text(
                       '${_selectedDateTime.hour.toString().padLeft(2, '0')}:'
                           '${_selectedDateTime.minute.toString().padLeft(2, '0')}',
@@ -157,7 +166,7 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                   const SizedBox(height: 16),
 
                   SwitchListTile(
-                    title: const Text('Sveglia ripetuta'),
+                    title: Text('repeating_alarm'.tr()),
                     value: _isRepeating,
                     onChanged: (value) {
                       setDialogState(() {
@@ -172,7 +181,7 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
 
                   if (_isRepeating) ...[
                     RadioListTile<bool>(
-                      title: const Text('Tutti i giorni'),
+                      title: Text('every_day'.tr()),
                       value: true,
                       groupValue: _repeatDaily,
                       onChanged: (value) {
@@ -185,7 +194,7 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                       },
                     ),
                     RadioListTile<bool>(
-                      title: const Text('Giorni specifici'),
+                      title: Text('specific_days'.tr()),
                       value: false,
                       groupValue: _repeatDaily,
                       onChanged: (value) {
@@ -231,10 +240,9 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'L\'orario è già passato oggi.\n'
-                                  'La sveglia suonerà domani alle '
-                                  '${smartTime.hour.toString().padLeft(2, '0')}:'
-                                  '${smartTime.minute.toString().padLeft(2, '0')}',
+                              'time_passed_info'.tr(namedArgs: {
+                                'time': '${smartTime.hour.toString().padLeft(2, '0')}:${smartTime.minute.toString().padLeft(2, '0')}'
+                              }),
                               style: const TextStyle(fontSize: 13),
                             ),
                           ),
@@ -247,15 +255,15 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Annulla'),
+                child: Text('cancel'.tr()),
               ),
               ElevatedButton(
                 onPressed: () async {
                   if (_titleController.text.isNotEmpty) {
                     if (_isRepeating && !_repeatDaily && _selectedDays.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Seleziona almeno un giorno'),
+                        SnackBar(
+                          content: Text('select_at_least_one_day'.tr()),
                           backgroundColor: Colors.orange,
                         ),
                       );
@@ -273,7 +281,7 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Imposta'),
+                child: Text('set_alarm'.tr()),
               ),
             ],
           );
@@ -288,7 +296,7 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
           '${alarm.dateTime.minute.toString().padLeft(2, '0')}';
 
       if (alarm.repeatDaily) {
-        return '$time (Tutti i giorni)';
+        return '$time (${'all_days'.tr()})';
       } else if (alarm.repeatDays.isNotEmpty) {
         final days = alarm.repeatDays
             .map((d) => _weekDays[d - 1])
@@ -306,14 +314,14 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
 
     String dayText = '';
     if (isToday) {
-      dayText = 'Oggi';
+      dayText = 'today_at'.tr();
     } else if (isTomorrow) {
-      dayText = 'Domani';
+      dayText = 'tomorrow_at'.tr();
     } else {
       dayText = '${alarm.dateTime.day}/${alarm.dateTime.month}';
     }
 
-    return '$dayText alle ${alarm.dateTime.hour.toString().padLeft(2, '0')}:'
+    return '$dayText ${alarm.dateTime.hour.toString().padLeft(2, '0')}:'
         '${alarm.dateTime.minute.toString().padLeft(2, '0')}';
   }
 
@@ -323,26 +331,26 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sveglia Intelligente'),
+        title: Text('smart_alarm'.tr()),
         actions: [
           IconButton(
             icon: const Icon(Icons.bug_report),
             onPressed: () async {
               final now = DateTime.now();
               await _alarmManager.addAlarm(
-                title: 'Test 10 secondi',
+                title: 'Test 10 sec',
                 dateTime: now.add(const Duration(seconds: 10)),
               );
               setState(() {});
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Sveglia test impostata per tra 10 secondi'),
-                ),
-              );
+                  SnackBar(
+                    content: Text('test_alarm_set'.tr()),
+                  ),
+                );
               }
             },
-            tooltip: 'Test veloce (10 sec)',
+            tooltip: 'quick_test'.tr(),
           ),
         ],
       ),
@@ -375,9 +383,9 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Prossima sveglia',
-                          style: TextStyle(
+                        Text(
+                          'next_alarm'.tr(),
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
                           ),
@@ -416,9 +424,9 @@ class _AlarmViewState extends State<AlarmView> with WidgetsBindingObserver {
                     color: Theme.of(context).disabledColor,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Nessuna sveglia impostata',
-                    style: TextStyle(fontSize: 16),
+                  Text(
+                    'no_alarms_set'.tr(),
+                    style: const TextStyle(fontSize: 16),
                   ),
                 ],
               ),

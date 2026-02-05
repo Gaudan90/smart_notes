@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/todo_presenter.dart';
 import '../theme/theme_config.dart';
 
@@ -47,15 +48,15 @@ class _TodoListViewState extends State<TodoListView> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
+        title: Text('confirm_deletion'.tr()),
         content: Text(
-          'Vuoi eliminare "$todoText"?',
+          'delete_item_confirm'.tr(namedArgs: {'item': todoText}),
           style: const TextStyle(fontSize: 14),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -63,7 +64,7 @@ class _TodoListViewState extends State<TodoListView> {
               foregroundColor: Colors.white,
             ),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
@@ -76,7 +77,7 @@ class _TodoListViewState extends State<TodoListView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lista To-Do'),
+        title: Text('todo_list'.tr()),
         actions: [
           if (_presenter.todos.isNotEmpty)
             IconButton(
@@ -85,12 +86,12 @@ class _TodoListViewState extends State<TodoListView> {
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Conferma'),
-                    content: const Text('Vuoi eliminare tutte le attività?'),
+                    title: Text('confirm'.tr()),
+                    content: Text('delete_all_confirm'.tr()),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Annulla'),
+                        child: Text('cancel'.tr()),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -98,7 +99,7 @@ class _TodoListViewState extends State<TodoListView> {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () => Navigator.pop(context, true),
-                        child: const Text('Elimina tutto'),
+                        child: Text('delete_all'.tr()),
                       ),
                     ],
                   ),
@@ -109,7 +110,7 @@ class _TodoListViewState extends State<TodoListView> {
                   setState(() {});
                 }
               },
-              tooltip: 'Elimina tutto',
+              tooltip: 'delete_all_tooltip'.tr(),
             ),
         ],
       ),
@@ -124,9 +125,9 @@ class _TodoListViewState extends State<TodoListView> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: 'Aggiungi attività...',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      hintText: 'add_activity_hint'.tr(),
+                      border: const OutlineInputBorder(),
                     ),
                     onSubmitted: (_) => _addTodo(),
                   ),
@@ -155,7 +156,7 @@ class _TodoListViewState extends State<TodoListView> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Nessuna attività',
+                    'no_activities'.tr(),
                     style: TextStyle(
                       color: Theme.of(context)
                           .colorScheme

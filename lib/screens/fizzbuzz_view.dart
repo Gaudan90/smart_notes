@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/fizzbuzz_presenter.dart';
 
 class FizzBuzzView extends StatefulWidget {
@@ -11,11 +11,19 @@ class FizzBuzzView extends StatefulWidget {
 
 class _FizzBuzzViewState extends State<FizzBuzzView> {
   final _limitController = TextEditingController();
-  final _fizzController = TextEditingController(text: 'Studio');
-  final _buzzController = TextEditingController(text: 'Allenamento');
-  final _bothController = TextEditingController(text: 'Riposo');
+  late final TextEditingController _fizzController;
+  late final TextEditingController _buzzController;
+  late final TextEditingController _bothController;
   final _presenter = FizzBuzzPresenter();
   String _result = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fizzController = TextEditingController(text: 'fb_default_study'.tr());
+    _buzzController = TextEditingController(text: 'fb_default_workout'.tr());
+    _bothController = TextEditingController(text: 'fb_default_rest'.tr());
+  }
 
   void _generate() {
     setState(() {
@@ -32,7 +40,7 @@ class _FizzBuzzViewState extends State<FizzBuzzView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Routine Planner'),
+        title: Text('fb_title'.tr()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -48,48 +56,48 @@ class _FizzBuzzViewState extends State<FizzBuzzView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Configura la tua routine',
+                          'fb_configure_routine'.tr(),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 16),
                         TextField(
                           controller: _limitController,
-                          decoration: const InputDecoration(
-                            labelText: 'Numero di giorni',
-                            hintText: 'Es: 30',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: 'fb_number_of_days'.tr(),
+                            hintText: 'fb_days_hint'.tr(),
+                            border: const OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.number,
                         ),
                         const SizedBox(height: 12),
                         TextField(
                           controller: _fizzController,
-                          decoration: const InputDecoration(
-                            labelText: 'Ogni 3 giorni',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: 'fb_every_3_days'.tr(),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                         const SizedBox(height: 12),
                         TextField(
                           controller: _buzzController,
-                          decoration: const InputDecoration(
-                            labelText: 'Ogni 5 giorni',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: 'fb_every_5_days'.tr(),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                         const SizedBox(height: 12),
                         TextField(
                           controller: _bothController,
-                          decoration: const InputDecoration(
-                            labelText: 'Ogni 15 giorni',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: 'fb_every_15_days'.tr(),
+                            border: const OutlineInputBorder(),
                           ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton.icon(
                           onPressed: _generate,
                           icon: const Icon(Icons.event_repeat),
-                          label: const Text('Genera Routine'),
+                          label: Text('fb_generate_btn'.tr()),
                         ),
                       ],
                     ),
@@ -110,7 +118,7 @@ class _FizzBuzzViewState extends State<FizzBuzzView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'La tua routine',
+                            'fb_your_routine'.tr(),
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           const SizedBox(height: 8),

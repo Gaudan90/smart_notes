@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/countdown_presenter.dart';
 import '../widget/countdown/countdown_add_dialog.dart';
 import '../widget/countdown/countdown_card.dart';
@@ -34,53 +35,8 @@ class _CountdownViewState extends State<CountdownView> {
   Future<void> _loadCountdowns() async {
     setState(() => _isLoading = true);
     await _presenter.loadCountdowns();
-
-    await _presenter.rescheduleAllNotifications();
-
-    await _checkAndNotifyExpiredCountdowns();
-
     if (mounted) {
       setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _checkAndNotifyExpiredCountdowns() async {
-    final justExpired = _presenter.getJustExpiredCountdowns();
-    for (final countdown in justExpired) {
-      await _presenter.showInAppNotification(countdown);
-      if (mounted) {
-        _showExpiredSnackBar(countdown.title);
-      }
-    }
-  }
-
-  void _showExpiredSnackBar(String title) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.celebration, color: Colors.white),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text('"$title" è terminato!'),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 4),
-      ),
-    );
-  }
-
-  void _handleCountdownExpired(String countdownId) async {
-    final countdown = _presenter.getCountdownById(countdownId);
-    if (countdown != null && !countdown.notified) {
-      await _presenter.showInAppNotification(countdown);
-      if (mounted) {
-        _showExpiredSnackBar(countdown.title);
-        setState(() {});
-      }
     }
   }
 
@@ -112,19 +68,19 @@ class _CountdownViewState extends State<CountdownView> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
-        content: Text('Eliminare il countdown "$title"?'),
+        title: Text('confirm_deletion'.tr()),
+        content: Text('delete_countdown_confirm'.tr(namedArgs: {'title': title})),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
@@ -136,8 +92,8 @@ class _CountdownViewState extends State<CountdownView> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Countdown eliminato'),
+          SnackBar(
+            content: Text('countdown_deleted'.tr()),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -152,21 +108,21 @@ class _CountdownViewState extends State<CountdownView> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Conferma eliminazione'),
-        content: Text(
-            'Eliminare tutti i $expiredCount countdown completati?'
-        ),
+        title: Text('confirm_deletion'.tr()),
+        content: Text('delete_all_completed_confirm'.tr(namedArgs: {
+          'count': '$expiredCount'
+        })),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina tutti'),
+            child: Text('delete_all_btn'.tr()),
           ),
         ],
       ),
@@ -179,7 +135,9 @@ class _CountdownViewState extends State<CountdownView> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('$expiredCount countdown eliminati'),
+            content: Text('countdowns_deleted'.tr(namedArgs: {
+              'count': '$expiredCount'
+            })),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -213,7 +171,7 @@ class _CountdownViewState extends State<CountdownView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Countdown Obiettivi'),
+        title: Text('countdown_goals'.tr()),
         actions: [
           if (expiredCount > 0)
             IconButton(
@@ -226,11 +184,10 @@ class _CountdownViewState extends State<CountdownView> {
                 });
               },
               tooltip: _showExpired
-                  ? 'Mostra attivi ($activeCount)'
-                  : 'Mostra completati ($expiredCount)',
+                  ? 'show_active'.tr(namedArgs: {'count': '$activeCount'})
+                  : 'show_completed'.tr(namedArgs: {'count': '$expiredCount'}),
             ),
 
-          // Menu opzioni
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'delete_expired') {
@@ -245,7 +202,9 @@ class _CountdownViewState extends State<CountdownView> {
                     children: [
                       const Icon(Icons.delete_sweep, color: Colors.red),
                       const SizedBox(width: 8),
-                      Text('Elimina completati ($expiredCount)'),
+                      Text('delete_completed'.tr(namedArgs: {
+                        'count': '$expiredCount'
+                      })),
                     ],
                   ),
                 ),
@@ -255,14 +214,13 @@ class _CountdownViewState extends State<CountdownView> {
       ),
       body: Column(
         children: [
-          // Barra di ricerca
           if (_presenter.countdowns.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(16),
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Cerca countdown...',
+                  hintText: 'search_countdown'.tr(),
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
@@ -283,7 +241,6 @@ class _CountdownViewState extends State<CountdownView> {
               ),
             ),
 
-          // Info card
           if (!_showExpired && activeCount > 0)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -302,8 +259,7 @@ class _CountdownViewState extends State<CountdownView> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        '$activeCount ${activeCount == 1 ? 'obiettivo attivo' :
-                        'obiettivi attivi'}',
+                        '$activeCount ${activeCount == 1 ? 'active_goal'.tr() : 'active_goals'.tr()}',
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -317,7 +273,6 @@ class _CountdownViewState extends State<CountdownView> {
 
           const SizedBox(height: 8),
 
-          // Lista countdown
           Expanded(
             child: filteredCountdowns.isEmpty
                 ? _buildEmptyState()
@@ -333,7 +288,6 @@ class _CountdownViewState extends State<CountdownView> {
                     countdown.id,
                     countdown.title,
                   ),
-                  onExpired: () => _handleCountdownExpired(countdown.id),
                 );
               },
             ),
@@ -343,7 +297,7 @@ class _CountdownViewState extends State<CountdownView> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Nuovo Obiettivo'),
+        label: Text('new_goal'.tr()),
       ),
     );
   }
@@ -361,8 +315,8 @@ class _CountdownViewState extends State<CountdownView> {
           const SizedBox(height: 16),
           Text(
             _showExpired
-                ? 'Nessun obiettivo completato'
-                : 'Nessun countdown attivo',
+                ? 'no_completed_goals'.tr()
+                : 'no_active_countdown'.tr(),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w500,
@@ -371,8 +325,8 @@ class _CountdownViewState extends State<CountdownView> {
           const SizedBox(height: 8),
           Text(
             _showExpired
-                ? 'Gli obiettivi completati appariranno qui'
-                : 'Crea il tuo primo countdown!',
+                ? 'completed_goals_appear_here'.tr()
+                : 'create_first_countdown'.tr(),
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey[600],
@@ -383,7 +337,7 @@ class _CountdownViewState extends State<CountdownView> {
             ElevatedButton.icon(
               onPressed: _showAddDialog,
               icon: const Icon(Icons.add),
-              label: const Text('Crea Countdown'),
+              label: Text('create_countdown'.tr()),
             ),
           ],
         ],

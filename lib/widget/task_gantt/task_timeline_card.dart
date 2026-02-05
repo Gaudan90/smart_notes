@@ -18,6 +18,29 @@ class TaskTimelineCard extends StatelessWidget {
     required this.onToggleNotifications,
   });
 
+  String _getLocalizedCountdownText() {
+    if (task.completed) return 'countdown_completed'.tr();
+
+    final dayLabel = (int count) => count == 1
+        ? 'day_singular'.tr()
+        : 'days_plural'.tr();
+
+    if (task.daysRemaining < 0) {
+      final days = task.daysRemaining.abs();
+      return 'countdown_overdue'.tr(namedArgs: {
+        'days': '$days',
+        'dayLabel': dayLabel(days),
+      });
+    }
+
+    if (task.daysRemaining == 0) return 'countdown_expires_soon'.tr();
+
+    return 'countdown_remaining'.tr(namedArgs: {
+      'days': '${task.daysRemaining}',
+      'dayLabel': dayLabel(task.daysRemaining),
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -70,13 +93,13 @@ class TaskTimelineCard extends StatelessWidget {
                     ),
                     onPressed: onToggleNotifications,
                     tooltip: task.notificationsEnabled
-                        ? 'Disattiva notifiche'
-                        : 'Attiva notifiche',
+                        ? 'disable_notifications'.tr()
+                        : 'enable_notifications'.tr(),
                   ),
                   IconButton(
                     icon: const Icon(Icons.delete_outline, color: Colors.red),
                     onPressed: onDelete,
-                    tooltip: 'Elimina task',
+                    tooltip: 'delete_task'.tr(),
                   ),
                 ],
               ),
@@ -111,7 +134,7 @@ class TaskTimelineCard extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      task.countdownText,
+                      _getLocalizedCountdownText(),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,

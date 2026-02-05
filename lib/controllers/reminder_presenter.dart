@@ -51,10 +51,17 @@ class ReminderPresenter {
     return times;
   }
 
+  /// Aggiunge un promemoria
+  /// [notificationTitle] e [notificationBody] sono le stringhe tradotte per le notifiche
+  /// Es: notificationTitle = 'notif_reminder_title'.tr(namedArgs: {'title': title})
   Future<void> addReminder({
     required String title,
     required int intervalHours,
     required String startTime,
+    String? notificationTitle,
+    String? notificationBody,
+    String? channelName,
+    String? channelDescription,
   }) async {
     if (title.trim().isEmpty || intervalHours <= 0) return;
 
@@ -76,11 +83,22 @@ class ReminderPresenter {
       reminderId: reminder.id,
       title: reminder.title,
       times: reminder.scheduledTimes,
+      notificationTitle: notificationTitle,
+      notificationBody: notificationBody,
+      channelName: channelName ?? 'Reminders',
+      channelDescription: channelDescription ?? 'Channel for daily reminders',
     );
   }
 
-  // Toggle attivazione con gestione notifiche
-  Future<void> toggleReminder(String id) async {
+  /// Toggle attivazione con gestione notifiche
+  /// [notificationTitle] e [notificationBody] sono le stringhe tradotte per le notifiche
+  Future<void> toggleReminder(
+      String id, {
+        String? notificationTitle,
+        String? notificationBody,
+        String? channelName,
+        String? channelDescription,
+      }) async {
     final index = _reminders.indexWhere((r) => r.id == id);
     if (index != -1) {
       final reminder = _reminders[index];
@@ -95,6 +113,10 @@ class ReminderPresenter {
           reminderId: reminder.id,
           title: reminder.title,
           times: reminder.scheduledTimes,
+          notificationTitle: notificationTitle,
+          notificationBody: notificationBody,
+          channelName: channelName ?? 'Reminders',
+          channelDescription: channelDescription ?? 'Channel for daily reminders',
         );
       } else {
         // Cancella notifiche
@@ -135,13 +157,24 @@ class ReminderPresenter {
     }).toList();
   }
 
-  Future<void> rescheduleAllNotifications() async {
+  /// Rischedula tutte le notifiche
+  /// [getNotificationTitle] e [getNotificationBody] sono funzioni che generano le stringhe tradotte
+  Future<void> rescheduleAllNotifications({
+    String Function(String title)? getNotificationTitle,
+    String Function(String title)? getNotificationBody,
+    String? channelName,
+    String? channelDescription,
+  }) async {
     for (final reminder in _reminders) {
       if (reminder.isActive) {
         await _notificationService.scheduleMultipleDaily(
           reminderId: reminder.id,
           title: reminder.title,
           times: reminder.scheduledTimes,
+          notificationTitle: getNotificationTitle?.call(reminder.title),
+          notificationBody: getNotificationBody?.call(reminder.title),
+          channelName: channelName ?? 'Reminders',
+          channelDescription: channelDescription ?? 'Channel for daily reminders',
         );
       }
     }

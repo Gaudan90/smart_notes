@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/sentence_presenter.dart';
 
 class SentenceReverserView extends StatefulWidget {
@@ -24,7 +24,7 @@ class _SentenceReverserViewState extends State<SentenceReverserView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Riformulatore Frasi'),
+        title: Text('sr_title'.tr()),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -38,15 +38,15 @@ class _SentenceReverserViewState extends State<SentenceReverserView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Inserisci una frase',
+                      'sr_enter_sentence'.tr(),
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Es: Il gatto mangia il pesce',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: 'sr_input_hint'.tr(),
+                        border: const OutlineInputBorder(),
                       ),
                       maxLines: 3,
                     ),
@@ -54,7 +54,7 @@ class _SentenceReverserViewState extends State<SentenceReverserView> {
                     ElevatedButton.icon(
                       onPressed: _reverse,
                       icon: const Icon(Icons.swap_horiz),
-                      label: const Text('Inverti Parole'),
+                      label: Text('sr_reverse_btn'.tr()),
                     ),
                   ],
                 ),
@@ -72,7 +72,7 @@ class _SentenceReverserViewState extends State<SentenceReverserView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Frase invertita',
+                          'sr_reversed_sentence'.tr(),
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 8),

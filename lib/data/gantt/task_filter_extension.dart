@@ -1,16 +1,17 @@
-import 'package:smart_notes/data/gantt/task_filter_enum.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'task_filter_enum.dart';
 
 extension TaskFilterExtension on TaskFilter {
   String get label {
     switch (this) {
       case TaskFilter.all:
-        return 'Tutti';
+        return 'filter_all'.tr();
       case TaskFilter.active:
-        return 'Attivi';
+        return 'filter_active'.tr();
       case TaskFilter.overdue:
-        return 'Scaduti';
+        return 'filter_overdue'.tr();
       case TaskFilter.completed:
-        return 'Completati';
+        return 'filter_completed'.tr();
     }
   }
 }

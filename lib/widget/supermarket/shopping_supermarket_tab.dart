@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/shopping_list_presenter.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 import '../../states/supermarket_purchase_model.dart';
@@ -164,9 +165,9 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
     return AppBar(
       automaticallyImplyLeading: false,
       title: _isSelectionMode
-          ? Text('${_selectedIds.length} selezionati')
+          ? Text('selected_count'.tr(namedArgs: {'count': '${_selectedIds.length}'}))
           : Text(
-        _isAlphabeticalSort ? 'Ordinamento: A-Z' : 'Ordinamento: Data',
+        _isAlphabeticalSort ? 'sort_alphabetical'.tr() : 'sort_date'.tr(),
         style: const TextStyle(fontSize: 16),
       ),
       leading: _isSelectionMode
@@ -185,15 +186,15 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
             ),
             onPressed: _toggleSelectAll,
             tooltip: _selectedIds.length == _filteredAndSortedPurchases.length
-                ? 'Deseleziona tutti'
-                : 'Seleziona tutti',
+                ? 'deselect_all'.tr()
+                : 'select_all'.tr(),
           ),
           IconButton(
             icon: const Icon(Icons.delete, color: Colors.red),
             onPressed: _selectedIds.isNotEmpty
                 ? () => deleteSelected(context)
                 : null,
-            tooltip: 'Elimina selezionati',
+            tooltip: 'delete_selected'.tr(),
           ),
         ] else
           IconButton(
@@ -203,14 +204,13 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
             ),
             onPressed: _toggleSortOrder,
             tooltip: _isAlphabeticalSort
-                ? 'Ordina per data'
-                : 'Ordina alfabeticamente',
+                ? 'sort_by_date'.tr()
+                : 'sort_alphabetically'.tr(),
           ),
       ],
     );
   }
 
-  // Costruisce l'header con controlli e search bar
   Widget _buildHeader() {
     return Padding(
       padding: EdgeInsets.all(_isLandscape ? 6 : 16),
@@ -231,7 +231,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
 
           SizedBox(height: _isLandscape ? 6 : 12),
 
-          // Search bar
           SupermarketSearchBar(
             isLandscape: _isLandscape,
             controller: _searchController,
@@ -258,7 +257,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
             onToggleSort: _toggleSortOrder,
           ),
 
-          // Info card - SOLO in portrait
           if (!_isLandscape &&
               widget.presenter.purchases.isNotEmpty &&
               _searchQuery.isEmpty)
@@ -287,8 +285,9 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
             const SizedBox(width: 8),
             Expanded(
               child: Text(
-                'Totale: ${widget.presenter.purchases.length} '
-                    'acquisti registrati',
+                'total_purchases'.tr(namedArgs: {
+                  'count': '${widget.presenter.purchases.length}'
+                }),
                 style: TextStyle(
                   fontSize: 13,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -301,7 +300,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
     );
   }
 
-  // Costruisce la lista degli acquisti
   Widget _buildPurchasesList(List<SupermarketPurchaseModel> sortedPurchases) {
     return Expanded(
       child: sortedPurchases.isEmpty
@@ -339,7 +337,6 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
     );
   }
 
-  // Costruisce il FAB per aggiungere supermercato custom
   Widget? _buildFAB() {
     if (_isSelectionMode) return null;
 
@@ -349,26 +346,24 @@ class _ShoppingSupermarketTabState extends State<ShoppingSupermarketTab>
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // Mini FAB per eliminare supermercati
           if (widget.presenter.customSupermarkets.isNotEmpty)
             FloatingActionButton.small(
               onPressed: _showDeleteCustomSupermarkets,
               heroTag: 'delete_supermarkets',
               backgroundColor: Colors.red.shade400,
-              tooltip: 'Elimina supermercati',
+              tooltip: 'delete_supermarkets'.tr(),
               child: const Icon(Icons.delete_outline, size: 20),
             ),
 
           if (widget.presenter.customSupermarkets.isNotEmpty)
             const SizedBox(height: 12),
 
-          // FAB principale per aggiungere
           FloatingActionButton.extended(
             onPressed: showAddCustomSupermarket,
             heroTag: 'add_supermarket',
             icon: const Icon(Icons.add_business),
-            label: const Text('Supermercato'),
-            tooltip: 'Aggiungi supermercato personalizzato',
+            label: Text('supermarket'.tr()),
+            tooltip: 'add_custom_supermarket'.tr(),
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/habit_tracker_presenter.dart';
 import '../states/habit_model.dart';
 import 'habit_detail_view.dart';
@@ -44,7 +45,7 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            title: const Text('Nuova Abitudine'),
+            title: Text('new_habit'.tr()),
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -52,30 +53,30 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
                 children: [
                   TextField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nome abitudine',
-                      hintText: 'Es: Allenamento',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.fitness_center),
+                    decoration: InputDecoration(
+                      labelText: 'habit_name'.tr(),
+                      hintText: 'habit_name_hint'.tr(),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.fitness_center),
                     ),
                   ),
                   const SizedBox(height: 16),
 
                   TextField(
                     controller: _descriptionController,
-                    decoration: const InputDecoration(
-                      labelText: 'Descrizione (opzionale)',
-                      hintText: 'Obiettivo o note',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.notes),
+                    decoration: InputDecoration(
+                      labelText: 'description_optional'.tr(),
+                      hintText: 'goal_or_notes'.tr(),
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.notes),
                     ),
                     maxLines: 2,
                   ),
                   const SizedBox(height: 16),
 
-                  const Text(
-                    'Colore:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Text(
+                    'color_label'.tr(),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
 
@@ -114,7 +115,7 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Annulla'),
+                child: Text('cancel'.tr()),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -128,7 +129,7 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Crea'),
+                child: Text('create'.tr()),
               ),
             ],
           );
@@ -154,12 +155,12 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tracker Abitudini'),
+        title: Text('habit_tracker'.tr()),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Abitudini', icon: Icon(Icons.list)),
-            Tab(text: 'Panoramica', icon: Icon(Icons.dashboard)),
+          tabs: [
+            Tab(text: 'tab_habits'.tr(), icon: const Icon(Icons.list)),
+            Tab(text: 'tab_overview'.tr(), icon: const Icon(Icons.dashboard)),
           ],
         ),
       ),
@@ -175,7 +176,7 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddHabitDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Nuova Abitudine'),
+        label: Text('new_habit'.tr()),
       ),
     );
   }
@@ -192,14 +193,14 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
               color: Theme.of(context).disabledColor,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Nessuna abitudine',
-              style: TextStyle(fontSize: 16),
+            Text(
+              'no_habits'.tr(),
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Crea la tua prima abitudine da tracciare',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+            Text(
+              'create_first_habit'.tr(),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
         ),
@@ -279,7 +280,7 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Statistiche Globali',
+            'global_statistics'.tr(),
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -290,7 +291,7 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Abitudini',
+                  'habits'.tr(),
                   '${globalStats['totalHabits']}',
                   Icons.list,
                   Colors.blue,
@@ -299,7 +300,7 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatCard(
-                  'Giorni Totali',
+                  'total_days'.tr(),
                   '${globalStats['totalCompletedDays']}',
                   Icons.calendar_today,
                   Colors.green,
@@ -311,7 +312,7 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
           const SizedBox(height: 24),
 
           Text(
-            'Top Abitudini (Questo Mese)',
+            'top_habits_month'.tr(),
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -319,10 +320,10 @@ class _HabitTrackerViewState extends State<HabitTrackerView>
           const SizedBox(height: 16),
 
           if (topHabits.isEmpty)
-            const Center(
+            Center(
               child: Text(
-                'Inizia a tracciare le tue abitudini!',
-                style: TextStyle(color: Colors.grey),
+                'start_tracking_habits'.tr(),
+                style: const TextStyle(color: Colors.grey),
               ),
             )
           else

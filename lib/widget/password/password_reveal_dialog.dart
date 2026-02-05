@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // mostra una password sbloccata
 class PasswordRevealDialog extends StatelessWidget {
@@ -17,11 +18,11 @@ class PasswordRevealDialog extends StatelessWidget {
 
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('✓ Password copiata negli appunti'),
+        SnackBar(
+          content: Text('password_copied'.tr()),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -34,11 +35,11 @@ class PasswordRevealDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Row(
+      title: Row(
         children: [
-          Icon(Icons.visibility, color: Colors.green),
-          SizedBox(width: 8),
-          Text('Password Sbloccata'),
+          const Icon(Icons.visibility, color: Colors.green),
+          const SizedBox(width: 8),
+          Text('password_unlocked'.tr()),
         ],
       ),
       content: Column(
@@ -68,14 +69,14 @@ class PasswordRevealDialog extends StatelessWidget {
               Navigator.pop(context);
             },
             icon: const Icon(Icons.copy),
-            label: const Text('Copia'),
+            label: Text('copy_btn'.tr()),
           ),
         ],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Chiudi'),
+          child: Text('close'.tr()),
         ),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../states/event_model.dart';
 import 'event_calendar_helpers.dart';
 
@@ -68,8 +69,8 @@ class _EventAddDialogState extends State<EventAddDialog> {
 
     if (_recurrenceType == RecurrenceType.weekly && _selectedWeekDays.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Seleziona almeno un giorno della settimana'),
+        SnackBar(
+          content: Text('select_weekday'.tr()),
           backgroundColor: Colors.orange,
         ),
       );
@@ -95,7 +96,7 @@ class _EventAddDialogState extends State<EventAddDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Nuovo Evento'),
+      title: Text('new_event'.tr()),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -118,11 +119,11 @@ class _EventAddDialogState extends State<EventAddDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton(
           onPressed: _handleSubmit,
-          child: const Text('Crea Evento'),
+          child: Text('create_event'.tr()),
         ),
       ],
     );
@@ -131,11 +132,11 @@ class _EventAddDialogState extends State<EventAddDialog> {
   Widget _buildTitleField() {
     return TextField(
       controller: _titleController,
-      decoration: const InputDecoration(
-        labelText: 'Titolo evento',
-        hintText: 'Es: Corso di inglese',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.title),
+      decoration: InputDecoration(
+        labelText: 'event_title'.tr(),
+        hintText: 'event_title_hint'.tr(),
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.title),
       ),
     );
   }
@@ -143,11 +144,11 @@ class _EventAddDialogState extends State<EventAddDialog> {
   Widget _buildDescriptionField() {
     return TextField(
       controller: _descriptionController,
-      decoration: const InputDecoration(
-        labelText: 'Descrizione (opzionale)',
-        hintText: 'Dettagli evento',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.description),
+      decoration: InputDecoration(
+        labelText: 'description_optional'.tr(),
+        hintText: 'event_details'.tr(),
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.description),
       ),
       maxLines: 2,
     );
@@ -157,7 +158,7 @@ class _EventAddDialogState extends State<EventAddDialog> {
     return Column(
       children: [
         ListTile(
-          title: const Text('Data inizio'),
+          title: Text('start_date'.tr()),
           subtitle: Text(EventCalendarHelpers.formatDate(_startDate)),
           trailing: const Icon(Icons.calendar_today),
           onTap: () => _selectDate(true),
@@ -168,7 +169,7 @@ class _EventAddDialogState extends State<EventAddDialog> {
         ),
         const SizedBox(height: 8),
         ListTile(
-          title: const Text('Data fine'),
+          title: Text('end_date'.tr()),
           subtitle: Text(EventCalendarHelpers.formatDate(_endDate)),
           trailing: const Icon(Icons.calendar_today),
           onTap: () => _selectDate(false),
@@ -184,15 +185,15 @@ class _EventAddDialogState extends State<EventAddDialog> {
   Widget _buildRecurrenceDropdown() {
     return DropdownButtonFormField<RecurrenceType>(
       value: _recurrenceType,
-      decoration: const InputDecoration(
-        labelText: 'Frequenza',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.repeat),
+      decoration: InputDecoration(
+        labelText: 'frequency'.tr(),
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.repeat),
       ),
       items: RecurrenceType.values.map((type) {
         return DropdownMenuItem(
           value: type,
-          child: Text(type.displayName),
+          child: Text(EventCalendarHelpers.getRecurrenceDisplayName(type)),
         );
       }).toList(),
       onChanged: (value) {
@@ -218,8 +219,8 @@ class _EventAddDialogState extends State<EventAddDialog> {
       child: TextField(
         decoration: InputDecoration(
           labelText: _recurrenceType == RecurrenceType.daily
-              ? 'Ogni quanti giorni?'
-              : 'Ogni quanti mesi?',
+              ? 'every_how_many_days'.tr()
+              : 'every_how_many_months'.tr(),
           hintText: '1',
           border: const OutlineInputBorder(),
           prefixIcon: const Icon(Icons.numbers),
@@ -242,9 +243,9 @@ class _EventAddDialogState extends State<EventAddDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Giorni della settimana:',
-            style: TextStyle(fontWeight: FontWeight.bold),
+          Text(
+            'weekdays_label'.tr(),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -278,12 +279,12 @@ class _EventAddDialogState extends State<EventAddDialog> {
     }
 
     return TextField(
-      decoration: const InputDecoration(
-        labelText: 'Numero ripetizioni (opzionale)',
-        hintText: 'Es: 8 settimane',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.repeat_one),
-        helperText: 'Lascia vuoto per usare la data fine',
+      decoration: InputDecoration(
+        labelText: 'occurrences_optional'.tr(),
+        hintText: 'occurrences_hint'.tr(),
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.repeat_one),
+        helperText: 'occurrences_helper'.tr(),
       ),
       keyboardType: TextInputType.number,
       onChanged: (value) {

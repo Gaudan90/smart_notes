@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class SupermarketEmptyState extends StatelessWidget {
   final bool isLandscape;
@@ -25,14 +26,14 @@ class SupermarketEmptyState extends StatelessWidget {
           ),
           SizedBox(height: isLandscape ? 12 : 16),
           Text(
-            isSearching ? 'Nessun risultato' : 'Nessun acquisto registrato',
+            isSearching ? 'no_results'.tr() : 'no_purchases'.tr(),
             style: TextStyle(fontSize: isLandscape ? 14 : 16),
           ),
           const SizedBox(height: 8),
           Text(
             isSearching
-                ? 'Prova con un altro termine'
-                : 'Registra i tuoi acquisti per supermercato',
+                ? 'try_another_search'.tr()
+                : 'add_first_purchase'.tr(),
             style: TextStyle(
               fontSize: isLandscape ? 12 : 14,
               color: Colors.grey,
@@ -44,7 +45,7 @@ class SupermarketEmptyState extends StatelessWidget {
               onPressed: onAddFirst,
               icon: Icon(Icons.add, size: isLandscape ? 18 : 20),
               label: Text(
-                'Aggiungi primo acquisto',
+                'add_purchase'.tr(),
                 style: TextStyle(fontSize: isLandscape ? 13 : 14),
               ),
             ),

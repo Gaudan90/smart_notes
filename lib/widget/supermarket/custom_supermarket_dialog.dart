@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/supermarket_tracker_presenter.dart';
 
 class CustomSupermarketDialog extends StatefulWidget {
@@ -19,7 +20,6 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
   final _nameController = TextEditingController();
   Color _selectedColor = Colors.blue;
 
-  // Palette colori predefiniti
   static const List<Color> _colorPalette = [
     Colors.red,
     Colors.pink,
@@ -52,7 +52,7 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
     final name = _nameController.text.trim();
 
     if (name.isEmpty) {
-      _showError('Inserisci il nome del supermercato');
+      _showError('enter_product_name'.tr());
       return;
     }
 
@@ -68,7 +68,7 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✓ "$name" aggiunto'),
+            content: Text('supermarket_added'.tr()),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
           ),
@@ -99,7 +99,7 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
             color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(width: 12),
-          const Text('Nuovo Supermercato'),
+          Expanded(child: Text('add_custom_supermarket'.tr())),
         ],
       ),
       content: SingleChildScrollView(
@@ -107,25 +107,24 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Nome supermercato
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nome Supermercato',
-                hintText: 'Es: Esselunga',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.store),
+              decoration: InputDecoration(
+                labelText: 'supermarket_name'.tr(),
+                hintText: 'supermarket_name_hint'.tr(),
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.store),
               ),
               textCapitalization: TextCapitalization.words,
               autofocus: true,
+              onChanged: (_) => setState(() {}),
             ),
 
             const SizedBox(height: 24),
 
-            // Label colore
-            const Text(
-              'Colore Identificativo',
-              style: TextStyle(
+            Text(
+              'Color',
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -133,7 +132,6 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
 
             const SizedBox(height: 12),
 
-            // Colore selezionato
             Container(
               height: 50,
               decoration: BoxDecoration(
@@ -147,7 +145,7 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
               child: Center(
                 child: Text(
                   _nameController.text.isEmpty
-                      ? 'Anteprima'
+                      ? 'Preview'
                       : _nameController.text,
                   style: TextStyle(
                     color: _selectedColor.computeLuminance() > 0.5
@@ -162,7 +160,6 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
 
             const SizedBox(height: 16),
 
-            // Palette colori
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -212,12 +209,12 @@ class _CustomSupermarketDialogState extends State<CustomSupermarketDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Annulla'),
+          child: Text('cancel'.tr()),
         ),
         ElevatedButton.icon(
           onPressed: _save,
           icon: const Icon(Icons.add),
-          label: const Text('Aggiungi'),
+          label: Text('add'.tr()),
         ),
       ],
     );

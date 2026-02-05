@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../controllers/meal_plan_presenter.dart';
 import '../data/meal_data/dish_category.dart';
 import '../data/meal_data/meal_plan_config.dart';
@@ -61,18 +62,18 @@ class _MealPlanViewState extends State<MealPlanView>
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Aggiungi Piatto'),
+          title: Text('add_dish_title'.tr()),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nome piatto',
-                    hintText: 'es. Pasta al pesto',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.restaurant),
+                  decoration: InputDecoration(
+                    labelText: 'dish_name_label'.tr(),
+                    hintText: 'dish_name_hint'.tr(),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.restaurant),
                   ),
                   autofocus: true,
                   textCapitalization: TextCapitalization.sentences,
@@ -80,10 +81,10 @@ class _MealPlanViewState extends State<MealPlanView>
                 const SizedBox(height: 16),
                 DropdownButtonFormField<DishCategory>(
                   value: selectedCategory,
-                  decoration: const InputDecoration(
-                    labelText: 'Categoria',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.category),
+                  decoration: InputDecoration(
+                    labelText: 'category_label'.tr(),
+                    border: const OutlineInputBorder(),
+                    prefixIcon: const Icon(Icons.category),
                   ),
                   items: DishCategory.values.map((cat) {
                     return DropdownMenuItem(
@@ -111,26 +112,31 @@ class _MealPlanViewState extends State<MealPlanView>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Annulla'),
+              child: Text('cancel'.tr()),
             ),
             ElevatedButton(
               onPressed: () async {
                 final name = nameController.text.trim();
                 if (name.isNotEmpty) {
+                  final navigator = Navigator.of(context);
+                  final messenger = ScaffoldMessenger.of(context);
                   await _presenter.addDish(name, selectedCategory);
                   setState(() {});
                   if (mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    navigator.pop();
+                    messenger.showSnackBar(
                       SnackBar(
-                        content: Text('✓ "$name" aggiunto come ${selectedCategory.label}'),
+                        content: Text('dish_added'.tr(namedArgs: {
+                          'name': name,
+                          'category': selectedCategory.label,
+                        })),
                         backgroundColor: Colors.green,
                       ),
                     );
                   }
                 }
               },
-              child: const Text('Aggiungi'),
+              child: Text('add'.tr()),
             ),
           ],
         ),
@@ -141,8 +147,8 @@ class _MealPlanViewState extends State<MealPlanView>
   void _showGeneratePlanDialog() {
     if (_presenter.dishes.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Aggiungi almeno alcuni piatti prima di generare il piano'),
+        SnackBar(
+          content: Text('add_dishes_first'.tr()),
           backgroundColor: Colors.orange,
         ),
       );
@@ -153,20 +159,20 @@ class _MealPlanViewState extends State<MealPlanView>
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Genera Piano Settimanale'),
+          title: Text('generate_weekly_plan'.tr()),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Piatti disponibili: ${_presenter.dishes.length}',
+                'dishes_available'.tr(namedArgs: {'count': '${_presenter.dishes.length}'}),
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 16),
-              const Text('Seleziona i pasti da includere:'),
+              Text('select_meals_to_include'.tr()),
               const SizedBox(height: 8),
               CheckboxListTile(
-                title: const Text('🌅 Colazione'),
+                title: Text('meal_breakfast'.tr()),
                 value: _includeBreakfast,
                 onChanged: (value) {
                   setDialogState(() {
@@ -175,7 +181,7 @@ class _MealPlanViewState extends State<MealPlanView>
                 },
               ),
               CheckboxListTile(
-                title: const Text('☀️ Pranzo'),
+                title: Text('meal_lunch'.tr()),
                 value: _includeLunch,
                 onChanged: (value) {
                   setDialogState(() {
@@ -184,7 +190,7 @@ class _MealPlanViewState extends State<MealPlanView>
                 },
               ),
               CheckboxListTile(
-                title: const Text('🌙 Cena'),
+                title: Text('meal_dinner'.tr()),
                 value: _includeDinner,
                 onChanged: (value) {
                   setDialogState(() {
@@ -193,11 +199,11 @@ class _MealPlanViewState extends State<MealPlanView>
                 },
               ),
               if (!_includeBreakfast && !_includeLunch && !_includeDinner)
-                const Padding(
-                  padding: EdgeInsets.only(top: 8),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
                   child: Text(
-                    'Seleziona almeno un pasto',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    'select_at_least_one_meal'.tr(),
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
             ],
@@ -205,11 +211,13 @@ class _MealPlanViewState extends State<MealPlanView>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Annulla'),
+              child: Text('cancel'.tr()),
             ),
             ElevatedButton(
               onPressed: (_includeBreakfast || _includeLunch || _includeDinner)
                   ? () async {
+                final navigator = Navigator.of(context);
+                final messenger = ScaffoldMessenger.of(context);
                 try {
                   final config = MealPlanConfig(
                     dishes: _presenter.dishes,
@@ -224,19 +232,19 @@ class _MealPlanViewState extends State<MealPlanView>
                   });
 
                   if (mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('✓ Piano settimanale generato!'),
+                    navigator.pop();
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text('plan_generated'.tr()),
                         backgroundColor: Colors.green,
                       ),
                     );
                   }
                 } catch (e) {
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBar(
-                        content: Text('Errore: $e'),
+                        content: Text('error'.tr(namedArgs: {'error': '$e'})),
                         backgroundColor: Colors.red,
                       ),
                     );
@@ -244,7 +252,7 @@ class _MealPlanViewState extends State<MealPlanView>
                 }
               }
                   : null,
-              child: const Text('Genera'),
+              child: Text('generate_btn'.tr()),
             ),
           ],
         ),
@@ -256,12 +264,12 @@ class _MealPlanViewState extends State<MealPlanView>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Piano pasti settimanale'),
+        title: Text('meal_plan_title'.tr()),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Piatti', icon: Icon(Icons.restaurant_menu, size: 20)),
-            Tab(text: 'Piano', icon: Icon(Icons.calendar_month, size: 20)),
+          tabs: [
+            Tab(text: 'tab_dishes'.tr(), icon: const Icon(Icons.restaurant_menu, size: 20)),
+            Tab(text: 'tab_plan'.tr(), icon: const Icon(Icons.calendar_month, size: 20)),
           ],
         ),
         actions: [
@@ -269,7 +277,7 @@ class _MealPlanViewState extends State<MealPlanView>
             IconButton(
               icon: const Icon(Icons.share),
               onPressed: _sharePlan,
-              tooltip: 'Condividi',
+              tooltip: 'share_btn'.tr(),
             ),
         ],
       ),
@@ -294,14 +302,15 @@ class _MealPlanViewState extends State<MealPlanView>
       return FloatingActionButton.extended(
         onPressed: _showAddDishDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Aggiungi Piatto'),
+        label: Text('add_dish'.tr()),
       );
     } else {
       // Tab Piano
       return FloatingActionButton.extended(
         onPressed: _showGeneratePlanDialog,
         icon: const Icon(Icons.auto_awesome),
-        label: Text(_presenter.hasPlan ? 'Rigenera' : 'Genera Piano'),
+        label: Text(_presenter.hasPlan ?
+        'regenerate_btn'.tr() : 'generate_plan_btn'.tr()),
       );
     }
   }
@@ -350,7 +359,7 @@ class _MealPlanViewState extends State<MealPlanView>
               date: date,
               meals: meals,
             );
-          }).toList(),
+          }),
         ],
       ),
     );
@@ -367,20 +376,20 @@ class _MealPlanViewState extends State<MealPlanView>
             color: Theme.of(context).disabledColor,
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Nessun piano generato',
-            style: TextStyle(fontSize: 16),
+          Text(
+            'no_plan_generated'.tr(),
+            style: const TextStyle(fontSize: 16),
           ),
           const SizedBox(height: 8),
           Text(
-            'Aggiungi piatti e genera il piano',
+            'add_dishes_and_generate'.tr(),
             style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: _showGeneratePlanDialog,
             icon: const Icon(Icons.auto_awesome),
-            label: const Text('Genera Piano'),
+            label: Text('generate_plan_btn'.tr()),
           ),
         ],
       ),
@@ -401,9 +410,9 @@ class _MealPlanViewState extends State<MealPlanView>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  '📊 Piano Settimanale',
-                  style: TextStyle(
+                Text(
+                  'weekly_plan_header'.tr(),
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -411,7 +420,7 @@ class _MealPlanViewState extends State<MealPlanView>
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
                   onPressed: _showDeletePlanConfirm,
-                  tooltip: 'Elimina piano',
+                  tooltip: 'delete'.tr(),
                 ),
               ],
             ),
@@ -421,16 +430,19 @@ class _MealPlanViewState extends State<MealPlanView>
               runSpacing: 8,
               children: [
                 _buildStatChip(
-                  '${stats['totalMeals']} pasti',
+                  'meals_count'.tr(namedArgs: {'count': '${stats['totalMeals']}'}),
                   Icons.restaurant,
                   Colors.blue,
                 ),
                 if (plan.includeBreakfast)
-                  _buildStatChip('Colazione', Icons.wb_sunny, Colors.amber),
+                  _buildStatChip
+                    ('meal_type_breakfast'.tr(), Icons.wb_sunny, Colors.amber),
                 if (plan.includeLunch)
-                  _buildStatChip('Pranzo', Icons.lunch_dining, Colors.orange),
+                  _buildStatChip
+                    ('meal_type_lunch'.tr(), Icons.lunch_dining, Colors.orange),
                 if (plan.includeDinner)
-                  _buildStatChip('Cena', Icons.nightlight_round, Colors.purple),
+                  _buildStatChip
+                    ('meal_type_dinner'.tr(), Icons.nightlight_round, Colors.purple),
               ],
             ),
           ],
@@ -450,24 +462,26 @@ class _MealPlanViewState extends State<MealPlanView>
   Future<void> _showDeletePlanConfirm() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Elimina Piano'),
-        content: const Text('Vuoi eliminare il piano settimanale corrente?'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text('delete_plan_title'.tr()),
+        content: Text('delete_plan_confirm'.tr()),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annulla'),
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text('cancel'.tr()),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
             ),
-            child: const Text('Elimina'),
+            child: Text('delete'.tr()),
           ),
         ],
       ),
     );
+
+    if (!mounted) return;
 
     if (confirm == true) {
       await _presenter.clearPlan();
@@ -477,6 +491,7 @@ class _MealPlanViewState extends State<MealPlanView>
 
   Future<void> _sharePlan() async {
     final text = _presenter.exportPlan();
-    await Share.share(text, subject: 'Piano pasti settimanale');
+    await SharePlus.instance.share
+      (ShareParams(text: text, subject: 'share_plan_subject'.tr()));
   }
 }

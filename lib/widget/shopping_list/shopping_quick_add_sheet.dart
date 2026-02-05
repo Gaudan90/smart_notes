@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../controllers/shopping_list_presenter.dart';
 
 class ShoppingQuickAddSheet extends StatelessWidget {
@@ -20,7 +21,7 @@ class ShoppingQuickAddSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Prodotti Frequenti',
+            'frequent_products'.tr(),
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
