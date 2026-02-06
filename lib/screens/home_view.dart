@@ -7,6 +7,7 @@ import 'package:smart_notes/screens/text_analyzer_view.dart';
 import 'package:smart_notes/screens/theme_settings_view.dart';
 import 'package:smart_notes/screens/todo_list_view.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
+import '../data/language_options.dart';
 import '../widget/feature_card.dart';
 import '../widget/password/password_security_gate.dart';
 import 'alarm_view.dart';
@@ -34,14 +35,17 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   late AnimationController _controller;
   late List<Animation<double>> _animations;
 
-  static const _supportedLanguages = [
-    _LanguageOption(locale: Locale('en', 'US'), flag: '🇺🇸', labelKey: 'lang_en'),
-    _LanguageOption(locale: Locale('it', 'IT'), flag: '🇮🇹', labelKey: 'lang_it'),
-    _LanguageOption(locale: Locale('fr', 'FR'), flag: '🇫🇷', labelKey: 'lang_fr'),
-    _LanguageOption(locale: Locale('de', 'DE'), flag: '🇩🇪', labelKey: 'lang_de'),
-    _LanguageOption(locale: Locale('zh', 'CN'), flag: '🇨🇳', labelKey: 'lang_zh'),
-    _LanguageOption(locale: Locale('tr', 'TR'), flag: '🇹🇷', labelKey: 'lang_tr'),
-    _LanguageOption(locale: Locale('ar', 'SA'), flag: '🇸🇦', labelKey: 'lang_ar'),
+  // Lista riordinata: spagnolo dopo tedesco
+  static const List<LanguageOption> _supportedLanguages = [
+    LanguageOption(locale: Locale('en', 'US'), flag: '🇺🇸', labelKey: 'lang_en'),
+    LanguageOption(locale: Locale('it', 'IT'), flag: '🇮🇹', labelKey: 'lang_it'),
+    LanguageOption(locale: Locale('fr', 'FR'), flag: '🇫🇷', labelKey: 'lang_fr'),
+    LanguageOption(locale: Locale('de', 'DE'), flag: '🇩🇪', labelKey: 'lang_de'),
+    LanguageOption(locale: Locale('es', 'ES'), flag: '🇪🇸', labelKey: 'lang_es'), // Spostato qui
+    LanguageOption(locale: Locale('zh', 'CN'), flag: '🇨🇳', labelKey: 'lang_zh'),
+    LanguageOption(locale: Locale('tr', 'TR'), flag: '🇹🇷', labelKey: 'lang_tr'),
+    LanguageOption(locale: Locale('ar', 'SA'), flag: '🇸🇦', labelKey: 'lang_ar'),
+    LanguageOption(locale: Locale('ru', 'RU'), flag: '🇷🇺', labelKey: 'lang_ru'),
   ];
 
   @override
@@ -88,6 +92,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       case 'ar': return 'ع';
       case 'fr': return 'FR';
       case 'de': return 'DE';
+      case 'es': return 'ES';
+      case 'ru': return 'РУ';
       default: return langCode.toUpperCase();
     }
   }
@@ -97,6 +103,10 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.75,
+      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -112,7 +122,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Theme.of(sheetContext).colorScheme.onSurface.withValues(alpha: 0.3),
+                    color: Theme.of(sheetContext).colorScheme.onSurface
+                        .withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -126,31 +137,37 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                   ),
                 ),
                 const Divider(),
-                ..._supportedLanguages.map((lang) {
-                  final isSelected = currentLocale == lang.locale;
-                  return ListTile(
-                    leading: Text(
-                      lang.flag,
-                      style: const TextStyle(fontSize: 28),
-                    ),
-                    title: Text(
-                      lang.labelKey.tr(),
-                      style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                    trailing: isSelected
-                        ? Icon(
-                      Icons.check_circle,
-                      color: Theme.of(sheetContext).colorScheme.primary,
-                    )
-                        : null,
-                    onTap: () {
-                      context.setLocale(lang.locale);
-                      Navigator.pop(sheetContext);
-                    },
-                  );
-                }),
+                SizedBox(
+                  height: MediaQuery.of(sheetContext).size.height * 0.6,
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: _supportedLanguages.map((lang) {
+                      final isSelected = currentLocale == lang.locale;
+                      return ListTile(
+                        leading: Text(
+                          lang.flag,
+                          style: const TextStyle(fontSize: 28),
+                        ),
+                        title: Text(
+                          lang.labelKey.tr(),
+                          style: TextStyle(
+                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                        trailing: isSelected
+                            ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(sheetContext).colorScheme.primary,
+                        )
+                            : null,
+                        onTap: () {
+                          context.setLocale(lang.locale);
+                          Navigator.pop(sheetContext);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                ),
               ],
             ),
           ),
@@ -437,16 +454,4 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       ),
     );
   }
-}
-
-class _LanguageOption {
-  final Locale locale;
-  final String flag;
-  final String labelKey;
-
-  const _LanguageOption({
-    required this.locale,
-    required this.flag,
-    required this.labelKey,
-  });
 }

@@ -692,5 +692,7 @@
   "lang_ar": "العربية",
   "lang_fr": "Français",
   "lang_de": "Deutsch",
-  "select_language": "选择语言"
+  "select_language": "选择语言",
+  "lang_es": "Español",
+  "lang_ru": "Русский"
 }
