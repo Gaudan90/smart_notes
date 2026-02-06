@@ -19,11 +19,19 @@ void main() async {
     print('✅ AlarmBackgroundService initialized');
   }
   runApp(EasyLocalization(
-    supportedLocales: const [Locale('en', 'US'), Locale('it', 'IT')],
+    supportedLocales: const [
+      Locale('en', 'US'),
+      Locale('it', 'IT'),
+      Locale('zh', 'CN'),
+      Locale('tr', 'TR'),
+      Locale('ar', 'SA'),
+      Locale('fr', 'FR'),
+      Locale('de', 'DE'),
+    ],
     path: 'assets/translations',
     fallbackLocale: const Locale('en', 'US'),
     startLocale: const Locale('en', 'US'),
-    saveLocale: true, // Salva la lingua in SharedPreferences
+    saveLocale: true,
     child: const MyApp(),
   ),);
 }

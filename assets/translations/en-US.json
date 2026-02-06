@@ -6,7 +6,6 @@
   "light_mode": "Light Mode",
   "dark_mode": "Dark Mode",
   "change_language": "Change Language",
-
   "todo_list": "To-Do List",
   "todo_list_subtitle": "Manage your activities",
   "habit_tracker": "Habit Tracker",
@@ -41,7 +40,6 @@
   "sentence_reverser_subtitle": "Reverse words in sentence",
   "missing_numbers": "Missing Numbers",
   "missing_numbers_subtitle": "Find skipped numbers",
-
   "title": "Title",
   "description": "Description",
   "date": "Date",
@@ -65,7 +63,6 @@
   "optional": "Optional",
   "required": "Required",
   "remove": "Remove",
-
   "confirm_deletion": "Confirm deletion",
   "delete_item_confirm": "Do you want to delete \"{item}\"?",
   "delete_all": "Delete all",
@@ -73,7 +70,6 @@
   "delete_all_tooltip": "Delete all",
   "add_activity_hint": "Add activity...",
   "no_activities": "No activities",
-
   "tab_list": "List",
   "tab_statistics": "Statistics",
   "tab_supermarkets": "Supermarkets",
@@ -94,7 +90,6 @@
   "try_another_search": "Try another search",
   "empty_list": "Empty list",
   "add_your_products": "Add your products",
-
   "shopping_progress": "Shopping Progress",
   "completed_percent": "{percent}% completed",
   "total_products": "Total Products",
@@ -102,7 +97,6 @@
   "total_cost": "Total Cost",
   "already_spent": "Already Spent",
   "by_category": "By Category",
-
   "add_product": "Add Product",
   "edit_product": "Edit Product",
   "product_name": "Product name",
@@ -110,19 +104,16 @@
   "sold_by_weight": "Sold by weight",
   "sold_by_weight_hint": "E.g.: fruit, vegetables, meat",
   "quantity": "Quantity",
-  "price_euro": "Price â‚¬",
+  "price_euro": "Price €",
   "weight_kg": "Weight (kg)",
   "weight_hint": "E.g.: 0.5",
-  "price_per_kg": "â‚¬/kg",
+  "price_per_kg": "€/kg",
   "category": "Category",
   "already_in_list": "Already in list ({quantity}x)\nQuantity will be updated",
-  "product_updated": "âœ“ Product updated",
-
+  "product_updated": "✓ Product updated",
   "frequent_products": "Frequent Products",
-
   "delete_product": "Delete product",
   "delete_product_confirm": "Remove \"{item}\" from list?",
-
   "add_purchase": "Add Purchase",
   "edit_purchase": "Edit Purchase",
   "supermarket": "Supermarket",
@@ -133,13 +124,11 @@
   "purchase_registered": "Purchase registered",
   "fill_required_fields": "Fill in all required fields",
   "purchase_updated": "Purchase updated",
-
   "selected_count": "{count} selected",
   "deselect_all": "Deselect all",
   "select_all": "Select all",
   "delete_selected": "Delete selected",
   "total_purchases": "Total: {count} purchases recorded",
-
   "add_custom_supermarket": "Add custom supermarket",
   "supermarket_name": "Supermarket name",
   "supermarket_name_hint": "E.g.: Local Market",
@@ -149,13 +138,11 @@
   "select_to_delete": "Select to delete:",
   "no_custom_supermarkets": "No custom supermarkets",
   "supermarkets_deleted": "{count} supermarkets deleted",
-
   "import_from_list": "Import from list",
   "select_products_to_import": "Select products to import:",
   "no_products_to_import": "No products to import",
   "products_imported": "{count} products imported",
   "import": "Import",
-
   "export_data": "Export data",
   "import_data": "Import data",
   "clear_all_purchases": "Clear all purchases",
@@ -164,14 +151,11 @@
   "delete_purchase_confirm": "Delete this purchase?",
   "purchase_deleted": "Purchase deleted",
   "selected_deleted": "{count} purchases deleted",
-
   "no_purchases": "No purchases",
   "add_first_purchase": "Add your first purchase",
   "no_search_results": "No results for your search",
-
   "data_exported": "Data exported",
   "data_imported": "{count} purchases imported",
-
   "search_product_or_category": "Search product or category...",
   "clear_search": "Clear search",
   "search_hint": "Search...",
@@ -184,7 +168,6 @@
   "manual_purchase_register": "Manual Purchase Register",
   "delete_selected_confirm": "Delete {count} selected purchases?",
   "purchases_deleted": "{count} purchases deleted",
-
   "tab_habits": "Habits",
   "tab_overview": "Overview",
   "new_habit": "New Habit",
@@ -217,7 +200,6 @@
   "month_october": "October",
   "month_november": "November",
   "month_december": "December",
-
   "expense_analyzer": "Expense Analyzer",
   "tab_expenses": "Expenses",
   "new_expense": "New Expense",
@@ -230,7 +212,6 @@
   "stat_highest": "Highest",
   "stat_lowest": "Lowest",
   "expenses_by_category": "Expenses by Category",
-
   "cat_grocery": "Grocery",
   "cat_transport": "Transport",
   "cat_entertainment": "Entertainment",
@@ -239,7 +220,6 @@
   "cat_clothing": "Clothing",
   "cat_restaurant": "Restaurant",
   "cat_other": "Other",
-
   "countdown_goals": "Goal Countdown",
   "new_goal": "New Goal",
   "new_countdown": "New Countdown",
@@ -248,8 +228,8 @@
   "show_completed": "Show completed ({count})",
   "delete_completed": "Delete completed ({count})",
   "delete_countdown_confirm": "Delete countdown \"{title}\"?",
-  "countdown_deleted": "âœ“ Countdown deleted",
-  "countdowns_deleted": "âœ“ {count} countdowns deleted",
+  "countdown_deleted": "✓ Countdown deleted",
+  "countdowns_deleted": "✓ {count} countdowns deleted",
   "delete_all_completed_confirm": "Delete all {count} completed countdowns?",
   "delete_all_btn": "Delete all",
   "search_countdown": "Search countdown...",
@@ -265,8 +245,8 @@
   "enter_title": "Enter a title",
   "add_details": "Add details...",
   "icon_optional": "Icon (optional)",
-  "countdown_created": "âœ“ Countdown created successfully",
-  "countdown_updated": "âœ“ Countdown updated successfully",
+  "countdown_created": "✓ Countdown created successfully",
+  "countdown_updated": "✓ Countdown updated successfully",
   "completed_label": "COMPLETED!",
   "time_days": "Days",
   "time_hours": "Hours",
@@ -277,7 +257,6 @@
   "status_days_left": "In {days} days, almost there!",
   "status_weeks_left": "In about {weeks} weeks",
   "status_months_left": "In about {months} months",
-
   "new_alarm": "New Alarm",
   "alarm_name": "Alarm name",
   "alarm_name_hint": "E.g.: Morning alarm",
@@ -304,7 +283,6 @@
   "weekday_fri": "Fri",
   "weekday_sat": "Sat",
   "weekday_sun": "Sun",
-
   "timer_title": "Timer",
   "tab_timer": "Timer",
   "tab_history": "History",
@@ -343,7 +321,6 @@
   "preset_standard": "Standard",
   "preset_extended": "Extended",
   "preset_long": "Long",
-
   "tab_my_events": "My Events",
   "event_calendar_title": "Event Calendar",
   "tab_future_dates": "Future Dates",
@@ -362,7 +339,7 @@
   "occurrences_helper": "Leave empty to use end date",
   "select_weekday": "Select at least one day of the week",
   "create_event": "Create Event",
-  "event_created": "âœ“ Event created with {count} dates generated",
+  "event_created": "✓ Event created with {count} dates generated",
   "dates_generated": "{count} dates generated",
   "next_occurrence": "Next: {date}",
   "no_events": "No events created",
@@ -380,7 +357,6 @@
   "recurrence_daily": "Daily",
   "recurrence_weekly": "Weekly",
   "recurrence_monthly": "Monthly",
-
   "daily_reminders": "Daily Reminders",
   "new_reminder": "New Reminder",
   "activity_label": "Activity",
@@ -394,12 +370,11 @@
   "every_x_hours_from": "Every {hours} hours from {time}",
   "view_schedule": "View schedule",
   "schedule_for": "Schedule for: {title}",
-
   "password_generator_title": "Password Generator",
   "lock_btn": "Lock",
   "tab_generate": "Generate",
   "tab_history_pwd": "History",
-  "password_copied": "âœ“ Password copied to clipboard",
+  "password_copied": "✓ Password copied to clipboard",
   "generated_password": "Generated Password",
   "strength_label": "Strength:",
   "characters_count": "{count} characters",
@@ -433,7 +408,6 @@
   "strength_medium": "Medium",
   "strength_weak": "Weak",
   "strength_very_weak": "Very weak",
-
   "security_setup": "Security Setup",
   "first_setup": "First Setup",
   "setup_description": "Set a PIN and a security question to protect your passwords",
@@ -445,7 +419,7 @@
   "answer_label": "Answer",
   "your_personal_answer": "Your personal answer",
   "important_warning": "IMPORTANT WARNING",
-  "warning_text": "â€¢ This screen will appear ONLY ONCE\nâ€¢ Memorize PIN and answer carefully\nâ€¢ After 3 failed attempts, the security question will be required\nâ€¢ Losing this data will require reinstalling the app\nâ€¢ All generated passwords will be hidden until unlock",
+  "warning_text": "• This screen will appear ONLY ONCE\n• Memorize PIN and answer carefully\n• After 3 failed attempts, the security question will be required\n• Losing this data will require reinstalling the app\n• All generated passwords will be hidden until unlock",
   "read_understood_warning": "I have read and understood the warning",
   "next_btn": "Next",
   "important_title": "Important!",
@@ -458,7 +432,6 @@
   "enter_answer": "Enter an answer",
   "answer_min_3_chars": "Answer must be at least 3 characters",
   "save_error": "Error during save: {error}",
-
   "unlock_passwords": "Unlock Passwords",
   "enter_pin": "Enter PIN",
   "failed_attempts_count": "Failed attempts: {count}/3",
@@ -477,7 +450,6 @@
   "pin_memorized": "I have memorized the PIN",
   "wrong_answer_retry": "Wrong answer. Try again.",
   "enter_security_answer": "Enter the answer to the security question",
-
   "security_q_1": "What is the name of your first pet?",
   "security_q_2": "In which city were you born?",
   "security_q_3": "What is your favorite team?",
@@ -489,7 +461,6 @@
   "security_q_9": "What is the name of your childhood best friend?",
   "security_q_10": "What is the brand of your first car?",
   "security_q_11": "In which year did you start high school?",
-
   "text_analyzer_title": "Text Analyzer",
   "tab_analyze": "Analyze",
   "enter_text_to_analyze": "Enter text to analyze",
@@ -518,7 +489,6 @@
   "words_count": "{count} words",
   "chars_count": "{count} characters",
   "clear_history_confirm_text": "Clear all history?",
-
   "theme_settings_title": "Customize Theme",
   "theme_mode": "Theme Mode",
   "theme_light": "Light",
@@ -532,7 +502,6 @@
   "preview": "Preview",
   "primary_color": "Primary Color",
   "button_label": "Button",
-
   "icon_birthday": "Birthday",
   "icon_graduation": "Graduation",
   "icon_trip": "Trip",
@@ -551,7 +520,6 @@
   "icon_running": "Running",
   "icon_work": "Work",
   "icon_medicine": "Medicine",
-
   "notif_tap_to_open": "Tap to open",
   "notif_alarms": "Alarms",
   "notif_alarms_desc": "Alarms with auto-open",
@@ -567,13 +535,10 @@
   "notif_timer": "Kitchen Timer",
   "notif_timer_desc": "Notifications for completed kitchen timers",
   "notif_instant": "Instant Notifications",
-
   "alarm_postponed": "{title} (Snoozed)",
-
   "import_no_purchases": "No purchases imported. Check the file format.",
   "import_success": "Imported {count} purchases",
   "import_skipped": "({skipped} rows skipped)",
-
   "meal_plan_title": "Weekly Meal Plan",
   "tab_dishes": "Dishes",
   "tab_plan": "Plan",
@@ -583,20 +548,20 @@
   "dish_name_label": "Dish name",
   "dish_name_hint": "e.g. Pasta with pesto",
   "category_label": "Category",
-  "dish_added": "âœ“ \"{name}\" added as {category}",
+  "dish_added": "✓ \"{name}\" added as {category}",
   "add_dishes_first": "Add at least some dishes before generating the plan",
   "generate_weekly_plan": "Generate Weekly Plan",
   "dishes_available": "Available dishes: {count}",
   "select_meals_to_include": "Select meals to include:",
-  "meal_breakfast": "ðŸŒ… Breakfast",
-  "meal_lunch": "â˜€ï¸ Lunch",
-  "meal_dinner": "ðŸŒ™ Dinner",
+  "meal_breakfast": "🌅 Breakfast",
+  "meal_lunch": "☀️ Lunch",
+  "meal_dinner": "🌙 Dinner",
   "select_at_least_one_meal": "Select at least one meal",
   "generate_btn": "Generate",
   "regenerate_btn": "Regenerate",
   "generate_plan_btn": "Generate Plan",
-  "plan_generated": "âœ“ Weekly plan generated!",
-  "weekly_plan_header": "ðŸ“Š Weekly Plan",
+  "plan_generated": "✓ Weekly plan generated!",
+  "weekly_plan_header": "📊 Weekly Plan",
   "delete_plan_title": "Delete Plan",
   "delete_plan_confirm": "Do you want to delete the current weekly plan?",
   "meals_count": "{count} meals",
@@ -610,7 +575,6 @@
   "delete_dish_confirm": "Do you want to delete \"{name}\"?",
   "clear_all_dishes": "Clear all dishes?",
   "share_plan_subject": "Weekly meal plan",
-
   "weekday_monday": "Monday",
   "weekday_tuesday": "Tuesday",
   "weekday_wednesday": "Wednesday",
@@ -618,18 +582,15 @@
   "weekday_friday": "Friday",
   "weekday_saturday": "Saturday",
   "weekday_sunday": "Sunday",
-
   "dish_cat_breakfast": "Breakfast",
   "dish_cat_first": "First Course",
   "dish_cat_second": "Second Course",
   "dish_cat_side": "Side Dish",
   "dish_cat_pizza": "Pizza",
   "dish_cat_dessert": "Dessert",
-
   "meal_type_breakfast": "Breakfast",
   "meal_type_lunch": "Lunch",
   "meal_type_dinner": "Dinner",
-
   "gantt_title": "Mini Planner",
   "new_task": "New Task",
   "gantt_stat_total": "Total",
@@ -659,7 +620,7 @@
   "task_created": "Task created",
   "delete_task_title": "Confirm deletion",
   "delete_task_confirm": "Do you want to delete the task \"{name}\"?",
-  "task_deleted": "âœ“ Task deleted",
+  "task_deleted": "✓ Task deleted",
   "notifications_enabled": "Notifications enabled for \"{name}\"",
   "notifications_disabled": "Notifications disabled for \"{name}\"",
   "disable_notifications": "Disable notifications",
@@ -671,16 +632,13 @@
   "countdown_remaining": "{days} {dayLabel} remaining",
   "day_singular": "day",
   "days_plural": "days",
-
   "notif_gantt_channel": "Mini Planner",
   "notif_gantt_channel_desc": "Daily task progress notifications",
   "notif_gantt_title": "Mini Planner",
   "notif_gantt_tasks_active": "{count} active {count, plural, one{task} other{tasks}}",
   "notif_gantt_tasks_urgent": "{count} expiring soon",
   "notif_gantt_tasks_overdue": "{count} overdue",
-
   "error_msg": "Error: {error}",
-
   "ns_title": "Number Statistics",
   "ns_enter_numbers": "Enter numbers",
   "ns_input_hint": "E.g.: 10, 20, 10, 30, 10, 40",
@@ -694,14 +652,12 @@
   "ns_frequencies": "Frequencies:",
   "ns_frequency_entry": "• {number}: {count} times",
   "ns_error_invalid": "Error: enter valid numbers separated by comma or space",
-
   "sr_title": "Sentence Reverser",
   "sr_enter_sentence": "Enter a sentence",
   "sr_input_hint": "E.g.: The cat eats the fish",
   "sr_reverse_btn": "Reverse Words",
   "sr_reversed_sentence": "Reversed sentence",
   "sr_empty_input": "Enter a sentence",
-
   "mn_title": "Missing Numbers",
   "mn_enter_sequence": "Enter sequence",
   "mn_example_hint": "Example: workout days of the month",
@@ -713,7 +669,6 @@
   "mn_no_missing": "No missing numbers in the sequence!",
   "mn_missing_found": "Missing numbers found: {count}",
   "mn_error_invalid": "Error: enter valid integers",
-
   "fb_title": "Routine Planner",
   "fb_configure_routine": "Configure your routine",
   "fb_number_of_days": "Number of days",
@@ -729,5 +684,13 @@
   "fb_default_study": "Study",
   "fb_default_workout": "Workout",
   "fb_default_rest": "Rest",
-  "fb_error_invalid": "Error: enter a valid number"
+  "fb_error_invalid": "Error: enter a valid number",
+  "lang_en": "English",
+  "lang_it": "Italiano",
+  "lang_zh": "中文",
+  "lang_tr": "Türkçe",
+  "lang_ar": "العربية",
+  "lang_fr": "Français",
+  "lang_de": "Deutsch",
+  "select_language": "Select Language"
 }

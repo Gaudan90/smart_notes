@@ -34,6 +34,16 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   late AnimationController _controller;
   late List<Animation<double>> _animations;
 
+  static const _supportedLanguages = [
+    _LanguageOption(locale: Locale('en', 'US'), flag: '🇺🇸', labelKey: 'lang_en'),
+    _LanguageOption(locale: Locale('it', 'IT'), flag: '🇮🇹', labelKey: 'lang_it'),
+    _LanguageOption(locale: Locale('fr', 'FR'), flag: '🇫🇷', labelKey: 'lang_fr'),
+    _LanguageOption(locale: Locale('de', 'DE'), flag: '🇩🇪', labelKey: 'lang_de'),
+    _LanguageOption(locale: Locale('zh', 'CN'), flag: '🇨🇳', labelKey: 'lang_zh'),
+    _LanguageOption(locale: Locale('tr', 'TR'), flag: '🇹🇷', labelKey: 'lang_tr'),
+    _LanguageOption(locale: Locale('ar', 'SA'), flag: '🇸🇦', labelKey: 'lang_ar'),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -68,19 +78,90 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  void _toggleLanguage() {
-    final currentLocale = context.locale;
-    if (currentLocale.languageCode == 'en') {
-      context.setLocale(const Locale('it', 'IT'));
-    } else {
-      context.setLocale(const Locale('en', 'US'));
+  String _getCurrentLanguageCode() {
+    final langCode = context.locale.languageCode;
+    switch (langCode) {
+      case 'en': return 'EN';
+      case 'it': return 'IT';
+      case 'zh': return '中';
+      case 'tr': return 'TR';
+      case 'ar': return 'ع';
+      case 'fr': return 'FR';
+      case 'de': return 'DE';
+      default: return langCode.toUpperCase();
     }
+  }
+
+  void _showLanguagePicker() {
+    final currentLocale = context.locale;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(sheetContext).colorScheme.onSurface.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(
+                    'select_language'.tr(),
+                    style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const Divider(),
+                ..._supportedLanguages.map((lang) {
+                  final isSelected = currentLocale == lang.locale;
+                  return ListTile(
+                    leading: Text(
+                      lang.flag,
+                      style: const TextStyle(fontSize: 28),
+                    ),
+                    title: Text(
+                      lang.labelKey.tr(),
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                    trailing: isSelected
+                        ? Icon(
+                      Icons.check_circle,
+                      color: Theme.of(sheetContext).colorScheme.primary,
+                    )
+                        : null,
+                    onTap: () {
+                      context.setLocale(lang.locale);
+                      Navigator.pop(sheetContext);
+                    },
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final isItalian = context.locale.languageCode == 'it';
 
     final features = [
       FeatureCard(
@@ -276,13 +357,13 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       appBar: AppBar(
         leading: IconButton(
           icon: Text(
-            isItalian ? 'IT' : 'EN',
+            _getCurrentLanguageCode(),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          onPressed: _toggleLanguage,
+          onPressed: _showLanguagePicker,
           tooltip: 'change_language'.tr(),
         ),
         title: Text('app_title'.tr()),
@@ -356,4 +437,16 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       ),
     );
   }
+}
+
+class _LanguageOption {
+  final Locale locale;
+  final String flag;
+  final String labelKey;
+
+  const _LanguageOption({
+    required this.locale,
+    required this.flag,
+    required this.labelKey,
+  });
 }
