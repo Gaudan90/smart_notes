@@ -694,5 +694,15 @@
   "lang_de": "Allemand",
   "select_language": "Choisir la langue",
   "lang_es": "Espagnol",
-  "lang_ru": "Russe"
+  "lang_ru": "Russe",
+  "cb_accessibility": "Accessibilité",
+  "cb_description": "Correction des couleurs pour déficience de la vision des couleurs (Loi européenne sur l'accessibilité)",
+  "cb_none": "Standard",
+  "cb_none_desc": "Aucune correction de couleur appliquée",
+  "cb_protanopia": "Protanopie",
+  "cb_protanopia_desc": "Déficience du rouge — difficulté à distinguer le rouge et le vert",
+  "cb_deuteranopia": "Deutéranopie",
+  "cb_deuteranopia_desc": "Déficience du vert — forme la plus courante de daltonisme",
+  "cb_tritanopia": "Tritanopie",
+  "cb_tritanopia_desc": "Déficience du bleu — difficulté à distinguer le bleu et le jaune"
 }

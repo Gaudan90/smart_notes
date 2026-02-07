@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'color_blind_mode.dart';
 
 class AppTheme {
   // Colori predefiniti
@@ -13,6 +14,46 @@ class AppTheme {
     'indigo': Color(0xFF303F9F),
     'red': Color(0xFFD32F2F),
   };
+
+  /// Matrici di correzione daltonismo (daltonizzazione).
+  /// Trasformano i colori per renderli distinguibili da utenti con deficit cromatico.
+  /// Conformi alle linee guida WCAG 2.1 e alla direttiva europea EAA.
+  static ColorFilter? colorBlindFilter(ColorBlindMode mode) {
+    switch (mode) {
+      case ColorBlindMode.none:
+        return null;
+
+      case ColorBlindMode.protanopia:
+      // Correzione per deficit del rosso:
+      // sposta le informazioni rosso/verde verso il canale blu/giallo
+        return const ColorFilter.matrix(<double>[
+          0.567, 0.433, 0.000, 0, 0,
+          0.558, 0.442, 0.000, 0, 0,
+          0.000, 0.242, 0.758, 0, 0,
+          0,     0,     0,     1, 0,
+        ]);
+
+      case ColorBlindMode.deuteranopia:
+      // Correzione per deficit del verde:
+      // sposta le informazioni rosso/verde verso il canale blu/giallo
+        return const ColorFilter.matrix(<double>[
+          0.625, 0.375, 0.000, 0, 0,
+          0.700, 0.300, 0.000, 0, 0,
+          0.000, 0.300, 0.700, 0, 0,
+          0,     0,     0,     1, 0,
+        ]);
+
+      case ColorBlindMode.tritanopia:
+      // Correzione per deficit del blu:
+      // sposta le informazioni blu/giallo verso il canale rosso/verde
+        return const ColorFilter.matrix(<double>[
+          0.950, 0.050, 0.000, 0, 0,
+          0.000, 0.433, 0.567, 0, 0,
+          0.000, 0.475, 0.525, 0, 0,
+          0,     0,     0,     1, 0,
+        ]);
+    }
+  }
 
   static ThemeData lightTheme(Color primaryColor) {
     final colorScheme = ColorScheme.fromSeed(

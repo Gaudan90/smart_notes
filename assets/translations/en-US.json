@@ -694,5 +694,15 @@
   "lang_de": "Deutsch",
   "select_language": "Select Language",
   "lang_es": "Español",
-  "lang_ru": "Русский"
+  "lang_ru": "Русский",
+  "cb_accessibility": "Accessibility",
+  "cb_description": "Color correction for color vision deficiency (EU Accessibility Act)",
+  "cb_none": "Standard",
+  "cb_none_desc": "No color correction applied",
+  "cb_protanopia": "Protanopia",
+  "cb_protanopia_desc": "Red deficiency — difficulty distinguishing red and green",
+  "cb_deuteranopia": "Deuteranopia",
+  "cb_deuteranopia_desc": "Green deficiency — most common form of color blindness",
+  "cb_tritanopia": "Tritanopia",
+  "cb_tritanopia_desc": "Blue deficiency — difficulty distinguishing blue and yellow"
 }

@@ -35,13 +35,12 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   late AnimationController _controller;
   late List<Animation<double>> _animations;
 
-  // Lista riordinata: spagnolo dopo tedesco
   static const List<LanguageOption> _supportedLanguages = [
     LanguageOption(locale: Locale('en', 'US'), flag: '🇺🇸', labelKey: 'lang_en'),
     LanguageOption(locale: Locale('it', 'IT'), flag: '🇮🇹', labelKey: 'lang_it'),
     LanguageOption(locale: Locale('fr', 'FR'), flag: '🇫🇷', labelKey: 'lang_fr'),
     LanguageOption(locale: Locale('de', 'DE'), flag: '🇩🇪', labelKey: 'lang_de'),
-    LanguageOption(locale: Locale('es', 'ES'), flag: '🇪🇸', labelKey: 'lang_es'), // Spostato qui
+    LanguageOption(locale: Locale('es', 'ES'), flag: '🇪🇸', labelKey: 'lang_es'),
     LanguageOption(locale: Locale('zh', 'CN'), flag: '🇨🇳', labelKey: 'lang_zh'),
     LanguageOption(locale: Locale('tr', 'TR'), flag: '🇹🇷', labelKey: 'lang_tr'),
     LanguageOption(locale: Locale('ar', 'SA'), flag: '🇸🇦', labelKey: 'lang_ar'),

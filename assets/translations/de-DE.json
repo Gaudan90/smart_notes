@@ -694,5 +694,15 @@
   "lang_de": "Deutsch",
   "select_language": "Sprache wählen",
   "lang_es": "Spanisch",
-  "lang_ru": "Russisch"
+  "lang_ru": "Russisch",
+  "cb_accessibility": "Barrierefreiheit",
+  "cb_description": "Farbkorrektur für Farbfehlsichtigkeit (EU-Barrierefreiheitsgesetz)",
+  "cb_none": "Standard",
+  "cb_none_desc": "Keine Farbkorrektur angewendet",
+  "cb_protanopia": "Protanopie",
+  "cb_protanopia_desc": "Rotdefizit — Schwierigkeit, Rot und Grün zu unterscheiden",
+  "cb_deuteranopia": "Deuteranopie",
+  "cb_deuteranopia_desc": "Gründefizit — häufigste Form der Farbblindheit",
+  "cb_tritanopia": "Tritanopie",
+  "cb_tritanopia_desc": "Blaudefizit — Schwierigkeit, Blau und Gelb zu unterscheiden"
 }

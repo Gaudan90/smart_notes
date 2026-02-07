@@ -694,5 +694,15 @@
   "lang_de": "Almanca",
   "select_language": "Dil Seçin",
   "lang_es": "İspanyolca",
-  "lang_ru": "Rusça"
+  "lang_ru": "Rusça",
+  "cb_accessibility": "Erişilebilirlik",
+  "cb_description": "Renk görme bozukluğu için renk düzeltme (AB Erişilebilirlik Yasası)",
+  "cb_none": "Standart",
+  "cb_none_desc": "Renk düzeltmesi uygulanmadı",
+  "cb_protanopia": "Protanopi",
+  "cb_protanopia_desc": "Kırmızı eksikliği — kırmızı ve yeşili ayırt etme zorluğu",
+  "cb_deuteranopia": "Deuteranopi",
+  "cb_deuteranopia_desc": "Yeşil eksikliği — en yaygın renk körlüğü türü",
+  "cb_tritanopia": "Tritanopi",
+  "cb_tritanopia_desc": "Mavi eksikliği — mavi ve sarıyı ayırt etme zorluğu"
 }

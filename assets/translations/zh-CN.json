@@ -694,5 +694,15 @@
   "lang_de": "Deutsch",
   "select_language": "选择语言",
   "lang_es": "Español",
-  "lang_ru": "Русский"
+  "lang_ru": "Русский",
+  "cb_accessibility": "无障碍",
+  "cb_description": "色觉障碍色彩校正（欧盟无障碍法规）",
+  "cb_none": "标准",
+  "cb_none_desc": "不应用色彩校正",
+  "cb_protanopia": "红色盲",
+  "cb_protanopia_desc": "红色缺陷 - 难以区分红色和绿色",
+  "cb_deuteranopia": "绿色盲",
+  "cb_deuteranopia_desc": "绿色缺陷 - 最常见的色盲形式",
+  "cb_tritanopia": "蓝色盲",
+  "cb_tritanopia_desc": "蓝色缺陷 - 难以区分蓝色和黄色"
 }

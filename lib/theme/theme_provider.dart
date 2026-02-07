@@ -2,20 +2,28 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:smart_notes/theme/theme_config.dart';
+import 'package:smart_notes/theme/color_blind_mode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
   static const String _themeModeKey = 'theme_mode';
   static const String _primaryColorKey = 'primary_color';
   static const String _customColorsKey = 'custom_colors';
+  static const String _colorBlindModeKey = 'color_blind_mode';
 
   ThemeMode _themeMode = ThemeMode.system;
   Color _primaryColor = AppTheme.defaultColors['purple']!;
   Map<String, Color> _customColors = {};
+  ColorBlindMode _colorBlindMode = ColorBlindMode.none;
 
   ThemeMode get themeMode => _themeMode;
   Color get primaryColor => _primaryColor;
   Map<String, Color> get availableColors => {...AppTheme.defaultColors, ..._customColors};
+  ColorBlindMode get colorBlindMode => _colorBlindMode;
+
+  /// Restituisce il ColorFilter da applicare all'intera app,
+  /// oppure null se nessun filtro è attivo.
+  ColorFilter? get activeColorFilter => AppTheme.colorBlindFilter(_colorBlindMode);
 
   ThemeProvider() {
     _loadPreferences();
@@ -41,6 +49,14 @@ class ThemeProvider extends ChangeNotifier {
     if (customColorsJson != null) {
       final Map<String, dynamic> decoded = json.decode(customColorsJson);
       _customColors = decoded.map((key, value) => MapEntry(key, Color(value as int)));
+    }
+
+    final colorBlindString = prefs.getString(_colorBlindModeKey);
+    if (colorBlindString != null) {
+      _colorBlindMode = ColorBlindMode.values.firstWhere(
+            (mode) => mode.toString() == colorBlindString,
+        orElse: () => ColorBlindMode.none,
+      );
     }
 
     notifyListeners();
@@ -71,6 +87,14 @@ class ThemeProvider extends ChangeNotifier {
         _customColors.map((key, value) => MapEntry(key, value.value))
     );
     await prefs.setString(_customColorsKey, encoded);
+  }
+
+  Future<void> setColorBlindMode(ColorBlindMode mode) async {
+    _colorBlindMode = mode;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_colorBlindModeKey, mode.toString());
   }
 
   void toggleTheme() {

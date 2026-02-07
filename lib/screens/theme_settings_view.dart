@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../theme/color_blind_mode.dart';
 import '../theme/color_picker_painter.dart';
 import '../theme/theme_provider.dart';
 
@@ -183,6 +184,48 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
     );
   }
 
+  /// Restituisce la chiave di traduzione per ogni modalità daltonismo
+  String _colorBlindModeLabel(ColorBlindMode mode) {
+    switch (mode) {
+      case ColorBlindMode.none:
+        return 'cb_none'.tr();
+      case ColorBlindMode.protanopia:
+        return 'cb_protanopia'.tr();
+      case ColorBlindMode.deuteranopia:
+        return 'cb_deuteranopia'.tr();
+      case ColorBlindMode.tritanopia:
+        return 'cb_tritanopia'.tr();
+    }
+  }
+
+  /// Restituisce la descrizione per ogni modalità daltonismo
+  String _colorBlindModeDesc(ColorBlindMode mode) {
+    switch (mode) {
+      case ColorBlindMode.none:
+        return 'cb_none_desc'.tr();
+      case ColorBlindMode.protanopia:
+        return 'cb_protanopia_desc'.tr();
+      case ColorBlindMode.deuteranopia:
+        return 'cb_deuteranopia_desc'.tr();
+      case ColorBlindMode.tritanopia:
+        return 'cb_tritanopia_desc'.tr();
+    }
+  }
+
+  /// Restituisce l'icona per ogni modalità daltonismo
+  IconData _colorBlindModeIcon(ColorBlindMode mode) {
+    switch (mode) {
+      case ColorBlindMode.none:
+        return Icons.visibility;
+      case ColorBlindMode.protanopia:
+        return Icons.remove_red_eye;
+      case ColorBlindMode.deuteranopia:
+        return Icons.remove_red_eye_outlined;
+      case ColorBlindMode.tritanopia:
+        return Icons.visibility_outlined;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final _ = Theme.of(context).brightness == Brightness.dark;
@@ -231,6 +274,94 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                         ),
                       ],
                     ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Accessibilità - Modalità Daltonici
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.accessibility_new,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'cb_accessibility'.tr(),
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'cb_description'.tr(),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ...ColorBlindMode.values.map((mode) {
+                      final isSelected = widget.themeProvider.colorBlindMode == mode;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                              width: isSelected ? 2 : 1,
+                            ),
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
+                                : null,
+                          ),
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            leading: Icon(
+                              _colorBlindModeIcon(mode),
+                              color: isSelected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
+                            title: Text(
+                              _colorBlindModeLabel(mode),
+                              style: TextStyle(
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+                            subtitle: Text(
+                              _colorBlindModeDesc(mode),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            trailing: isSelected
+                                ? Icon(
+                              Icons.check_circle,
+                              color: Theme.of(context).colorScheme.primary,
+                            )
+                                : null,
+                            onTap: () {
+                              widget.themeProvider.setColorBlindMode(mode);
+                            },
+                          ),
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ),

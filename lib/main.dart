@@ -84,20 +84,34 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
       builder: (context, _) {
         return FadeTransition(
           opacity: _fadeAnimation,
-          child: MaterialApp(
-            title: 'SmartNotes',
-            theme: AppTheme.lightTheme(_themeProvider.primaryColor),
-            darkTheme: AppTheme.darkTheme(_themeProvider.primaryColor),
-            themeMode: _themeProvider.themeMode,
-            home: HomeView(themeProvider: _themeProvider),
-            debugShowCheckedModeBanner: false,
-            localizationsDelegates: context.localizationDelegates,
-            supportedLocales: context.supportedLocales,
-            locale: context.locale,
-            routes: {
-              '/pin_setup': (context) => const PinSetupView(),
-              '/pin_unlock': (context) => const PinUnlockView(),
-              '/password_generator': (context) => const PasswordGeneratorView(),
+          child: Builder(
+            builder: (context) {
+              final filter = _themeProvider.activeColorFilter;
+              Widget app = MaterialApp(
+                title: 'SmartNotes',
+                theme: AppTheme.lightTheme(_themeProvider.primaryColor),
+                darkTheme: AppTheme.darkTheme(_themeProvider.primaryColor),
+                themeMode: _themeProvider.themeMode,
+                home: HomeView(themeProvider: _themeProvider),
+                debugShowCheckedModeBanner: false,
+                localizationsDelegates: context.localizationDelegates,
+                supportedLocales: context.supportedLocales,
+                locale: context.locale,
+                routes: {
+                  '/pin_setup': (context) => const PinSetupView(),
+                  '/pin_unlock': (context) => const PinUnlockView(),
+                  '/password_generator': (context) => const PasswordGeneratorView(),
+                },
+              );
+
+              if (filter != null) {
+                app = ColorFiltered(
+                  colorFilter: filter,
+                  child: app,
+                );
+              }
+
+              return app;
             },
           ),
         );
