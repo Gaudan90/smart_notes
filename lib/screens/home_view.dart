@@ -7,6 +7,7 @@ import 'package:smart_notes/screens/text_analyzer_view.dart';
 import 'package:smart_notes/screens/theme_settings_view.dart';
 import 'package:smart_notes/screens/todo_list_view.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
+import 'package:smart_notes/screens/onboarding_view.dart';
 import '../data/language_options.dart';
 import '../widget/feature_card.dart';
 import '../widget/password/password_security_gate.dart';
@@ -35,12 +36,13 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   late AnimationController _controller;
   late List<Animation<double>> _animations;
 
+  // Lista riordinata: spagnolo dopo tedesco
   static const List<LanguageOption> _supportedLanguages = [
     LanguageOption(locale: Locale('en', 'US'), flag: '🇺🇸', labelKey: 'lang_en'),
     LanguageOption(locale: Locale('it', 'IT'), flag: '🇮🇹', labelKey: 'lang_it'),
     LanguageOption(locale: Locale('fr', 'FR'), flag: '🇫🇷', labelKey: 'lang_fr'),
     LanguageOption(locale: Locale('de', 'DE'), flag: '🇩🇪', labelKey: 'lang_de'),
-    LanguageOption(locale: Locale('es', 'ES'), flag: '🇪🇸', labelKey: 'lang_es'),
+    LanguageOption(locale: Locale('es', 'ES'), flag: '🇪🇸', labelKey: 'lang_es'), // Spostato qui
     LanguageOption(locale: Locale('zh', 'CN'), flag: '🇨🇳', labelKey: 'lang_zh'),
     LanguageOption(locale: Locale('tr', 'TR'), flag: '🇹🇷', labelKey: 'lang_tr'),
     LanguageOption(locale: Locale('ar', 'SA'), flag: '🇸🇦', labelKey: 'lang_ar'),
@@ -371,16 +373,34 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Text(
-            _getCurrentLanguageCode(),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+        leadingWidth: 96,
+        leading: Row(
+          children: [
+            IconButton(
+              icon: Text(
+                _getCurrentLanguageCode(),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: _showLanguagePicker,
+              tooltip: 'change_language'.tr(),
             ),
-          ),
-          onPressed: _showLanguagePicker,
-          tooltip: 'change_language'.tr(),
+            IconButton(
+              icon: const Icon(Icons.help_outline, size: 22),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => OnboardingView(
+                    themeProvider: widget.themeProvider,
+                    isRevisit: true,
+                  ),
+                ),
+              ),
+              tooltip: 'ob_tutorial'.tr(),
+            ),
+          ],
         ),
         title: Text('app_title'.tr()),
         actions: [

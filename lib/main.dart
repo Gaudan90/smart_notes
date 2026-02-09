@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_notes/screens/home_view.dart';
+import 'package:smart_notes/screens/onboarding_view.dart';
 import 'package:smart_notes/screens/password_generator_view.dart';
 import 'package:smart_notes/screens/pin_setup_view.dart';
 import 'package:smart_notes/screens/pin_unlock_view.dart';
@@ -10,13 +12,21 @@ import 'data/alarm_background_service.dart';
 import 'data/notification_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+late final bool onboardingCompleted;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await NotificationService().initialize();
   await AlarmBackgroundService.initialize();
+
+  // Leggi lo stato dell'onboarding prima di avviare l'app
+  final prefs = await SharedPreferences.getInstance();
+  onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
+
   if (kDebugMode) {
     print('✅ AlarmBackgroundService initialized');
+    print('📋 Onboarding completed: $onboardingCompleted');
   }
   runApp(EasyLocalization(
     supportedLocales: const [
@@ -92,7 +102,9 @@ class _MyAppState extends State<MyApp> with TickerProviderStateMixin {
                 theme: AppTheme.lightTheme(_themeProvider.primaryColor),
                 darkTheme: AppTheme.darkTheme(_themeProvider.primaryColor),
                 themeMode: _themeProvider.themeMode,
-                home: HomeView(themeProvider: _themeProvider),
+                home: onboardingCompleted
+                    ? HomeView(themeProvider: _themeProvider)
+                    : OnboardingView(themeProvider: _themeProvider),
                 debugShowCheckedModeBanner: false,
                 localizationsDelegates: context.localizationDelegates,
                 supportedLocales: context.supportedLocales,
