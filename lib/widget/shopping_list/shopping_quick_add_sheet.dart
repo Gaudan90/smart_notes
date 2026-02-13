@@ -35,7 +35,7 @@ class ShoppingQuickAddSheet extends StatelessWidget {
                 onPressed: () async {
                   final message = await presenter.addItem(
                     name: product,
-                    category: 'Altro',
+                    category: 'default_category'.tr(),
                   );
                   onItemAdded();
 

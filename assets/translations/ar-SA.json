@@ -746,5 +746,7 @@
   "ob_feat_languages": "دعم 9 لغات",
   "ob_feat_accessibility": "أوضاع ملائمة لعمى الألوان (قانون الوصول الأوروبي)",
   "ob_ready_title": "كل شيء جاهز!",
-  "ob_ready_desc": "يمكنك دائماً إعادة زيارة هذا الدليل من الشاشة الرئيسية. استمتع بـ SmartNotes!"
+  "ob_ready_desc": "يمكنك دائماً إعادة زيارة هذا الدليل من الشاشة الرئيسية. استمتع بـ SmartNotes!",
+  "category_hint": "أدخل فئة",
+  "default_category": "أخرى"
 }

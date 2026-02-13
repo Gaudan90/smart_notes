@@ -746,5 +746,7 @@
   "ob_feat_languages": "支持 9 种语言",
   "ob_feat_accessibility": "色盲友好模式（欧盟无障碍法规）",
   "ob_ready_title": "一切就绪！",
-  "ob_ready_desc": "您可以随时从主屏幕重新查看本指南。祝您使用 SmartNotes 愉快！"
+  "ob_ready_desc": "您可以随时从主屏幕重新查看本指南。祝您使用 SmartNotes 愉快！",
+  "category_hint": "输入分类",
+  "default_category": "其他"
 }

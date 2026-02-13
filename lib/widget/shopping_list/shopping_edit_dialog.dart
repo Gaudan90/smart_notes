@@ -26,7 +26,7 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
   late TextEditingController _priceController;
   late TextEditingController _weightController;
   late TextEditingController _pricePerKgController;
-  late String _selectedCategory;
+  late TextEditingController _categoryController;
   late bool _isSoldByWeight;
 
   @override
@@ -46,7 +46,7 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
       text: widget.item.pricePerKg != null
           ? widget.item.pricePerKg!.toStringAsFixed(2) : '',
     );
-    _selectedCategory = widget.item.category;
+    _categoryController = TextEditingController(text: widget.item.category);
     _isSoldByWeight = widget.item.isSoldByWeight;
   }
 
@@ -57,11 +57,14 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
     _priceController.dispose();
     _weightController.dispose();
     _pricePerKgController.dispose();
+    _categoryController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final usedCategories = widget.presenter.getUsedCategories();
+
     return AlertDialog(
       title: Text('edit_product'.tr()),
       content: SingleChildScrollView(
@@ -184,25 +187,40 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
 
             const SizedBox(height: 16),
 
-            DropdownButtonFormField<String>(
-              value: _selectedCategory,
+            // Campo categoria libero
+            TextField(
+              controller: _categoryController,
               decoration: InputDecoration(
                 labelText: 'category'.tr(),
+                hintText: 'category_hint'.tr(),
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.category),
               ),
-              items: ShoppingListPresenter.categories.map((cat) {
-                return DropdownMenuItem(
-                  value: cat,
-                  child: Text(cat),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedCategory = value!;
-                });
-              },
+              textCapitalization: TextCapitalization.sentences,
             ),
+
+            // Chip suggerimenti categorie già usate
+            if (usedCategories.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: usedCategories.map((cat) {
+                    return ActionChip(
+                      label: Text(cat, style: const TextStyle(fontSize: 12)),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () {
+                        setState(() {
+                          _categoryController.text = cat;
+                        });
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -227,10 +245,14 @@ class _ShoppingEditDialogState extends State<ShoppingEditDialog> {
               final pricePerKg = pricePerKgText.isNotEmpty ? double
                   .tryParse(pricePerKgText) : null;
 
+              final category = _categoryController.text.trim().isNotEmpty
+                  ? _categoryController.text.trim()
+                  : 'default_category'.tr();
+
               await widget.presenter.updateItem(
                 id: widget.item.id,
                 name: _nameController.text,
-                category: _selectedCategory,
+                category: category,
                 quantity: quantity,
                 price: price,
                 weightKg: weightKg,

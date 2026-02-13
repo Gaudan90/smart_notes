@@ -25,7 +25,6 @@ class ShoppingListTab extends StatefulWidget {
 
 class _ShoppingListTabState extends State<ShoppingListTab> {
   bool _showGrouped = false;
-  bool _showSearch = false;
 
   void _showAddItemDialog() {
     showDialog(
@@ -92,21 +91,6 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
         actions: [
           IconButton(
             icon: Icon(
-              _showSearch ? Icons.search_off : Icons.search,
-              color: _showSearch ? Colors.blue : null,
-            ),
-            onPressed: () {
-              setState(() {
-                _showSearch = !_showSearch;
-                if (!_showSearch) {
-                  _clearSearch();
-                }
-              });
-            },
-            tooltip: _showSearch ? 'hide_search'.tr() : 'search_products'.tr(),
-          ),
-          IconButton(
-            icon: Icon(
               isAlphabetical ? Icons.sort_by_alpha : Icons.category,
               color: isAlphabetical ? Colors.green : null,
             ),
@@ -157,12 +141,12 @@ class _ShoppingListTabState extends State<ShoppingListTab> {
       ),
       body: Column(
         children: [
-          if (_showSearch)
-            ShoppingSearchBar(
-              initialQuery: widget.presenter.searchQuery,
-              onQueryChanged: _onSearchQueryChanged,
-              onClear: _clearSearch,
-            ),
+          // Search bar sempre visibile
+          ShoppingSearchBar(
+            initialQuery: widget.presenter.searchQuery,
+            onQueryChanged: _onSearchQueryChanged,
+            onClear: _clearSearch,
+          ),
           Expanded(child: _buildBody()),
         ],
       ),

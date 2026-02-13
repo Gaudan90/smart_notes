@@ -746,5 +746,7 @@
   "ob_feat_languages": "9 dil destekleniyor",
   "ob_feat_accessibility": "Renk körlüğü dostu modlar (AB Erişilebilirlik Yasası)",
   "ob_ready_title": "Her Şey Hazır!",
-  "ob_ready_desc": "Bu rehberi ana ekrandan her zaman tekrar görüntüleyebilirsiniz. SmartNotes'un keyfini çıkarın!"
+  "ob_ready_desc": "Bu rehberi ana ekrandan her zaman tekrar görüntüleyebilirsiniz. SmartNotes'un keyfini çıkarın!",
+  "category_hint": "Bir kategori girin",
+  "default_category": "Diğer"
 }

@@ -745,6 +745,8 @@
   "ob_feat_theme": "Temi Chiaro e Scuro con colori personalizzati",
   "ob_feat_languages": "9 lingue supportate",
   "ob_feat_accessibility": "Modalità per daltonici (Normativa UE accessibilità)",
-  "ob_ready_title": "Ecco fatto!",
-  "ob_ready_desc": "Puoi sempre rivedere questa guida dalla schermata principale. Buon utilizzo di SmartNotes!"
+  "ob_ready_title": "Ecco Fatto!",
+  "ob_ready_desc": "Puoi sempre rivedere questa guida dalla schermata principale. Buon utilizzo di SmartNotes!",
+  "category_hint": "Inserisci una categoria",
+  "default_category": "Altro"
 }

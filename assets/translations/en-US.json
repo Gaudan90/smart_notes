@@ -746,5 +746,7 @@
   "ob_feat_languages": "9 languages supported",
   "ob_feat_accessibility": "Colorblind-friendly modes (EU Accessibility Act)",
   "ob_ready_title": "You're All Set!",
-  "ob_ready_desc": "You can always revisit this guide from the home screen. Enjoy SmartNotes!"
+  "ob_ready_desc": "You can always revisit this guide from the home screen. Enjoy SmartNotes!",
+  "category_hint": "Enter a category",
+  "default_category": "Other"
 }

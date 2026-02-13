@@ -746,5 +746,7 @@
   "ob_feat_languages": "9 idiomas soportados",
   "ob_feat_accessibility": "Modos para daltónicos (Ley de Accesibilidad UE)",
   "ob_ready_title": "¡Todo Listo!",
-  "ob_ready_desc": "Puedes volver a ver esta guía desde la pantalla principal. ¡Disfruta de SmartNotes!"
+  "ob_ready_desc": "Puedes volver a ver esta guía desde la pantalla principal. ¡Disfruta de SmartNotes!",
+  "category_hint": "Introduce una categoría",
+  "default_category": "Otros"
 }

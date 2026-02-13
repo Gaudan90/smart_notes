@@ -38,18 +38,20 @@ class ShoppingListPresenter {
     _searchQuery = '';
   }
 
-  static const List<String> categories = [
-    'Frutta e Verdura',
-    'Latticini',
-    'Carne, Pesce e Affettati',
-    'Pane, Cereali, Pasta e Riso',
-    'Bevande',
-    'Dolci',
-    'Surgelati',
-    'Igiene Personale',
-    'Casa',
-    'Altro',
-  ];
+  /// Categoria di default per l'aggiunta rapida
+  static const String defaultCategory = 'Altro';
+
+  /// Restituisce le categorie già usate negli item attuali, ordinate.
+  List<String> getUsedCategories() {
+    final categories = <String>{};
+    for (final item in _items) {
+      if (item.category.isNotEmpty) {
+        categories.add(item.category);
+      }
+    }
+    final sorted = categories.toList()..sort();
+    return sorted;
+  }
 
   Future<void> loadItems() async {
     final prefs = await SharedPreferences.getInstance();
@@ -159,7 +161,7 @@ class ShoppingListPresenter {
 
       _sortItems();
       await _saveItems();
-      return 'Quantità aggiornata: ${existingItem.name} '
+      return 'QuantitÃ  aggiornata: ${existingItem.name} '
           '(${_formatItemQuantity(existingItem)})';
     }
 

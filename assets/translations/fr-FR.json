@@ -746,5 +746,7 @@
   "ob_feat_languages": "9 langues prises en charge",
   "ob_feat_accessibility": "Modes adaptés aux daltoniens (Loi européenne sur l'accessibilité)",
   "ob_ready_title": "Tout est Prêt !",
-  "ob_ready_desc": "Vous pouvez toujours revoir ce guide depuis l'écran d'accueil. Profitez de SmartNotes !"
+  "ob_ready_desc": "Vous pouvez toujours revoir ce guide depuis l'écran d'accueil. Profitez de SmartNotes !",
+  "category_hint": "Saisissez une catégorie",
+  "default_category": "Autre"
 }
