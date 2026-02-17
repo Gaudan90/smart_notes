@@ -182,15 +182,16 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     final features = [
+      // ── Feature principali (elaborate, alto valore di mercato) ──
       FeatureCard(
-        title: 'todo_list'.tr(),
-        subtitle: 'todo_list_subtitle'.tr(),
-        icon: Icons.checklist,
-        color: Colors.orange,
+        title: 'shopping_list'.tr(),
+        subtitle: 'shopping_list_subtitle'.tr(),
+        icon: Icons.shopping_cart,
+        color: Colors.lightGreen,
         animation: _animations[0],
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const TodoListView()),
+          MaterialPageRoute(builder: (_) => const ShoppingListView()),
         ),
       ),
       FeatureCard(
@@ -205,36 +206,60 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'shopping_list'.tr(),
-        subtitle: 'shopping_list_subtitle'.tr(),
-        icon: Icons.shopping_cart,
-        color: Colors.lightGreen,
-        animation: _animations[2],
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const ShoppingListView()),
-        ),
-      ),
-      FeatureCard(
         title: 'expense_tracker'.tr(),
         subtitle: 'expense_tracker_subtitle'.tr(),
         icon: Icons.account_balance_wallet,
         color: Colors.indigo,
-        animation: _animations[3],
+        animation: _animations[2],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ExpenseView()),
         ),
       ),
       FeatureCard(
-        title: 'countdown'.tr(),
-        subtitle: 'countdown_subtitle'.tr(),
-        icon: Icons.timer,
-        color: Colors.pink,
+        title: 'event_calendar'.tr(),
+        subtitle: 'event_calendar_subtitle'.tr(),
+        icon: Icons.event_repeat,
+        color: Colors.deepPurple,
+        animation: _animations[3],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const EventCalendarView()),
+        ),
+      ),
+      FeatureCard(
+        title: 'password_generator'.tr(),
+        subtitle: 'password_generator_subtitle'.tr(),
+        icon: Icons.security,
+        color: Colors.deepPurple,
         animation: _animations[4],
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const CountdownView()),
+          MaterialPageRoute(builder: (_) => const PasswordSecurityGate()),
+        ),
+      ),
+      FeatureCard(
+        title: 'mini_planner'.tr(),
+        subtitle: 'mini_planner_subtitle'.tr(),
+        icon: Icons.timeline,
+        color: Colors.amberAccent,
+        animation: _animations[5],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const GanttPlannerView()),
+        ),
+      ),
+
+      // ── Feature quotidiane (uso pratico giornaliero) ──
+      FeatureCard(
+        title: 'meal_plan'.tr(),
+        subtitle: 'meal_plan_subtitle'.tr(),
+        icon: Icons.restaurant_menu,
+        color: Colors.teal,
+        animation: _animations[6],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const MealPlanView()),
         ),
       ),
       FeatureCard(
@@ -242,7 +267,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'smart_alarm_subtitle'.tr(),
         icon: Icons.alarm,
         color: Colors.cyan,
-        animation: _animations[5],
+        animation: _animations[7],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const AlarmView()),
@@ -253,21 +278,32 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'timer_subtitle'.tr(),
         icon: Icons.kitchen_outlined,
         color: Colors.redAccent,
-        animation: _animations[6],
+        animation: _animations[8],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const KitchenTimerView()),
         ),
       ),
       FeatureCard(
-        title: 'event_calendar'.tr(),
-        subtitle: 'event_calendar_subtitle'.tr(),
-        icon: Icons.event_repeat,
-        color: Colors.deepPurple,
-        animation: _animations[7],
+        title: 'todo_list'.tr(),
+        subtitle: 'todo_list_subtitle'.tr(),
+        icon: Icons.checklist,
+        color: Colors.orange,
+        animation: _animations[9],
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const EventCalendarView()),
+          MaterialPageRoute(builder: (_) => const TodoListView()),
+        ),
+      ),
+      FeatureCard(
+        title: 'countdown'.tr(),
+        subtitle: 'countdown_subtitle'.tr(),
+        icon: Icons.timer,
+        color: Colors.pink,
+        animation: _animations[10],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CountdownView()),
         ),
       ),
       FeatureCard(
@@ -275,32 +311,23 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'reminder_subtitle'.tr(),
         icon: Icons.notifications_active,
         color: Colors.amber,
-        animation: _animations[8],
+        animation: _animations[11],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ReminderView()),
         ),
       ),
+
+      // ── Utility e strumenti educativi ──
       FeatureCard(
         title: 'routine_planner'.tr(),
         subtitle: 'routine_planner_subtitle'.tr(),
         icon: Icons.event_repeat,
         color: Colors.red,
-        animation: _animations[9],
+        animation: _animations[12],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const FizzBuzzView()),
-        ),
-      ),
-      FeatureCard(
-        title: 'password_generator'.tr(),
-        subtitle: 'password_generator_subtitle'.tr(),
-        icon: Icons.security,
-        color: Colors.deepPurple,
-        animation: _animations[10],
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const PasswordSecurityGate()),
         ),
       ),
       FeatureCard(
@@ -308,32 +335,10 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'text_analyzer_subtitle'.tr(),
         icon: Icons.text_snippet,
         color: Colors.deepOrange,
-        animation: _animations[11],
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const TextAnalyzerView()),
-        ),
-      ),
-      FeatureCard(
-        title: 'meal_plan'.tr(),
-        subtitle: 'meal_plan_subtitle'.tr(),
-        icon: Icons.restaurant_menu,
-        color: Colors.teal,
-        animation: _animations[12],
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const MealPlanView()),
-        ),
-      ),
-      FeatureCard(
-        title: 'mini_planner'.tr(),
-        subtitle: 'mini_planner_subtitle'.tr(),
-        icon: Icons.timeline,
-        color: Colors.amberAccent,
         animation: _animations[13],
         onTap: () => Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const GanttPlannerView()),
+          MaterialPageRoute(builder: (_) => const TextAnalyzerView()),
         ),
       ),
       FeatureCard(
@@ -379,9 +384,10 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
             IconButton(
               icon: Text(
                 _getCurrentLanguageCode(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).appBarTheme.foregroundColor,
                 ),
               ),
               onPressed: _showLanguagePicker,

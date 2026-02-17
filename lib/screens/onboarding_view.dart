@@ -55,26 +55,22 @@ class _OnboardingViewState extends State<OnboardingView> {
       body: SafeArea(
         child: Column(
           children: [
-            // Skip (solo al primo avvio)
-            if (!widget.isRevisit)
-              Align(
-                alignment: Alignment.centerRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 8, right: 8),
-                  child: TextButton(
-                    onPressed: _completeOnboarding,
-                    child: Text(
-                      'ob_skip'.tr(),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface
-                            .withValues(alpha: 0.6),
-                      ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8, right: 8),
+                child: TextButton(
+                  onPressed: _completeOnboarding,
+                  child: Text(
+                    'ob_skip'.tr(),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface
+                          .withValues(alpha: 0.6),
                     ),
                   ),
                 ),
-              )
-            else
-              const SizedBox(height: 16),
+              ),
+            ),
 
             // PageView
             Expanded(
