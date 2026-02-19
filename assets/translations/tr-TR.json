@@ -674,5 +674,16 @@
   "ob_ready_title": "Her Şey Hazır!",
   "ob_ready_desc": "Bu rehberi ana ekrandan her zaman tekrar görüntüleyebilirsiniz. SmartNotes'un keyfini çıkarın!",
   "category_hint": "Bir kategori girin",
-  "default_category": "Diğer"
+  "default_category": "Diğer",
+  "dice_roller": "Zar Atıcı",
+  "dice_roller_subtitle": "Masa oyunları için zar atın",
+  "dice_count": "Zar sayısı",
+  "dice_type": "Zar türü",
+  "dice_roll": "At",
+  "dice_rolling": "Atılıyor...",
+  "dice_total": "Toplam:",
+  "dice_tap_to_roll": "Atmak için düğmeye basın",
+  "dice_history": "Geçmiş",
+  "dice_clear_history": "Geçmişi temizle",
+  "ob_feat_dice": "Zar Atıcı — RPG ve masa oyunları için zar"
 }

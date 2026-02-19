@@ -674,5 +674,16 @@
   "ob_ready_title": "كل شيء جاهز!",
   "ob_ready_desc": "يمكنك دائماً إعادة زيارة هذا الدليل من الشاشة الرئيسية. استمتع بـ SmartNotes!",
   "category_hint": "أدخل فئة",
-  "default_category": "أخرى"
+  "default_category": "أخرى",
+  "dice_roller": "رامي النرد",
+  "dice_roller_subtitle": "ارمِ النرد لألعاب الطاولة",
+  "dice_count": "عدد النرد",
+  "dice_type": "نوع النرد",
+  "dice_roll": "ارمِ",
+  "dice_rolling": "جارٍ الرمي...",
+  "dice_total": "المجموع:",
+  "dice_tap_to_roll": "اضغط الزر للرمي",
+  "dice_history": "السجل",
+  "dice_clear_history": "مسح السجل",
+  "ob_feat_dice": "رامي النرد — نرد لألعاب الأدوار والطاولة"
 }

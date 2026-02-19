@@ -674,5 +674,16 @@
   "ob_ready_title": "¡Todo Listo!",
   "ob_ready_desc": "Puedes volver a ver esta guía desde la pantalla principal. ¡Disfruta de SmartNotes!",
   "category_hint": "Introduce una categoría",
-  "default_category": "Otros"
+  "default_category": "Otros",
+  "dice_roller": "Lanzador de Dados",
+  "dice_roller_subtitle": "Lanza dados para juegos de mesa",
+  "dice_count": "Número de dados",
+  "dice_type": "Tipo de dado",
+  "dice_roll": "Lanzar",
+  "dice_rolling": "Lanzando...",
+  "dice_total": "Total:",
+  "dice_tap_to_roll": "Pulsa para lanzar",
+  "dice_history": "Historial",
+  "dice_clear_history": "Borrar historial",
+  "ob_feat_dice": "Lanzador de Dados — dados para RPG y juegos de mesa"
 }

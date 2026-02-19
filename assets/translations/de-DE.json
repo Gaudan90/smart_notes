@@ -674,5 +674,16 @@
   "ob_ready_title": "Alles Bereit!",
   "ob_ready_desc": "Sie können diese Anleitung jederzeit vom Startbildschirm aus erneut aufrufen. Viel Spaß mit SmartNotes!",
   "category_hint": "Kategorie eingeben",
-  "default_category": "Sonstiges"
+  "default_category": "Sonstiges",
+  "dice_roller": "Würfelwerfer",
+  "dice_roller_subtitle": "Würfeln für Brettspiele",
+  "dice_count": "Anzahl der Würfel",
+  "dice_type": "Würfeltyp",
+  "dice_roll": "Würfeln",
+  "dice_rolling": "Würfeln...",
+  "dice_total": "Gesamt:",
+  "dice_tap_to_roll": "Zum Würfeln tippen",
+  "dice_history": "Verlauf",
+  "dice_clear_history": "Verlauf löschen",
+  "ob_feat_dice": "Würfelwerfer — Würfel für Rollenspiele und Brettspiele"
 }

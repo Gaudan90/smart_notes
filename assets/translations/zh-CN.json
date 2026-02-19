@@ -674,5 +674,16 @@
   "ob_ready_title": "一切就绪！",
   "ob_ready_desc": "您可以随时从主屏幕重新查看本指南。祝您使用 SmartNotes 愉快！",
   "category_hint": "输入分类",
-  "default_category": "其他"
+  "default_category": "其他",
+  "dice_roller": "骰子投掷器",
+  "dice_roller_subtitle": "为桌游投掷骰子",
+  "dice_count": "骰子数量",
+  "dice_type": "骰子类型",
+  "dice_roll": "投掷",
+  "dice_rolling": "投掷中...",
+  "dice_total": "总计：",
+  "dice_tap_to_roll": "点击按钮投掷",
+  "dice_history": "历史记录",
+  "dice_clear_history": "清除历史",
+  "ob_feat_dice": "骰子投掷器 — 角色扮演和桌游骰子"
 }

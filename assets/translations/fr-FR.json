@@ -674,5 +674,16 @@
   "ob_ready_title": "Tout est Prêt !",
   "ob_ready_desc": "Vous pouvez toujours revoir ce guide depuis l'écran d'accueil. Profitez de SmartNotes !",
   "category_hint": "Saisissez une catégorie",
-  "default_category": "Autre"
+  "default_category": "Autre",
+  "dice_roller": "Lanceur de Dés",
+  "dice_roller_subtitle": "Lancez des dés pour jeux de table",
+  "dice_count": "Nombre de dés",
+  "dice_type": "Type de dé",
+  "dice_roll": "Lancer",
+  "dice_rolling": "Lancer...",
+  "dice_total": "Total :",
+  "dice_tap_to_roll": "Appuyez pour lancer",
+  "dice_history": "Historique",
+  "dice_clear_history": "Effacer l'historique",
+  "ob_feat_dice": "Lanceur de Dés — dés pour JDR et jeux de société"
 }

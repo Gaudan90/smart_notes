@@ -674,5 +674,16 @@
   "ob_ready_title": "Всё готово!",
   "ob_ready_desc": "Вы всегда можете вернуться к этому руководству с главного экрана. Приятного использования SmartNotes!",
   "category_hint": "Введите категорию",
-  "default_category": "Другое"
+  "default_category": "Другое",
+  "dice_roller": "Бросок Кубиков",
+  "dice_roller_subtitle": "Бросайте кубики для настольных игр",
+  "dice_count": "Количество кубиков",
+  "dice_type": "Тип кубика",
+  "dice_roll": "Бросить",
+  "dice_rolling": "Бросок...",
+  "dice_total": "Итого:",
+  "dice_tap_to_roll": "Нажмите для броска",
+  "dice_history": "История",
+  "dice_clear_history": "Очистить историю",
+  "ob_feat_dice": "Бросок Кубиков — кубики для RPG и настольных игр"
 }

@@ -118,6 +118,7 @@ class OnboardingPresenter {
           OnboardingFeatureItem(icon: Icons.analytics_outlined, color: Colors.blue, labelKey: 'ob_feat_numbers'),
           OnboardingFeatureItem(icon: Icons.text_rotation_none, color: Colors.green, labelKey: 'ob_feat_sentence'),
           OnboardingFeatureItem(icon: Icons.search, color: Colors.purple, labelKey: 'ob_feat_missing'),
+          OnboardingFeatureItem(icon: Icons.casino, color: Colors.yellow, labelKey: 'ob_feat_dice'),
         ],
       ),
 
@@ -136,7 +137,7 @@ class OnboardingPresenter {
 
       // 8. Pronti
       OnboardingPageData(
-        icon: Icons.rocket_launch,
+        icon: Icons.thumb_up_alt_outlined,
         iconColor: Colors.deepOrange,
         titleKey: 'ob_ready_title',
         descriptionKey: 'ob_ready_desc',

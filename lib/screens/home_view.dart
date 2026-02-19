@@ -12,6 +12,7 @@ import '../data/language_options.dart';
 import '../widget/feature_card.dart';
 import '../widget/password/password_security_gate.dart';
 import 'countdown_view.dart';
+import 'dice_roller_view.dart';
 import 'expense_view.dart';
 import 'fizzbuzz_view.dart';
 import 'gantt_planner_view.dart';
@@ -55,7 +56,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _animations = List.generate(15, (index) {
+    _animations = List.generate(16, (index) {
       final double start = index * 0.04;
       final double end = (0.2 + index * 0.04).clamp(0.0, 1.0);
 
@@ -180,12 +181,11 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     final features = [
-      // ── Feature principali (elaborate, alto valore di mercato) ──
       FeatureCard(
         title: 'shopping_list'.tr(),
         subtitle: 'shopping_list_subtitle'.tr(),
         icon: Icons.shopping_cart,
-        color: Colors.lightGreen,
+        color: Colors.lightGreenAccent.shade700,
         animation: _animations[0],
         onTap: () => Navigator.push(
           context,
@@ -247,13 +247,11 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
           MaterialPageRoute(builder: (_) => const GanttPlannerView()),
         ),
       ),
-
-      // ── Feature quotidiane (uso pratico giornaliero) ──
       FeatureCard(
         title: 'meal_plan'.tr(),
         subtitle: 'meal_plan_subtitle'.tr(),
         icon: Icons.restaurant_menu,
-        color: Colors.teal,
+        color: Colors.lightGreenAccent.shade200,
         animation: _animations[6],
         onTap: () => Navigator.push(
           context,
@@ -286,20 +284,18 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         title: 'reminder'.tr(),
         subtitle: 'reminder_subtitle'.tr(),
         icon: Icons.notifications_active,
-        color: Colors.cyanAccent,
+        color: Colors.cyanAccent.shade100,
         animation: _animations[9],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ReminderView()),
         ),
       ),
-
-      // ── Utility e strumenti educativi ──
       FeatureCard(
         title: 'routine_planner'.tr(),
         subtitle: 'routine_planner_subtitle'.tr(),
         icon: Icons.event_repeat,
-        color: Colors.purpleAccent,
+        color: Colors.purpleAccent.shade100,
         animation: _animations[10],
         onTap: () => Navigator.push(
           context,
@@ -348,6 +344,17 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MissingNumbersView()),
+        ),
+      ),
+      FeatureCard(
+        title: 'dice_roller'.tr(),
+        subtitle: 'dice_roller_subtitle'.tr(),
+        icon: Icons.casino,
+        color: Colors.yellow,
+        animation: _animations[15],
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const DiceRollerView()),
         ),
       ),
     ];

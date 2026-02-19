@@ -674,5 +674,16 @@
   "ob_ready_title": "You're All Set!",
   "ob_ready_desc": "You can always revisit this guide from the home screen. Enjoy SmartNotes!",
   "category_hint": "Enter a category",
-  "default_category": "Other"
+  "default_category": "Other",
+  "dice_roller": "Dice Roller",
+  "dice_roller_subtitle": "Roll dice for tabletop games",
+  "dice_count": "Number of dice",
+  "dice_type": "Dice type",
+  "dice_roll": "Roll",
+  "dice_rolling": "Rolling...",
+  "dice_total": "Total:",
+  "dice_tap_to_roll": "Tap the button to roll",
+  "dice_history": "History",
+  "dice_clear_history": "Clear history",
+  "ob_feat_dice": "Dice Roller — roll dice for RPG and board games"
 }

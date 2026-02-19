@@ -674,5 +674,16 @@
   "ob_ready_title": "Ecco Fatto!",
   "ob_ready_desc": "Puoi sempre rivedere questa guida dalla schermata principale. Buon utilizzo di SmartNotes!",
   "category_hint": "Inserisci una categoria",
-  "default_category": "Altro"
+  "default_category": "Altro",
+  "dice_roller": "Lancio Dadi",
+  "dice_roller_subtitle": "Lancia dadi per giochi da tavolo",
+  "dice_count": "Numero di dadi",
+  "dice_type": "Tipo di dado",
+  "dice_roll": "Lancia",
+  "dice_rolling": "Lancio...",
+  "dice_total": "Totale:",
+  "dice_tap_to_roll": "Premi il pulsante per lanciare",
+  "dice_history": "Cronologia",
+  "dice_clear_history": "Cancella cronologia",
+  "ob_feat_dice": "Lancio Dadi — dadi per GDR e giochi da tavolo"
 }
