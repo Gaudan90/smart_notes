@@ -8,7 +8,6 @@ import 'package:smart_notes/screens/pin_setup_view.dart';
 import 'package:smart_notes/screens/pin_unlock_view.dart';
 import 'package:smart_notes/theme/theme_config.dart';
 import 'package:smart_notes/theme/theme_provider.dart';
-import 'data/alarm_background_service.dart';
 import 'data/notification_service.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -18,14 +17,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await NotificationService().initialize();
-  await AlarmBackgroundService.initialize();
 
   // Leggi lo stato dell'onboarding prima di avviare l'app
   final prefs = await SharedPreferences.getInstance();
   onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
 
   if (kDebugMode) {
-    print('✅ AlarmBackgroundService initialized');
     print('📋 Onboarding completed: $onboardingCompleted');
   }
   runApp(EasyLocalization(

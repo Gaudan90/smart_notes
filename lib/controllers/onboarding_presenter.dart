@@ -89,8 +89,6 @@ class OnboardingPresenter {
         descriptionKey: 'ob_time_desc',
         features: [
           OnboardingFeatureItem(icon: Icons.timer, color: Colors.pink, labelKey: 'ob_feat_countdown'),
-          OnboardingFeatureItem(icon: Icons.alarm, color: Colors.cyan, labelKey: 'ob_feat_alarm'),
-          OnboardingFeatureItem(icon: Icons.kitchen_outlined, color: Colors.redAccent, labelKey: 'ob_feat_timer'),
           OnboardingFeatureItem(icon: Icons.event_repeat, color: Colors.deepPurple, labelKey: 'ob_feat_calendar'),
           OnboardingFeatureItem(icon: Icons.notifications_active, color: Colors.amber, labelKey: 'ob_feat_reminder'),
         ],

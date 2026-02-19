@@ -11,12 +11,10 @@ import 'package:smart_notes/screens/onboarding_view.dart';
 import '../data/language_options.dart';
 import '../widget/feature_card.dart';
 import '../widget/password/password_security_gate.dart';
-import 'alarm_view.dart';
 import 'countdown_view.dart';
 import 'expense_view.dart';
 import 'fizzbuzz_view.dart';
 import 'gantt_planner_view.dart';
-import 'kitchen_timer_view.dart';
 import 'meal_plan_view.dart';
 import 'missing_numbers_view.dart';
 import 'number_stats_view.dart';
@@ -57,7 +55,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
       vsync: this,
     );
 
-    _animations = List.generate(17, (index) {
+    _animations = List.generate(15, (index) {
       final double start = index * 0.04;
       final double end = (0.2 + index * 0.04).clamp(0.0, 1.0);
 
@@ -231,7 +229,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         title: 'password_generator'.tr(),
         subtitle: 'password_generator_subtitle'.tr(),
         icon: Icons.security,
-        color: Colors.deepPurple,
+        color: Colors.deepOrange,
         animation: _animations[4],
         onTap: () => Navigator.push(
           context,
@@ -263,33 +261,11 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         ),
       ),
       FeatureCard(
-        title: 'smart_alarm'.tr(),
-        subtitle: 'smart_alarm_subtitle'.tr(),
-        icon: Icons.alarm,
-        color: Colors.cyan,
-        animation: _animations[7],
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AlarmView()),
-        ),
-      ),
-      FeatureCard(
-        title: 'timer'.tr(),
-        subtitle: 'timer_subtitle'.tr(),
-        icon: Icons.kitchen_outlined,
-        color: Colors.redAccent,
-        animation: _animations[8],
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const KitchenTimerView()),
-        ),
-      ),
-      FeatureCard(
         title: 'todo_list'.tr(),
         subtitle: 'todo_list_subtitle'.tr(),
         icon: Icons.checklist,
-        color: Colors.orange,
-        animation: _animations[9],
+        color: Colors.blue,
+        animation: _animations[7],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const TodoListView()),
@@ -300,7 +276,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'countdown_subtitle'.tr(),
         icon: Icons.timer,
         color: Colors.pink,
-        animation: _animations[10],
+        animation: _animations[8],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const CountdownView()),
@@ -310,8 +286,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         title: 'reminder'.tr(),
         subtitle: 'reminder_subtitle'.tr(),
         icon: Icons.notifications_active,
-        color: Colors.amber,
-        animation: _animations[11],
+        color: Colors.cyanAccent,
+        animation: _animations[9],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const ReminderView()),
@@ -323,8 +299,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         title: 'routine_planner'.tr(),
         subtitle: 'routine_planner_subtitle'.tr(),
         icon: Icons.event_repeat,
-        color: Colors.red,
-        animation: _animations[12],
+        color: Colors.purpleAccent,
+        animation: _animations[10],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const FizzBuzzView()),
@@ -335,7 +311,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'text_analyzer_subtitle'.tr(),
         icon: Icons.text_snippet,
         color: Colors.deepOrange,
-        animation: _animations[13],
+        animation: _animations[11],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const TextAnalyzerView()),
@@ -346,7 +322,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'number_stats_subtitle'.tr(),
         icon: Icons.analytics_outlined,
         color: Colors.blue,
-        animation: _animations[14],
+        animation: _animations[12],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const NumberStatsView()),
@@ -357,7 +333,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         subtitle: 'sentence_reverser_subtitle'.tr(),
         icon: Icons.text_rotation_none,
         color: Colors.green,
-        animation: _animations[15],
+        animation: _animations[13],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const SentenceReverserView()),
@@ -367,8 +343,8 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
         title: 'missing_numbers'.tr(),
         subtitle: 'missing_numbers_subtitle'.tr(),
         icon: Icons.search,
-        color: Colors.purple,
-        animation: _animations[16],
+        color: Colors.tealAccent,
+        animation: _animations[14],
         onTap: () => Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const MissingNumbersView()),
