@@ -22,6 +22,9 @@ class _DiceRollerViewState extends State<DiceRollerView>
   int _diceFaces = 6;
   DiceRollModel? _lastRoll;
   bool _isRolling = false;
+  bool _isLoading = true;
+
+  late TabController _tabController;
 
   late AnimationController _rollController;
   late Animation<double> _shakeAnimation;
@@ -37,6 +40,9 @@ class _DiceRollerViewState extends State<DiceRollerView>
   @override
   void initState() {
     super.initState();
+
+    _tabController = TabController(length: 2, vsync: this);
+    _loadHistory();
 
     _rollController = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -63,8 +69,14 @@ class _DiceRollerViewState extends State<DiceRollerView>
     );
   }
 
+  Future<void> _loadHistory() async {
+    await _presenter.loadHistory();
+    if (mounted) setState(() => _isLoading = false);
+  }
+
   @override
   void dispose() {
+    _tabController.dispose();
     _rollController.dispose();
     _resultController.dispose();
     super.dispose();
@@ -93,7 +105,10 @@ class _DiceRollerViewState extends State<DiceRollerView>
       });
     }
 
-    final roll = _presenter.roll(count: _diceCount, faces: _diceFaces);
+    final roll = await _presenter.roll(
+      count: _diceCount,
+      faces: _diceFaces,
+    );
 
     setState(() {
       _lastRoll = roll;
@@ -104,7 +119,7 @@ class _DiceRollerViewState extends State<DiceRollerView>
     _resultController.forward();
   }
 
-  void _confirmClearHistory() {
+  void _confirmClearPersistentHistory() {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -116,10 +131,15 @@ class _DiceRollerViewState extends State<DiceRollerView>
             child: Text('cancel'.tr()),
           ),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              setState(() => _presenter.clearHistory());
+              await _presenter.clearPersistentHistory();
+              setState(() {});
             },
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
             child: Text('confirm'.tr()),
           ),
         ],
@@ -132,36 +152,53 @@ class _DiceRollerViewState extends State<DiceRollerView>
     return Scaffold(
       appBar: AppBar(
         title: Text('dice_roller'.tr()),
-        actions: [
-          if (_presenter.history.isNotEmpty)
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              tooltip: 'dice_clear_history'.tr(),
-              onPressed: _confirmClearHistory,
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: [
+            Tab(
+              icon: const Icon(Icons.casino),
+              text: 'dice_roll'.tr(),
             ),
-        ],
+            Tab(
+              icon: const Icon(Icons.history),
+              text: 'tab_history'.tr(),
+            ),
+          ],
+        ),
       ),
-      body: Column(
+      body: TabBarView(
+        controller: _tabController,
         children: [
-          Expanded(
-            flex: 3,
-            child: _buildMainArea(),
-          ),
-          DiceSelectors(
-            diceCount: _diceCount,
-            diceFaces: _diceFaces,
-            onCountChanged: (v) => setState(() => _diceCount = v),
-            onFacesChanged: (v) => setState(() => _diceFaces = v),
-          ),
-          _buildRollButton(),
-          if (_presenter.history.isNotEmpty)
-            Expanded(
-              flex: 2,
-              child: DiceHistoryList(history: _presenter.history),
-            ),
-          const SizedBox(height: 8),
+          _buildRollTab(),
+          _buildHistoryTab(),
         ],
       ),
+    );
+  }
+
+  // ── TAB 1: Roll ──
+
+  Widget _buildRollTab() {
+    return Column(
+      children: [
+        Expanded(
+          flex: 3,
+          child: _buildMainArea(),
+        ),
+        DiceSelectors(
+          diceCount: _diceCount,
+          diceFaces: _diceFaces,
+          onCountChanged: (v) => setState(() => _diceCount = v),
+          onFacesChanged: (v) => setState(() => _diceFaces = v),
+        ),
+        _buildRollButton(),
+        if (_presenter.sessionHistory.isNotEmpty)
+          Expanded(
+            flex: 2,
+            child: DiceHistoryList(history: _presenter.sessionHistory),
+          ),
+        const SizedBox(height: 8),
+      ],
     );
   }
 
@@ -223,6 +260,78 @@ class _DiceRollerViewState extends State<DiceRollerView>
           ),
         ),
       ),
+    );
+  }
+
+  // ── TAB 2: History persistente ──
+
+  Widget _buildHistoryTab() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final history = _presenter.persistentHistory;
+
+    if (history.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.history,
+              size: 64,
+              color: Theme.of(context)
+                  .colorScheme
+                  .onSurface
+                  .withValues(alpha: 0.2),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'dice_no_history'.tr(),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.5),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        // Header con conteggio e pulsante cancella
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 8, 0),
+          child: Row(
+            children: [
+              Text(
+                'dice_total_rolls'.tr(args: ['${history.length}']),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.6),
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: 'dice_clear_history'.tr(),
+                onPressed: _confirmClearPersistentHistory,
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: DiceHistoryList(
+            history: history,
+            showHeader: false,
+          ),
+        ),
+      ],
     );
   }
 }

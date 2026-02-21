@@ -685,5 +685,7 @@
   "dice_tap_to_roll": "Premi il pulsante per lanciare",
   "dice_history": "Cronologia",
   "dice_clear_history": "Cancella cronologia",
-  "ob_feat_dice": "Lancio Dadi — dadi per GDR e giochi da tavolo"
+  "ob_feat_dice": "Lancio Dadi — dadi per GDR e giochi da tavolo",
+  "dice_no_history": "Nessun lancio ancora",
+  "dice_total_rolls": "{} lanci totali"
 }

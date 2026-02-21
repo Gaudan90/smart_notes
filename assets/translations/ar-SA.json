@@ -685,5 +685,7 @@
   "dice_tap_to_roll": "اضغط الزر للرمي",
   "dice_history": "السجل",
   "dice_clear_history": "مسح السجل",
-  "ob_feat_dice": "رامي النرد — نرد لألعاب الأدوار والطاولة"
+  "ob_feat_dice": "رامي النرد — نرد لألعاب الأدوار والطاولة",
+  "dice_no_history": "لا رميات بعد",
+  "dice_total_rolls": "{} رمية إجمالية"
 }

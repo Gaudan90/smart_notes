@@ -685,5 +685,7 @@
   "dice_tap_to_roll": "Pulsa para lanzar",
   "dice_history": "Historial",
   "dice_clear_history": "Borrar historial",
-  "ob_feat_dice": "Lanzador de Dados — dados para RPG y juegos de mesa"
+  "ob_feat_dice": "Lanzador de Dados — dados para RPG y juegos de mesa",
+  "dice_no_history": "Ningún lanzamiento aún",
+  "dice_total_rolls": "{} lanzamientos en total"
 }

@@ -685,5 +685,7 @@
   "dice_tap_to_roll": "Нажмите для броска",
   "dice_history": "История",
   "dice_clear_history": "Очистить историю",
-  "ob_feat_dice": "Бросок Кубиков — кубики для RPG и настольных игр"
+  "ob_feat_dice": "Бросок Кубиков — кубики для RPG и настольных игр",
+  "dice_no_history": "Бросков пока нет",
+  "dice_total_rolls": "Всего {} бросков"
 }

@@ -3,12 +3,15 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../states/dice_roller_model.dart';
 
 /// Lista scrollabile della cronologia lanci.
+/// [showHeader] controlla la visibilità del titolo "History".
 class DiceHistoryList extends StatelessWidget {
   final List<DiceRollModel> history;
+  final bool showHeader;
 
   const DiceHistoryList({
     super.key,
     required this.history,
+    this.showHeader = true,
   });
 
   @override
@@ -19,16 +22,18 @@ class DiceHistoryList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'dice_history'.tr(),
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: colorScheme.onSurface.withValues(alpha: 0.6),
+        if (showHeader) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              'dice_history'.tr(),
+              style: theme.textTheme.labelLarge?.copyWith(
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 4),
+          const SizedBox(height: 4),
+        ],
         Expanded(
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 20),

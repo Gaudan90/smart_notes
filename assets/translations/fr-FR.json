@@ -685,5 +685,7 @@
   "dice_tap_to_roll": "Appuyez pour lancer",
   "dice_history": "Historique",
   "dice_clear_history": "Effacer l'historique",
-  "ob_feat_dice": "Lanceur de Dés — dés pour JDR et jeux de société"
+  "ob_feat_dice": "Lanceur de Dés — dés pour JDR et jeux de société",
+  "dice_no_history": "Aucun lancer encore",
+  "dice_total_rolls": "{} lancers au total"
 }

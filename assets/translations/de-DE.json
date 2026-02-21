@@ -685,5 +685,7 @@
   "dice_tap_to_roll": "Zum Würfeln tippen",
   "dice_history": "Verlauf",
   "dice_clear_history": "Verlauf löschen",
-  "ob_feat_dice": "Würfelwerfer — Würfel für Rollenspiele und Brettspiele"
+  "ob_feat_dice": "Würfelwerfer — Würfel für Rollenspiele und Brettspiele",
+  "dice_no_history": "Noch keine Würfe",
+  "dice_total_rolls": "{} Würfe insgesamt"
 }

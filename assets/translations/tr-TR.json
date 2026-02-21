@@ -685,5 +685,7 @@
   "dice_tap_to_roll": "Atmak için düğmeye basın",
   "dice_history": "Geçmiş",
   "dice_clear_history": "Geçmişi temizle",
-  "ob_feat_dice": "Zar Atıcı — RPG ve masa oyunları için zar"
+  "ob_feat_dice": "Zar Atıcı — RPG ve masa oyunları için zar",
+  "dice_no_history": "Henüz atış yok",
+  "dice_total_rolls": "Toplam {} atış"
 }

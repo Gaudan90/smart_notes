@@ -685,5 +685,7 @@
   "dice_tap_to_roll": "Tap the button to roll",
   "dice_history": "History",
   "dice_clear_history": "Clear history",
-  "ob_feat_dice": "Dice Roller — roll dice for RPG and board games"
+  "ob_feat_dice": "Dice Roller — roll dice for RPG and board games",
+  "dice_no_history": "No rolls yet",
+  "dice_total_rolls": "{} total rolls"
 }
