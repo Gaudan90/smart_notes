@@ -687,5 +687,15 @@
   "dice_clear_history": "Очистить историю",
   "ob_feat_dice": "Бросок Кубиков — кубики для RPG и настольных игр",
   "dice_no_history": "Бросков пока нет",
-  "dice_total_rolls": "Всего {} бросков"
+  "dice_total_rolls": "Всего {} бросков",
+  "password_export_title": "Экспорт паролей",
+  "password_export_choose_format": "Выберите формат экспорта:",
+  "password_export_date": "Дата",
+  "password_export_count": "Всего паролей",
+  "password_export_warning": "КОНФИДЕНЦИАЛЬНО - Храните этот файл в безопасности!",
+  "password_label": "Пароль",
+  "password_length_label": "Длина",
+  "password_strength_label": "Надёжность",
+  "password_export_save": "Сохранить на устройство",
+  "password_export_saved": "Файл сохранён: {path}"
 }

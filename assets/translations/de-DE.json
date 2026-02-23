@@ -687,5 +687,15 @@
   "dice_clear_history": "Verlauf löschen",
   "ob_feat_dice": "Würfelwerfer — Würfel für Rollenspiele und Brettspiele",
   "dice_no_history": "Noch keine Würfe",
-  "dice_total_rolls": "{} Würfe insgesamt"
+  "dice_total_rolls": "{} Würfe insgesamt",
+  "password_export_title": "Passwörter exportieren",
+  "password_export_choose_format": "Exportformat wählen:",
+  "password_export_date": "Datum",
+  "password_export_count": "Passwörter gesamt",
+  "password_export_warning": "VERTRAULICH - Bewahren Sie diese Datei sicher auf!",
+  "password_label": "Passwort",
+  "password_length_label": "Länge",
+  "password_strength_label": "Stärke",
+  "password_export_save": "Auf Gerät speichern",
+  "password_export_saved": "Datei gespeichert in: {path}"
 }

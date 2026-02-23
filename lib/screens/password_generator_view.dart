@@ -6,9 +6,11 @@ import '../controllers/password_generator_presenter.dart';
 import '../states/password_model.dart';
 import '../widget/password/password_display_card.dart';
 import '../widget/password/password_config_section.dart';
+import '../widget/password/password_export_service.dart';
 import '../widget/password/password_history_item.dart';
 import '../widget/password/pin_unlock_dialog.dart';
 import '../widget/password/password_reveal_dialog.dart';
+import '../widget/password/password_export_dialog.dart';
 
 class PasswordGeneratorView extends StatefulWidget {
   const PasswordGeneratorView({super.key});
@@ -21,6 +23,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
     with SingleTickerProviderStateMixin {
   final _presenter = PasswordGeneratorPresenter();
   final _securityManager = PinSecurityPresenter();
+  final _exportService = PasswordExportService();
   late TextEditingController _nameController;
 
   PasswordModel? _currentPassword;
@@ -93,7 +96,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
       ),
     );
 
-    // Gestisci il risultato DOPO che il dialog è completamente chiuso
+    // Gestisci il risultato DOPO che il dialog Ã¨ completamente chiuso
     if (result == 'too_many_attempts') {
       // Aspetta che il dialog sia completamente chiuso
       await Future.delayed(const Duration(milliseconds: 300));
@@ -120,6 +123,86 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
         onCopy: () => _copyToClipboard(password),
       ),
     );
+  }
+
+  /// Mostra scelta formato e azione → PIN → esporta
+  Future<void> _exportPasswords() async {
+    // 1. Scelta formato + azione
+    final choice = await showDialog<ExportChoice>(
+      context: context,
+      builder: (ctx) => ExportChoiceDialog(),
+    );
+
+    if (choice == null || !mounted) return;
+
+    // 2. Verifica PIN
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => PinUnlockDialog(
+        onVerifyPin: (pin) => _securityManager.verifyPin(pin),
+        onGetFailedAttempts: () => _securityManager.getFailedAttempts(),
+      ),
+    );
+
+    if (result == 'too_many_attempts') {
+      await Future.delayed(const Duration(milliseconds: 300));
+      if (mounted) {
+        _securityManager.lock();
+        Navigator.of(context).pushReplacementNamed('/pin_unlock');
+      }
+      return;
+    }
+
+    if (result != 'success' || !mounted) return;
+
+    // 3. Esegui
+    try {
+      if (choice.action == 'share') {
+        if (choice.format == 'pdf') {
+          await _exportService.shareAsPdf(_presenter.history);
+        } else {
+          await _exportService.shareAsTxt(_presenter.history);
+        }
+      } else {
+        // Save to device
+        final exportResult = choice.format == 'pdf'
+            ? await _exportService.saveAsPdf(_presenter.history)
+            : await _exportService.saveAsTxt(_presenter.history);
+
+        if (!mounted) return;
+
+        if (exportResult.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'password_export_saved'.tr(
+                    namedArgs: {'path': exportResult.filePath!}),
+              ),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        } else if (exportResult.error != 'cancelled') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'save_error'.tr(namedArgs: {'error': exportResult.error!})),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('save_error'.tr(namedArgs: {'error': '$e'})),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -171,7 +254,7 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
             PasswordDisplayCard(
               password: _currentPassword!,
               onCopy: () => _copyToClipboard(_currentPassword!.password),
-              isLocked: false, // Appena generata è visibile
+              isLocked: false, // Appena generata Ã¨ visibile
             ),
             const SizedBox(height: 24),
           ],
@@ -269,10 +352,20 @@ class _PasswordGeneratorViewState extends State<PasswordGeneratorView>
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                TextButton.icon(
-                  onPressed: _clearAllHistory,
-                  icon: const Icon(Icons.delete_sweep),
-                  label: Text('clear_all_history_pwd'.tr()),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: _exportPasswords,
+                      icon: const Icon(Icons.save_alt, size: 20),
+                      tooltip: 'password_export_title'.tr(),
+                    ),
+                    TextButton.icon(
+                      onPressed: _clearAllHistory,
+                      icon: const Icon(Icons.delete_sweep),
+                      label: Text('clear_all_history_pwd'.tr()),
+                    ),
+                  ],
                 ),
               ],
             ),

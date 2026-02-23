@@ -687,5 +687,15 @@
   "dice_clear_history": "مسح السجل",
   "ob_feat_dice": "رامي النرد — نرد لألعاب الأدوار والطاولة",
   "dice_no_history": "لا رميات بعد",
-  "dice_total_rolls": "{} رمية إجمالية"
+  "dice_total_rolls": "{} رمية إجمالية",
+  "password_export_title": "تصدير كلمات المرور",
+  "password_export_choose_format": "اختر صيغة التصدير:",
+  "password_export_date": "التاريخ",
+  "password_export_count": "إجمالي كلمات المرور",
+  "password_export_warning": "سري - احتفظ بهذا الملف في مكان آمن!",
+  "password_label": "كلمة المرور",
+  "password_length_label": "الطول",
+  "password_strength_label": "القوة",
+  "password_export_save": "حفظ على الجهاز",
+  "password_export_saved": "تم حفظ الملف في: {path}"
 }

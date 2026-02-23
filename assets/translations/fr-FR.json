@@ -687,5 +687,15 @@
   "dice_clear_history": "Effacer l'historique",
   "ob_feat_dice": "Lanceur de Dés — dés pour JDR et jeux de société",
   "dice_no_history": "Aucun lancer encore",
-  "dice_total_rolls": "{} lancers au total"
+  "dice_total_rolls": "{} lancers au total",
+  "password_export_title": "Exporter les mots de passe",
+  "password_export_choose_format": "Choisissez le format d'exportation :",
+  "password_export_date": "Date",
+  "password_export_count": "Total des mots de passe",
+  "password_export_warning": "CONFIDENTIEL - Gardez ce fichier en sécurité !",
+  "password_label": "Mot de passe",
+  "password_length_label": "Longueur",
+  "password_strength_label": "Sécurité",
+  "password_export_save": "Enregistrer sur l'appareil",
+  "password_export_saved": "Fichier enregistré dans : {path}"
 }

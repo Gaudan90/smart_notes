@@ -687,5 +687,15 @@
   "dice_clear_history": "清除历史",
   "ob_feat_dice": "骰子投掷器 — 角色扮演和桌游骰子",
   "dice_no_history": "暂无投掷记录",
-  "dice_total_rolls": "共 {} 次投掷"
+  "dice_total_rolls": "共 {} 次投掷",
+  "password_export_title": "导出密码",
+  "password_export_choose_format": "选择导出格式：",
+  "password_export_date": "日期",
+  "password_export_count": "密码总数",
+  "password_export_warning": "机密 - 请妥善保管此文件！",
+  "password_label": "密码",
+  "password_length_label": "长度",
+  "password_strength_label": "强度",
+  "password_export_save": "保存到设备",
+  "password_export_saved": "文件已保存到：{path}"
 }

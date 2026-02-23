@@ -687,5 +687,15 @@
   "dice_clear_history": "Cancella cronologia",
   "ob_feat_dice": "Lancio Dadi — dadi per GDR e giochi da tavolo",
   "dice_no_history": "Nessun lancio ancora",
-  "dice_total_rolls": "{} lanci totali"
+  "dice_total_rolls": "{} lanci totali",
+  "password_export_title": "Esporta Password",
+  "password_export_choose_format": "Scegli il formato di esportazione:",
+  "password_export_date": "Data",
+  "password_export_count": "Password totali",
+  "password_export_warning": "RISERVATO - Conserva questo file al sicuro!",
+  "password_label": "Password",
+  "password_length_label": "Lunghezza",
+  "password_strength_label": "Sicurezza",
+  "password_export_save": "Salva sul dispositivo",
+  "password_export_saved": "File salvato in: {path}"
 }

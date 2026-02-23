@@ -687,5 +687,15 @@
   "dice_clear_history": "Borrar historial",
   "ob_feat_dice": "Lanzador de Dados — dados para RPG y juegos de mesa",
   "dice_no_history": "Ningún lanzamiento aún",
-  "dice_total_rolls": "{} lanzamientos en total"
+  "dice_total_rolls": "{} lanzamientos en total",
+  "password_export_title": "Exportar contraseñas",
+  "password_export_choose_format": "Elige el formato de exportación:",
+  "password_export_date": "Fecha",
+  "password_export_count": "Total de contraseñas",
+  "password_export_warning": "CONFIDENCIAL - ¡Guarda este archivo de forma segura!",
+  "password_label": "Contraseña",
+  "password_length_label": "Longitud",
+  "password_strength_label": "Seguridad",
+  "password_export_save": "Guardar en el dispositivo",
+  "password_export_saved": "Archivo guardado en: {path}"
 }

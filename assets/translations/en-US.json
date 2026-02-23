@@ -687,5 +687,15 @@
   "dice_clear_history": "Clear history",
   "ob_feat_dice": "Dice Roller — roll dice for RPG and board games",
   "dice_no_history": "No rolls yet",
-  "dice_total_rolls": "{} total rolls"
+  "dice_total_rolls": "{} total rolls",
+  "password_export_title": "Export Passwords",
+  "password_export_choose_format": "Choose the export format:",
+  "password_export_date": "Date",
+  "password_export_count": "Total passwords",
+  "password_export_warning": "CONFIDENTIAL - Keep this file safe!",
+  "password_label": "Password",
+  "password_length_label": "Length",
+  "password_strength_label": "Strength",
+  "password_export_save": "Save to device",
+  "password_export_saved": "File saved to: {path}"
 }

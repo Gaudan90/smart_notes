@@ -687,5 +687,15 @@
   "dice_clear_history": "Geçmişi temizle",
   "ob_feat_dice": "Zar Atıcı — RPG ve masa oyunları için zar",
   "dice_no_history": "Henüz atış yok",
-  "dice_total_rolls": "Toplam {} atış"
+  "dice_total_rolls": "Toplam {} atış",
+  "password_export_title": "Şifreleri dışa aktar",
+  "password_export_choose_format": "Dışa aktarma biçimini seçin:",
+  "password_export_date": "Tarih",
+  "password_export_count": "Toplam şifre",
+  "password_export_warning": "GİZLİ - Bu dosyayı güvende tutun!",
+  "password_label": "Şifre",
+  "password_length_label": "Uzunluk",
+  "password_strength_label": "Güvenlik",
+  "password_export_save": "Cihaza kaydet",
+  "password_export_saved": "Dosya kaydedildi: {path}"
 }
