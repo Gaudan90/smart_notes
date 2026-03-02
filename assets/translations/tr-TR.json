@@ -698,5 +698,6 @@
   "password_strength_label": "Güvenlik",
   "password_export_save": "Cihaza kaydet",
   "password_export_saved": "Dosya kaydedildi: {path}",
-  "todo_empty_warning": "Listeye eklemek için bir şey yazın"
+  "todo_empty_warning": "Listeye eklemek için bir şey yazın",
+  "color_name_required": "Renk için bir ad girin"
 }

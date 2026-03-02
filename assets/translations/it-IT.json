@@ -698,5 +698,6 @@
   "password_strength_label": "Sicurezza",
   "password_export_save": "Salva sul dispositivo",
   "password_export_saved": "File salvato in: {path}",
-  "todo_empty_warning": "Scrivi qualcosa da aggiungere alla lista"
+  "todo_empty_warning": "Scrivi qualcosa da aggiungere alla lista",
+  "color_name_required": "Inserisci un nome per il colore"
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import '../theme/color_blind_mode.dart';
-import '../theme/color_picker_painter.dart';
 import '../theme/theme_provider.dart';
+import '../widget/theme/custom_color_dialog.dart';
+import '../widget/theme/colorblind_mode_card.dart';
 
 class ThemeSettingsView extends StatefulWidget {
   final ThemeProvider themeProvider;
@@ -17,8 +17,6 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  final TextEditingController _customColorController = TextEditingController();
-  Color _selectedCustomColor = Colors.blue;
 
   @override
   void initState() {
@@ -39,7 +37,6 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
   @override
   void dispose() {
     _controller.dispose();
-    _customColorController.dispose();
     super.dispose();
   }
 
@@ -48,188 +45,19 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
     widget.themeProvider.setPrimaryColor(color);
   }
 
-  void _showCustomColorDialog() {
-    double touchX = 0.5;
-    double touchY = 0.5;
-    const double pickerWidth = 250.0;
-    const double pickerHeight = 150.0;
-
-    showDialog(
+  Future<void> _showCustomColorDialog() async {
+    final result = await showDialog<CustomColorResult>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('add_custom_color_title'.tr()),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: _customColorController,
-                decoration: InputDecoration(
-                  labelText: 'color_name_label'.tr(),
-                  hintText: 'color_name_hint'.tr(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: pickerWidth,
-                height: pickerHeight,
-                child: StatefulBuilder(
-                  builder: (context, setDialogState) {
-                    return GestureDetector(
-                      onPanStart: (details) {
-                        setDialogState(() {
-                          touchX = (details.localPosition.dx / pickerWidth).clamp(0.0, 1.0);
-                          touchY = (details.localPosition.dy / pickerHeight).clamp(0.0, 1.0);
-
-                          final hue = touchX * 360;
-                          final saturation = 1.0;
-                          final lightness = 0.3 + (1 - touchY) * 0.5;
-
-                          _selectedCustomColor = HSLColor.fromAHSL(
-                            1.0, hue, saturation, lightness,
-                          ).toColor();
-                        });
-                      },
-                      onPanUpdate: (details) {
-                        setDialogState(() {
-                          touchX = (details.localPosition.dx / pickerWidth).clamp(0.0, 1.0);
-                          touchY = (details.localPosition.dy / pickerHeight).clamp(0.0, 1.0);
-
-                          final hue = touchX * 360;
-                          final saturation = 1.0;
-                          final lightness = 0.3 + (1 - touchY) * 0.5;
-
-                          _selectedCustomColor = HSLColor.fromAHSL(
-                            1.0, hue, saturation, lightness,
-                          ).toColor();
-                        });
-                      },
-                      onTapDown: (details) {
-                        setDialogState(() {
-                          touchX = (details.localPosition.dx / pickerWidth).clamp(0.0, 1.0);
-                          touchY = (details.localPosition.dy / pickerHeight).clamp(0.0, 1.0);
-
-                          final hue = touchX * 360;
-                          final saturation = 1.0;
-                          final lightness = 0.3 + (1 - touchY) * 0.5;
-
-                          _selectedCustomColor = HSLColor.fromAHSL(
-                            1.0, hue, saturation, lightness,
-                          ).toColor();
-                        });
-                      },
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Stack(
-                          children: [
-                            CustomPaint(
-                              painter: ColorPickerPainter(),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey.shade300, width: 1),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              left: (touchX * pickerWidth) - 20,
-                              top: (touchY * pickerHeight) - 20,
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  color: _selectedCustomColor,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 3),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.3),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('cancel'.tr()),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (_customColorController.text.isNotEmpty) {
-                widget.themeProvider.addCustomColor(
-                  _customColorController.text,
-                  _selectedCustomColor,
-                );
-                Navigator.pop(context);
-                _customColorController.clear();
-              }
-            },
-            child: Text('add'.tr()),
-          ),
-        ],
-      ),
+      builder: (context) => const CustomColorDialog(),
     );
-  }
 
-  /// Restituisce la chiave di traduzione per ogni modalità daltonismo
-  String _colorBlindModeLabel(ColorBlindMode mode) {
-    switch (mode) {
-      case ColorBlindMode.none:
-        return 'cb_none'.tr();
-      case ColorBlindMode.protanopia:
-        return 'cb_protanopia'.tr();
-      case ColorBlindMode.deuteranopia:
-        return 'cb_deuteranopia'.tr();
-      case ColorBlindMode.tritanopia:
-        return 'cb_tritanopia'.tr();
-    }
-  }
-
-  /// Restituisce la descrizione per ogni modalità daltonismo
-  String _colorBlindModeDesc(ColorBlindMode mode) {
-    switch (mode) {
-      case ColorBlindMode.none:
-        return 'cb_none_desc'.tr();
-      case ColorBlindMode.protanopia:
-        return 'cb_protanopia_desc'.tr();
-      case ColorBlindMode.deuteranopia:
-        return 'cb_deuteranopia_desc'.tr();
-      case ColorBlindMode.tritanopia:
-        return 'cb_tritanopia_desc'.tr();
-    }
-  }
-
-  /// Restituisce l'icona per ogni modalità daltonismo
-  IconData _colorBlindModeIcon(ColorBlindMode mode) {
-    switch (mode) {
-      case ColorBlindMode.none:
-        return Icons.visibility;
-      case ColorBlindMode.protanopia:
-        return Icons.remove_red_eye;
-      case ColorBlindMode.deuteranopia:
-        return Icons.remove_red_eye_outlined;
-      case ColorBlindMode.tritanopia:
-        return Icons.visibility_outlined;
+    if (result != null) {
+      widget.themeProvider.addCustomColor(result.name, result.color);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final _ = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         title: Text('theme_settings_title'.tr()),
@@ -240,275 +68,238 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Modalità tema
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'theme_mode'.tr(),
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    SegmentedButton<ThemeMode>(
-                      selected: {widget.themeProvider.themeMode},
-                      onSelectionChanged: (Set<ThemeMode> modes) {
-                        widget.themeProvider.setThemeMode(modes.first);
-                      },
-                      segments: [
-                        ButtonSegment(
-                          value: ThemeMode.light,
-                          icon: const Icon(Icons.light_mode),
-                          label: Text('theme_light'.tr()),
-                        ),
-                        ButtonSegment(
-                          value: ThemeMode.dark,
-                          icon: const Icon(Icons.dark_mode),
-                          label: Text('theme_dark'.tr()),
-                        ),
-                        ButtonSegment(
-                          value: ThemeMode.system,
-                          icon: const Icon(Icons.auto_mode),
-                          label: Text('theme_system'.tr()),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildThemeModeCard(context),
 
             const SizedBox(height: 20),
 
-            // Accessibilità - Modalità Daltonici
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.accessibility_new,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'cb_accessibility'.tr(),
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'cb_description'.tr(),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ...ColorBlindMode.values.map((mode) {
-                      final isSelected = widget.themeProvider.colorBlindMode == mode;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-                              width: isSelected ? 2 : 1,
-                            ),
-                            color: isSelected
-                                ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3)
-                                : null,
-                          ),
-                          child: ListTile(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            leading: Icon(
-                              _colorBlindModeIcon(mode),
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                            ),
-                            title: Text(
-                              _colorBlindModeLabel(mode),
-                              style: TextStyle(
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              ),
-                            ),
-                            subtitle: Text(
-                              _colorBlindModeDesc(mode),
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            trailing: isSelected
-                                ? Icon(
-                              Icons.check_circle,
-                              color: Theme.of(context).colorScheme.primary,
-                            )
-                                : null,
-                            onTap: () {
-                              widget.themeProvider.setColorBlindMode(mode);
-                            },
-                          ),
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            ),
+            // Accessibilità - Daltonismo
+            ColorBlindModeCard(themeProvider: widget.themeProvider),
 
             const SizedBox(height: 20),
 
             // Colore primario
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'theme_color'.tr(),
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add_circle_outline),
-                          onPressed: _showCustomColorDialog,
-                          tooltip: 'add_custom_color'.tr(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: widget.themeProvider.availableColors.entries.map((entry) {
-                        final isSelected = widget.themeProvider.primaryColor.value == entry.value.value;
-                        return GestureDetector(
-                          onTap: () => _selectColor(entry.value),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: isSelected ? 60 : 50,
-                            height: isSelected ? 60 : 50,
-                            decoration: BoxDecoration(
-                              color: entry.value,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.onSurface
-                                    : Colors.transparent,
-                                width: 3,
-                              ),
-                              boxShadow: isSelected ? [
-                                BoxShadow(
-                                  color: entry.value.withValues(alpha: 0.4),
-                                  blurRadius: 12,
-                                  spreadRadius: 2,
-                                ),
-                              ] : [],
-                            ),
-                            child: isSelected
-                                ? ScaleTransition(
-                              scale: _scaleAnimation,
-                              child: const Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            )
-                                : null,
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            _buildColorPaletteCard(context),
 
             const SizedBox(height: 20),
 
             // Anteprima
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'preview'.tr(),
-                      style: Theme.of(context).textTheme.titleLarge,
+            _buildPreviewCard(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildThemeModeCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'theme_mode'.tr(),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            SegmentedButton<ThemeMode>(
+              selected: {widget.themeProvider.themeMode},
+              onSelectionChanged: (Set<ThemeMode> modes) {
+                widget.themeProvider.setThemeMode(modes.first);
+              },
+              segments: [
+                ButtonSegment(
+                  value: ThemeMode.light,
+                  icon: const Icon(Icons.light_mode),
+                  label: Text('theme_light'.tr()),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.dark,
+                  icon: const Icon(Icons.dark_mode),
+                  label: Text('theme_dark'.tr()),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.system,
+                  icon: const Icon(Icons.auto_mode),
+                  label: Text('theme_system'.tr()),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColorPaletteCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'theme_color'.tr(),
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  onPressed: _showCustomColorDialog,
+                  tooltip: 'add_custom_color'.tr(),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 12,
+              runSpacing: 16,
+              children: widget.themeProvider.availableColors.entries.map((entry) {
+                final isSelected =
+                    widget.themeProvider.primaryColor.value == entry.value.value;
+                return GestureDetector(
+                  onTap: () => _selectColor(entry.value),
+                  child: SizedBox(
+                    width: 64,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          width: isSelected ? 52 : 44,
+                          height: isSelected ? 52 : 44,
+                          decoration: BoxDecoration(
+                            color: entry.value,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected
+                                  ? Theme.of(context).colorScheme.onSurface
+                                  : Colors.transparent,
+                              width: 3,
+                            ),
+                            boxShadow: isSelected
+                                ? [
+                              BoxShadow(
+                                color: entry.value.withValues(alpha: 0.4),
+                                blurRadius: 12,
+                                spreadRadius: 2,
+                              ),
+                            ]
+                                : [],
+                          ),
+                          child: isSelected
+                              ? ScaleTransition(
+                            scale: _scaleAnimation,
+                            child: const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          )
+                              : null,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          entry.key,
+                          style:
+                          Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontSize: 10,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isSelected
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.6),
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPreviewCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'preview'.tr(),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withValues(alpha: 0.2),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.palette,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'primary_color'.tr(),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: Text('button_label'.tr()),
                         ),
                       ),
-                      child: Column(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.palette,
-                                  color: Theme.of(context).colorScheme.onPrimary,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'primary_color'.tr(),
-                                  style: TextStyle(
-                                    color: Theme.of(context).colorScheme.onPrimary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  child: Text('button_label'.tr()),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: OutlinedButton(
-                                  onPressed: () {},
-                                  child: const Text('Outlined'),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {},
+                          child: const Text('Outlined'),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

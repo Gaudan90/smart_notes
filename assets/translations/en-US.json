@@ -698,5 +698,6 @@
   "password_strength_label": "Strength",
   "password_export_save": "Save to device",
   "password_export_saved": "File saved to: {path}",
-  "todo_empty_warning": "Write something to add to the list"
+  "todo_empty_warning": "Write something to add to the list",
+  "color_name_required": "Enter a name for the color"
 }

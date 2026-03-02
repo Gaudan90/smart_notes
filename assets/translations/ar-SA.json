@@ -698,5 +698,6 @@
   "password_strength_label": "القوة",
   "password_export_save": "حفظ على الجهاز",
   "password_export_saved": "تم حفظ الملف في: {path}",
-  "todo_empty_warning": "اكتب شيئاً لإضافته إلى القائمة"
+  "todo_empty_warning": "اكتب شيئاً لإضافته إلى القائمة",
+  "color_name_required": "أدخل اسماً للون"
 }
