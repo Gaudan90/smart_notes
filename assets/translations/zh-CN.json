@@ -697,5 +697,6 @@
   "password_length_label": "长度",
   "password_strength_label": "强度",
   "password_export_save": "保存到设备",
-  "password_export_saved": "文件已保存到：{path}"
+  "password_export_saved": "文件已保存到：{path}",
+  "todo_empty_warning": "请输入要添加到列表的内容"
 }

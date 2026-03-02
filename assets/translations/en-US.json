@@ -697,5 +697,6 @@
   "password_length_label": "Length",
   "password_strength_label": "Strength",
   "password_export_save": "Save to device",
-  "password_export_saved": "File saved to: {path}"
+  "password_export_saved": "File saved to: {path}",
+  "todo_empty_warning": "Write something to add to the list"
 }

@@ -29,6 +29,16 @@ class _TodoListViewState extends State<TodoListView> {
   }
 
   Future<void> _addTodo() async {
+    if (_controller.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('todo_empty_warning'.tr()),
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
     await _presenter.addTodo(_controller.text);
     _controller.clear();
     setState(() {});

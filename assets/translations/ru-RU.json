@@ -697,5 +697,6 @@
   "password_length_label": "Длина",
   "password_strength_label": "Надёжность",
   "password_export_save": "Сохранить на устройство",
-  "password_export_saved": "Файл сохранён: {path}"
+  "password_export_saved": "Файл сохранён: {path}",
+  "todo_empty_warning": "Напишите что-нибудь для добавления в список"
 }

@@ -697,5 +697,6 @@
   "password_length_label": "Longueur",
   "password_strength_label": "Sécurité",
   "password_export_save": "Enregistrer sur l'appareil",
-  "password_export_saved": "Fichier enregistré dans : {path}"
+  "password_export_saved": "Fichier enregistré dans : {path}",
+  "todo_empty_warning": "Écrivez quelque chose à ajouter à la liste"
 }
