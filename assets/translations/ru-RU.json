@@ -699,5 +699,8 @@
   "password_export_save": "Сохранить на устройство",
   "password_export_saved": "Файл сохранён: {path}",
   "todo_empty_warning": "Напишите что-нибудь для добавления в список",
-  "color_name_required": "Введите название цвета"
+  "color_name_required": "Введите название цвета",
+  "delete_custom_colors_title": "Удалить пользовательские цвета",
+  "delete_custom_colors_hint": "Выберите цвета для удаления:",
+  "delete_custom_colors_confirm": "Удалить {count} выбранных цвет(а)?"
 }

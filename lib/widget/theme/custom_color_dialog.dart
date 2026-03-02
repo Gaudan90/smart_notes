@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../theme/color_picker_painter.dart';
 
+/// Risultato del dialog: nome e colore scelti dall'utente.
 class CustomColorResult {
   final String name;
   final Color color;

@@ -699,5 +699,8 @@
   "password_export_save": "保存到设备",
   "password_export_saved": "文件已保存到：{path}",
   "todo_empty_warning": "请输入要添加到列表的内容",
-  "color_name_required": "请输入颜色名称"
+  "color_name_required": "请输入颜色名称",
+  "delete_custom_colors_title": "删除自定义颜色",
+  "delete_custom_colors_hint": "选择要删除的颜色：",
+  "delete_custom_colors_confirm": "删除 {count} 个选中的颜色？"
 }

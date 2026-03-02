@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../theme/theme_provider.dart';
 import '../widget/theme/custom_color_dialog.dart';
 import '../widget/theme/colorblind_mode_card.dart';
+import '../widget/theme/delete_custom_colors_dialog.dart';
 
 class ThemeSettingsView extends StatefulWidget {
   final ThemeProvider themeProvider;
@@ -53,6 +54,19 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
 
     if (result != null) {
       widget.themeProvider.addCustomColor(result.name, result.color);
+    }
+  }
+
+  Future<void> _showDeleteColorsDialog() async {
+    final toRemove = await showDialog<List<String>>(
+      context: context,
+      builder: (context) => DeleteCustomColorsDialog(
+        customColors: widget.themeProvider.customColors,
+      ),
+    );
+
+    if (toRemove != null && toRemove.isNotEmpty) {
+      await widget.themeProvider.removeCustomColors(toRemove);
     }
   }
 
@@ -145,10 +159,21 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
                   'theme_color'.tr(),
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.add_circle_outline),
-                  onPressed: _showCustomColorDialog,
-                  tooltip: 'add_custom_color'.tr(),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.themeProvider.customColors.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(Icons.remove_circle_outline),
+                        onPressed: _showDeleteColorsDialog,
+                        tooltip: 'delete_custom_colors_title'.tr(),
+                      ),
+                    IconButton(
+                      icon: const Icon(Icons.add_circle_outline),
+                      onPressed: _showCustomColorDialog,
+                      tooltip: 'add_custom_color'.tr(),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -158,7 +183,7 @@ class _ThemeSettingsViewState extends State<ThemeSettingsView>
               runSpacing: 16,
               children: widget.themeProvider.availableColors.entries.map((entry) {
                 final isSelected =
-                    widget.themeProvider.primaryColor.value == entry.value.value;
+                    widget.themeProvider.primaryColor.toARGB32() == entry.value.toARGB32();
                 return GestureDetector(
                   onTap: () => _selectColor(entry.value),
                   child: SizedBox(

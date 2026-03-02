@@ -699,5 +699,8 @@
   "password_export_save": "Cihaza kaydet",
   "password_export_saved": "Dosya kaydedildi: {path}",
   "todo_empty_warning": "Listeye eklemek için bir şey yazın",
-  "color_name_required": "Renk için bir ad girin"
+  "color_name_required": "Renk için bir ad girin",
+  "delete_custom_colors_title": "Özel renkleri kaldır",
+  "delete_custom_colors_hint": "Kaldırılacak renkleri seçin:",
+  "delete_custom_colors_confirm": "{count} seçili renk kaldırılsın mı?"
 }

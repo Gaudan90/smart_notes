@@ -699,5 +699,8 @@
   "password_export_save": "Salva sul dispositivo",
   "password_export_saved": "File salvato in: {path}",
   "todo_empty_warning": "Scrivi qualcosa da aggiungere alla lista",
-  "color_name_required": "Inserisci un nome per il colore"
+  "color_name_required": "Inserisci un nome per il colore",
+  "delete_custom_colors_title": "Rimuovi colori personalizzati",
+  "delete_custom_colors_hint": "Seleziona i colori da rimuovere:",
+  "delete_custom_colors_confirm": "Rimuovere {count} colore/i selezionato/i?"
 }

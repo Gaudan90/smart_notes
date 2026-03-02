@@ -699,5 +699,8 @@
   "password_export_save": "Enregistrer sur l'appareil",
   "password_export_saved": "Fichier enregistré dans : {path}",
   "todo_empty_warning": "Écrivez quelque chose à ajouter à la liste",
-  "color_name_required": "Entrez un nom pour la couleur"
+  "color_name_required": "Entrez un nom pour la couleur",
+  "delete_custom_colors_title": "Supprimer les couleurs personnalisées",
+  "delete_custom_colors_hint": "Sélectionnez les couleurs à supprimer :",
+  "delete_custom_colors_confirm": "Supprimer {count} couleur(s) sélectionnée(s) ?"
 }

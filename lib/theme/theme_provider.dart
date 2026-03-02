@@ -19,6 +19,7 @@ class ThemeProvider extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
   Color get primaryColor => _primaryColor;
   Map<String, Color> get availableColors => {...AppTheme.defaultColors, ..._customColors};
+  Map<String, Color> get customColors => Map.unmodifiable(_customColors);
   ColorBlindMode get colorBlindMode => _colorBlindMode;
 
   /// Restituisce il ColorFilter da applicare all'intera app,
@@ -75,16 +76,37 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
 
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_primaryColorKey, color.value);
+    await prefs.setInt(_primaryColorKey, color.toARGB32());
   }
 
   Future<void> addCustomColor(String name, Color color) async {
     _customColors[name] = color;
     notifyListeners();
 
+    await _saveCustomColors();
+  }
+
+  /// Rimuove i colori custom specificati per nome.
+  /// Se il colore primario attivo viene rimosso, fallback al default.
+  Future<void> removeCustomColors(List<String> names) async {
+    for (final name in names) {
+      final removed = _customColors.remove(name);
+      if (removed != null &&
+          removed.toARGB32() == _primaryColor.toARGB32()) {
+        _primaryColor = AppTheme.defaultColors.values.first;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt(_primaryColorKey, _primaryColor.toARGB32());
+      }
+    }
+    notifyListeners();
+
+    await _saveCustomColors();
+  }
+
+  Future<void> _saveCustomColors() async {
     final prefs = await SharedPreferences.getInstance();
     final encoded = json.encode(
-        _customColors.map((key, value) => MapEntry(key, value.value))
+        _customColors.map((key, value) => MapEntry(key, value.toARGB32()))
     );
     await prefs.setString(_customColorsKey, encoded);
   }
