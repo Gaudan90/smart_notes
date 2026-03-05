@@ -393,10 +393,8 @@ SOFTWARE.
 
 **Gaudan90**
 
-- Professional mobile developer (Flutter, Kotlin Jetpack Compose, SwiftUI)
-- Passionate about creative writing, tabletop gaming, and fantasy roleplay
-- 20 years of experience managing play-by-forum RPG communities
-
+- Junior mobile developer (Flutter, Kotlin Jetpack Compose, SwiftUI, React Native)
+- Passionate about creative writing, utilities, roleplay sometimes, and coding most importantly.
 ---
 
 ## 📊 Version History
@@ -416,6 +414,6 @@ SOFTWARE.
 
 ---
 
-**Made with ❤️ in Flutter**
+**Made with the heart in Flutter**
 
-**Your productivity, your device, your privacy.** 📝✨
+**Your productivity, your device, your privacy.**
